@@ -77,9 +77,9 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720]">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
       {/* Header */}
-      <div className="bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545] px-4 py-4">
+      <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4">
         <div className="max-w-xl mx-auto flex items-center gap-4">
           <button
             onClick={() => setCurrentView('dashboard')}
@@ -93,7 +93,7 @@ export default function Settings() {
 
       {/* Tabs */}
       <div className="max-w-xl mx-auto px-4 pt-4">
-        <div className="flex gap-1 bg-[#f0f0f0] dark:bg-[#1a2332] rounded-lg p-1 mb-6">
+        <div className="flex gap-1 bg-[#e8e8e8] dark:bg-[#1a2332] rounded-lg p-1 mb-6">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -127,7 +127,7 @@ export default function Settings() {
             <div className="card">
               <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-4">Statistics</p>
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                <div className="text-center p-3 bg-[#e8e8e8] dark:bg-[#0f1720] rounded-lg">
                   <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.xp}</p>
                   <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Total XP</p>
                 </div>
@@ -156,7 +156,7 @@ export default function Settings() {
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className={`w-11 h-6 rounded-full transition-colors relative ${
-                    darkMode ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8]'
+                    darkMode ? 'bg-[#c9a84c]' : 'bg-[#c8c8c8]'
                   }`}
                 >
                   <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
@@ -185,7 +185,7 @@ export default function Settings() {
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                   user.instrument === inst.id 
                     ? 'bg-[#c9a84c] text-[#1a2332]' 
-                    : 'bg-[#f0f0f0] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
+                    : 'bg-[#e8e8e8] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
                 }`}>
                   <MusicIcon />
                 </div>
@@ -233,7 +233,7 @@ export default function Settings() {
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
                           isSelected 
                             ? 'bg-[#c9a84c] text-[#1a2332]' 
-                            : 'bg-[#f0f0f0] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
+                            : 'bg-[#e8e8e8] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
                         }`}>
                           <MusicIcon />
                         </div>

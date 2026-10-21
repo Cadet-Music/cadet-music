@@ -88,7 +88,7 @@ export default function Onboarding() {
         className="w-full max-w-md"
       >
         {!finished ? (
-          <div className="bg-white dark:bg-[#1a2332] rounded-xl border border-[#e2e4e8] dark:border-[#2a3545] p-6 shadow-sm">
+          <div className="bg-white dark:bg-[#1a2332] rounded-xl border border-[#c8c8c8] dark:border-[#2a3545] p-6 shadow-sm">
             {/* Progress */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
@@ -125,7 +125,7 @@ export default function Onboarding() {
                   const isCorrect = idx === QUESTIONS[currentQ].correct;
                   const showResult = selected !== null;
 
-                  let borderColor = 'border-[#e2e4e8] dark:border-[#2a3545]';
+                  let borderColor = 'border-[#c8c8c8] dark:border-[#2a3545]';
                   let bgColor = '';
                   let textColor = 'text-[#1a2332] dark:text-white';
 

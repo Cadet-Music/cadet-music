@@ -118,7 +118,7 @@ function MultipleChoiceExercise({ exercise, onComplete }: { exercise: Exercise; 
       <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
       <div className="space-y-2.5">
         {exercise.options?.map((opt, idx) => {
-          let borderColor = 'border-[#e2e4e8] dark:border-[#2a3545]';
+          let borderColor = 'border-[#c8c8c8] dark:border-[#2a3545]';
           let bgColor = '';
           if (selected !== null) {
             if (opt.correct) { borderColor = 'border-[#3a8a5c]'; bgColor = 'bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10'; }
@@ -162,7 +162,7 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
               ? exercise.correctAnswer === 'true'
                 ? 'border-[#3a8a5c] bg-[#3a8a5c]/10 text-[#3a8a5c]'
                 : 'border-[#c44536] bg-[#c44536]/10 text-[#c44536]'
-              : 'border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
+              : 'border-[#c8c8c8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
           }`}
         >
           True
@@ -174,7 +174,7 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
               ? exercise.correctAnswer === 'false'
                 ? 'border-[#3a8a5c] bg-[#3a8a5c]/10 text-[#3a8a5c]'
                 : 'border-[#c44536] bg-[#c44536]/10 text-[#c44536]'
-              : 'border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
+              : 'border-[#c8c8c8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
           }`}
         >
           False
@@ -207,7 +207,7 @@ function RhythmTapExercise({ exercise, onComplete }: { exercise: Exercise; onCom
             key={i}
             animate={i < tapCount ? { scale: [1, 1.2, 1] } : {}}
             className={`w-8 h-8 rounded-full transition-colors ${
-              i < tapCount ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8] dark:bg-[#2a3545]'
+              i < tapCount ? 'bg-[#c9a84c]' : 'bg-[#d0d0d0] dark:bg-[#2a3545]'
             }`}
           />
         ))}
@@ -253,7 +253,7 @@ function FillOrderExercise({ exercise, onComplete }: { exercise: Exercise; onCom
     <div>
       <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
       
-      <div className="min-h-[56px] bg-[#f0f0f0] dark:bg-[#0f1720] border border-dashed border-[#e2e4e8] dark:border-[#2a3545] rounded-lg p-3 mb-4 flex flex-wrap gap-2">
+      <div className="min-h-[56px] bg-[#e8e8e8] dark:bg-[#0f1720] border border-dashed border-[#c8c8c8] dark:border-[#2a3545] rounded-lg p-3 mb-4 flex flex-wrap gap-2">
         {selected.map((item, idx) => (
           <motion.button
             key={`${item}-${idx}`}
@@ -280,7 +280,7 @@ function FillOrderExercise({ exercise, onComplete }: { exercise: Exercise; onCom
             key={item}
             whileTap={{ scale: 0.95 }}
             onClick={() => handleSelect(item)}
-            className="px-3 py-1.5 rounded-md font-semibold text-sm border border-[#e2e4e8] dark:border-[#2a3545] bg-white dark:bg-[#1a2332] text-[#1a2332] dark:text-white hover:border-[#c9a84c] transition-colors"
+            className="px-3 py-1.5 rounded-md font-semibold text-sm border border-[#c8c8c8] dark:border-[#2a3545] bg-white dark:bg-[#1a2332] text-[#1a2332] dark:text-white hover:border-[#c9a84c] transition-colors"
           >
             {item}
           </motion.button>
@@ -342,7 +342,7 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
                   ? 'bg-[#c9a84c] text-[#1a2332] border border-[#a68a3a]'
                   : Object.values(matches).includes(note)
                   ? 'bg-[#3a8a5c]/10 text-[#3a8a5c] border border-[#3a8a5c]'
-                  : 'bg-white dark:bg-[#1a2332] border border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white'
+                  : 'bg-white dark:bg-[#1a2332] border border-[#c8c8c8] dark:border-[#2a3545] text-[#1a2332] dark:text-white'
               }`}
             >
               {note}
@@ -363,7 +363,7 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
                       ? 'bg-[#3a8a5c]/10 border border-[#3a8a5c] text-[#3a8a5c]'
                       : 'bg-[#c44536]/10 border border-[#c44536] text-[#c44536]'
                     : 'bg-[#c9a84c]/10 border border-[#c9a84c] text-[#c9a84c]'
-                  : 'bg-[#f0f0f0] dark:bg-[#0f1720] border border-dashed border-[#e2e4e8] dark:border-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                  : 'bg-[#e8e8e8] dark:bg-[#0f1720] border border-dashed border-[#c8c8c8] dark:border-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
               }`}
             >
               {matches[pos] ? `${matches[pos]} →` : pos}
@@ -421,9 +421,9 @@ export default function LessonView() {
   const progressPercent = step === 'intro' ? 10 : step === 'learn' ? 30 : step === 'quiz' ? 50 + ((exerciseIdx + 1) / totalExercises) * 45 : 100;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720]">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
       {/* Top Bar */}
-      <div className="sticky top-0 z-50 bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545] px-4 py-3">
+      <div className="sticky top-0 z-50 bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-3">
         <div className="max-w-xl mx-auto flex items-center gap-3">
           <button onClick={handleBackToPath} className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#c44536] transition-colors">
             <CloseIcon />
@@ -500,7 +500,7 @@ export default function LessonView() {
                 {learnContent.title}
               </h2>
               
-              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#e2e4e8] dark:border-[#2a3545] mb-5">
+              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-5">
                 <div className="text-[#1a2332] dark:text-white leading-relaxed whitespace-pre-line text-[15px]">
                   {learnContent.content}
                 </div>
@@ -532,13 +532,13 @@ export default function LessonView() {
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-colors ${
-                      i < exerciseIdx ? 'bg-[#3a8a5c]' : i === exerciseIdx ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8] dark:bg-[#2a3545]'
+                      i < exerciseIdx ? 'bg-[#3a8a5c]' : i === exerciseIdx ? 'bg-[#c9a84c]' : 'bg-[#d0d0d0] dark:bg-[#2a3545]'
                     }`}
                   />
                 ))}
               </div>
 
-              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#e2e4e8] dark:border-[#2a3545]">
+              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545]">
                 {currentExercise.type === 'multiple-choice' && (
                   <MultipleChoiceExercise exercise={currentExercise} onComplete={handleExerciseComplete} />
                 )}

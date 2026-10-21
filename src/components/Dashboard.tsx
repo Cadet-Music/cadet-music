@@ -149,9 +149,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720] pb-24">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720] pb-24">
       {/* Top Bar */}
-      <header className="sticky top-0 z-50 bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545]">
+      <header className="sticky top-0 z-50 bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545]">
         <div className="max-w-2xl mx-auto flex items-center justify-between px-4 py-3">
           {/* Profile */}
           <div className="relative">
@@ -177,9 +177,9 @@ export default function Dashboard() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-12 left-0 bg-white dark:bg-[#1a2332] border border-[#e2e4e8] dark:border-[#2a3545] rounded-lg shadow-lg w-52 overflow-hidden z-50"
+                    className="absolute top-12 left-0 bg-white dark:bg-[#1a2332] border border-[#c8c8c8] dark:border-[#2a3545] rounded-lg shadow-lg w-52 overflow-hidden z-50"
                   >
-                    <div className="p-3 border-b border-[#e2e4e8] dark:border-[#2a3545]">
+                    <div className="p-3 border-b border-[#c8c8c8] dark:border-[#2a3545]">
                       <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{user.username}</p>
                       <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Level {user.progress.level} · {user.instrument} sax</p>
                     </div>
@@ -300,7 +300,7 @@ export default function Dashboard() {
                 transition={{ duration: 0.3 }}
                 className="text-center mb-5"
               >
-                <div className="inline-flex items-center gap-2 bg-white dark:bg-[#1a2332] border border-[#e2e4e8] dark:border-[#2a3545] rounded-full px-4 py-1.5">
+                <div className="inline-flex items-center gap-2 bg-white dark:bg-[#1a2332] border border-[#c8c8c8] dark:border-[#2a3545] rounded-full px-4 py-1.5">
                   <h3 className="font-semibold text-[#1a2332] dark:text-white text-xs uppercase tracking-wide">
                     {section.title}
                   </h3>
@@ -360,7 +360,7 @@ export default function Dashboard() {
       </div>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1a2332] border-t border-[#e2e4e8] dark:border-[#2a3545]">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1a2332] border-t border-[#c8c8c8] dark:border-[#2a3545]">
         <div className="max-w-lg mx-auto flex items-center justify-around py-2">
           <button
             onClick={() => setCurrentView('dashboard')}
@@ -422,7 +422,7 @@ export default function Dashboard() {
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', damping: 28 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-[#1a2332] rounded-xl p-6 w-full max-w-sm shadow-xl border border-[#e2e4e8] dark:border-[#2a3545]"
+              className="bg-white dark:bg-[#1a2332] rounded-xl p-6 w-full max-w-sm shadow-xl border border-[#c8c8c8] dark:border-[#2a3545]"
             >
               <div className="text-center mb-5">
                 <div className="w-14 h-14 rounded-full bg-[#c9a84c]/10 flex items-center justify-center mx-auto mb-3">

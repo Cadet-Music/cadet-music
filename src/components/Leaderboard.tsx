@@ -61,9 +61,9 @@ export default function Leaderboard() {
   const isUser = (name: string) => name === user.username;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720]">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
       {/* Header */}
-      <div className="bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545] px-4 py-4">
+      <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4">
         <div className="max-w-xl mx-auto flex items-center gap-4">
           <button
             onClick={() => setCurrentView('dashboard')}
@@ -88,12 +88,12 @@ export default function Leaderboard() {
             transition={{ delay: 0.15 }}
             className="text-center"
           >
-            <div className="w-12 h-12 rounded-full bg-[#f0f0f0] dark:bg-[#2a3545] flex items-center justify-center text-sm font-bold text-[#1a2332] dark:text-white mx-auto mb-2 border-2 border-[#c0c0c0]">
+            <div className="w-12 h-12 rounded-full bg-[#e8e8e8] dark:bg-[#2a3545] flex items-center justify-center text-sm font-bold text-[#1a2332] dark:text-white mx-auto mb-2 border-2 border-[#c0c0c0]">
               {allEntries[1]?.name.charAt(0)}
             </div>
             <p className="text-xs font-semibold text-[#1a2332] dark:text-white truncate w-16">{allEntries[1]?.name.split(' ')[0]}</p>
             <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{allEntries[1]?.xp} XP</p>
-            <div className="w-14 h-12 bg-[#f0f0f0] dark:bg-[#2a3545] rounded-t-lg mt-2 flex items-center justify-center border-t-2 border-x-2 border-[#c0c0c0]/40">
+            <div className="w-14 h-12 bg-[#e8e8e8] dark:bg-[#2a3545] rounded-t-lg mt-2 flex items-center justify-center border-t-2 border-x-2 border-[#c0c0c0]/40">
               <span className="text-sm font-bold text-[#5a6577] dark:text-[#9aa3b0]">2</span>
             </div>
           </motion.div>
@@ -122,12 +122,12 @@ export default function Leaderboard() {
             transition={{ delay: 0.2 }}
             className="text-center"
           >
-            <div className="w-12 h-12 rounded-full bg-[#f0f0f0] dark:bg-[#2a3545] flex items-center justify-center text-sm font-bold text-[#1a2332] dark:text-white mx-auto mb-2 border-2 border-[#cd7f32]">
+            <div className="w-12 h-12 rounded-full bg-[#e8e8e8] dark:bg-[#2a3545] flex items-center justify-center text-sm font-bold text-[#1a2332] dark:text-white mx-auto mb-2 border-2 border-[#cd7f32]">
               {allEntries[2]?.name.charAt(0)}
             </div>
             <p className="text-xs font-semibold text-[#1a2332] dark:text-white truncate w-16">{allEntries[2]?.name.split(' ')[0]}</p>
             <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{allEntries[2]?.xp} XP</p>
-            <div className="w-14 h-8 bg-[#f0f0f0] dark:bg-[#2a3545] rounded-t-lg mt-2 flex items-center justify-center border-t-2 border-x-2 border-[#cd7f32]/40">
+            <div className="w-14 h-8 bg-[#e8e8e8] dark:bg-[#2a3545] rounded-t-lg mt-2 flex items-center justify-center border-t-2 border-x-2 border-[#cd7f32]/40">
               <span className="text-sm font-bold text-[#5a6577] dark:text-[#9aa3b0]">3</span>
             </div>
           </motion.div>
@@ -153,7 +153,7 @@ export default function Leaderboard() {
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
                 isUser(entry.name) 
                   ? 'bg-[#c9a84c] text-[#1a2332]' 
-                  : 'bg-[#f0f0f0] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                  : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
               }`}>
                 {entry.name.charAt(0)}
               </div>
