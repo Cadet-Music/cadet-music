@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
-import { getLessonById, getAllLessons } from '../data';
+import { getLessonById } from '../data';
 import confetti from 'canvas-confetti';
-import Mascot from './Mascot';
 
-type LessonStep = 'intro' | 'learn' | 'practice' | 'quiz' | 'complete';
+type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
 type ExerciseType = 'multiple-choice' | 'note-match' | 'rhythm-tap' | 'true-false' | 'fill-order';
 
 interface QuizOption {
@@ -65,26 +64,45 @@ function getExercisesForLesson(lessonId: string): Exercise[] {
   ];
 }
 
-function getLearnContent(lessonId: string): { title: string; content: string; tip: string; visual?: string } {
-  const content: Record<string, { title: string; content: string; tip: string; visual?: string }> = {
-    'pb-1': { title: 'Meet Your Saxophone', content: 'The saxophone has 4 main parts:\n\n🔹 Mouthpiece — where you blow\n🔹 Neck — connects mouthpiece to body\n🔹 Body — the main tube with keys\n🔹 Bell — the flared end\n\nThe reed is a thin piece of cane that vibrates when air passes over it!', tip: '💡 Always wet your reed before playing!', visual: '🎷' },
-    'pb-2': { title: 'Assembly Steps', content: '1️⃣ Attach neck to body\n2️⃣ Wet the reed\n3️⃣ Place reed on mouthpiece\n4️⃣ Slide ligature over & tighten\n5️⃣ Attach mouthpiece to neck', tip: '💡 Handle by the bell & body — never by the keys!', visual: '🔧' },
-    'n-1': { title: 'Your First Notes: B, A, G', content: '🎵 B — Left hand: index finger\n🎵 A — Left hand: index + middle\n🎵 G — Left hand: all 3 fingers\n\nPractice: B-B-B → A-A-A → G-G-G', tip: '💡 Keep fingers curved like holding a ball!', visual: '🎵' },
-    'r-1': { title: 'Quarter Notes ♩', content: 'A quarter note = 1 beat\n\nCount: 1 - 2 - 3 - 4\n\nEach number = one quarter note\n\n♩ ♩ ♩ ♩ = 4 taps', tip: '💡 Start at 60 BPM — one tap per second!', visual: '♩' },
-    'r-4': { title: 'Eighth Notes ♫', content: 'Eighth notes = half a beat each\n\nCount: "1-and, 2-and, 3-and, 4-and"\n\n♫ ♫ ♫ ♫ = 8 taps in 4 beats', tip: '💡 Think "hot-dog, hot-dog" — two taps per beat!', visual: '♫' },
-    't-1': { title: 'Time Signatures', content: '4/4 — 4 beats, quarter = 1 beat\n3/4 — 3 beats (waltz)\n2/4 — 2 beats (march)\n\nTop number = beats per measure\nBottom = which note gets 1 beat', tip: '💡 4/4 is the most common time signature!', visual: '⏱️' },
-    't-3': { title: 'Dynamics', content: 'pp = pianissimo (very soft)\np = piano (soft)\nmp = mezzo piano (medium soft)\nmf = mezzo forte (medium loud)\nf = forte (loud)\nff = fortissimo (very loud)', tip: '💡 Dynamics add expression to your music!', visual: '🔊' },
+function getLearnContent(lessonId: string): { title: string; content: string; tip: string } {
+  const content: Record<string, { title: string; content: string; tip: string }> = {
+    'pb-1': { title: 'Meet Your Saxophone', content: 'The saxophone has 4 main parts:\n\nMouthpiece — where you blow\nNeck — connects mouthpiece to body\nBody — the main tube with keys\nBell — the flared end\n\nThe reed is a thin piece of cane that vibrates when air passes over it.', tip: 'Always wet your reed before playing.' },
+    'pb-2': { title: 'Assembly Steps', content: '1. Attach neck to body\n2. Wet the reed\n3. Place reed on mouthpiece\n4. Slide ligature over & tighten\n5. Attach mouthpiece to neck', tip: 'Handle by the bell & body — never by the keys.' },
+    'n-1': { title: 'Your First Notes: B, A, G', content: 'B — Left hand: index finger\nA — Left hand: index + middle\nG — Left hand: all 3 fingers\n\nPractice: B-B-B → A-A-A → G-G-G', tip: 'Keep fingers curved like holding a ball.' },
+    'r-1': { title: 'Quarter Notes', content: 'A quarter note = 1 beat\n\nCount: 1 - 2 - 3 - 4\n\nEach number = one quarter note\n\n4 quarter notes = 4 taps', tip: 'Start at 60 BPM — one tap per second.' },
+    'r-4': { title: 'Eighth Notes', content: 'Eighth notes = half a beat each\n\nCount: "1-and, 2-and, 3-and, 4-and"\n\n8 eighth notes = 8 taps in 4 beats', tip: 'Think "hot-dog, hot-dog" — two taps per beat.' },
+    't-1': { title: 'Time Signatures', content: '4/4 — 4 beats, quarter = 1 beat\n3/4 — 3 beats (waltz)\n2/4 — 2 beats (march)\n\nTop number = beats per measure\nBottom = which note gets 1 beat', tip: '4/4 is the most common time signature.' },
+    't-3': { title: 'Dynamics', content: 'pp = pianissimo (very soft)\np = piano (soft)\nmp = mezzo piano (medium soft)\nmf = mezzo forte (medium loud)\nf = forte (loud)\nff = fortissimo (very loud)', tip: 'Dynamics add expression to your music.' },
   };
 
   return content[lessonId] || {
     title: 'Practice Time',
-    content: 'Follow the instructions and practice!\n\n🎯 Focus on accuracy over speed.\n🎯 Take it slow — speed up later.\n🎯 Repeat until comfortable.',
-    tip: '💡 Even 5 minutes daily helps!',
-    visual: '🎯',
+    content: 'Follow the instructions and practice.\n\nFocus on accuracy over speed.\nTake it slow — speed up later.\nRepeat until comfortable.',
+    tip: 'Even 5 minutes daily helps.',
   };
 }
 
-// Individual Exercise Components
+const CloseIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const ArrowRightIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12" />
+    <polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+
+// Exercise Components
 function MultipleChoiceExercise({ exercise, onComplete }: { exercise: Exercise; onComplete: (correct: boolean) => void }) {
   const [selected, setSelected] = useState<number | null>(null);
 
@@ -97,23 +115,25 @@ function MultipleChoiceExercise({ exercise, onComplete }: { exercise: Exercise; 
 
   return (
     <div>
-      <p className="text-xl font-bold text-[#3c3c3c] dark:text-white mb-6 text-center">{exercise.question}</p>
-      <div className="space-y-3">
+      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <div className="space-y-2.5">
         {exercise.options?.map((opt, idx) => {
-          let cls = 'border-2 border-[#e5e5e5] dark:border-[#2a3f4a] bg-white dark:bg-[#131f24]';
+          let borderColor = 'border-[#e2e4e8] dark:border-[#2a3545]';
+          let bgColor = '';
           if (selected !== null) {
-            if (opt.correct) cls = 'border-2 border-[#58cc02] bg-[#58cc02]/10';
-            else if (idx === selected) cls = 'border-2 border-[#ff4b4b] bg-[#ff4b4b]/10';
+            if (opt.correct) { borderColor = 'border-[#3a8a5c]'; bgColor = 'bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10'; }
+            else if (idx === selected) { borderColor = 'border-[#c44536]'; bgColor = 'bg-[#c44536]/5 dark:bg-[#c44536]/10'; }
           }
           return (
-            <motion.button
+            <button
               key={idx}
-              whileTap={{ scale: 0.98 }}
               onClick={() => handleSelect(idx)}
-              className={`w-full p-4 rounded-xl text-left font-semibold text-lg transition-all ${cls} text-[#3c3c3c] dark:text-white`}
+              className={`w-full p-4 rounded-lg text-left font-medium transition-all border ${borderColor} ${bgColor} ${
+                selected === null ? 'hover:border-[#c9a84c] hover:bg-[#c9a84c]/5 dark:hover:bg-[#c9a84c]/10' : ''
+              } text-[#1a2332] dark:text-white`}
             >
               {opt.text}
-            </motion.button>
+            </button>
           );
         })}
       </div>
@@ -133,34 +153,32 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div>
-      <p className="text-xl font-bold text-[#3c3c3c] dark:text-white mb-6 text-center">{exercise.question}</p>
-      <div className="grid grid-cols-2 gap-4">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <div className="grid grid-cols-2 gap-3">
+        <button
           onClick={() => handleSelect('true')}
-          className={`p-6 rounded-xl font-bold text-xl border-2 transition-all ${
+          className={`p-5 rounded-lg font-semibold border transition-all ${
             selected === 'true'
               ? exercise.correctAnswer === 'true'
-                ? 'border-[#58cc02] bg-[#58cc02]/10 text-[#58cc02]'
-                : 'border-[#ff4b4b] bg-[#ff4b4b]/10 text-[#ff4b4b]'
-              : 'border-[#e5e5e5] dark:border-[#2a3f4a] text-[#3c3c3c] dark:text-white'
+                ? 'border-[#3a8a5c] bg-[#3a8a5c]/10 text-[#3a8a5c]'
+                : 'border-[#c44536] bg-[#c44536]/10 text-[#c44536]'
+              : 'border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
           }`}
         >
-          ✓ TRUE
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+          True
+        </button>
+        <button
           onClick={() => handleSelect('false')}
-          className={`p-6 rounded-xl font-bold text-xl border-2 transition-all ${
+          className={`p-5 rounded-lg font-semibold border transition-all ${
             selected === 'false'
               ? exercise.correctAnswer === 'false'
-                ? 'border-[#58cc02] bg-[#58cc02]/10 text-[#58cc02]'
-                : 'border-[#ff4b4b] bg-[#ff4b4b]/10 text-[#ff4b4b]'
-              : 'border-[#e5e5e5] dark:border-[#2a3f4a] text-[#3c3c3c] dark:text-white'
+                ? 'border-[#3a8a5c] bg-[#3a8a5c]/10 text-[#3a8a5c]'
+                : 'border-[#c44536] bg-[#c44536]/10 text-[#c44536]'
+              : 'border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white hover:border-[#c9a84c]'
           }`}
         >
-          ✗ FALSE
-        </motion.button>
+          False
+        </button>
       </div>
     </div>
   );
@@ -168,11 +186,9 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
 function RhythmTapExercise({ exercise, onComplete }: { exercise: Exercise; onComplete: (correct: boolean) => void }) {
   const [tapCount, setTapCount] = useState(0);
-  const [started, setStarted] = useState(false);
   const targetTaps = exercise.items?.length || 4;
 
   const handleTap = () => {
-    if (!started) setStarted(true);
     const newCount = tapCount + 1;
     setTapCount(newCount);
     if (newCount >= targetTaps) {
@@ -182,30 +198,29 @@ function RhythmTapExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div className="text-center">
-      <p className="text-xl font-bold text-[#3c3c3c] dark:text-white mb-4">{exercise.question}</p>
-      <p className="text-[#777] dark:text-[#aaa] mb-6">Tap {targetTaps} times!</p>
+      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-2">{exercise.question}</p>
+      <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">Tap {targetTaps} times</p>
       
-      {/* Tap targets visualization */}
       <div className="flex justify-center gap-2 mb-6">
         {exercise.items?.map((_, i) => (
           <motion.div
             key={i}
-            animate={i < tapCount ? { scale: [1, 1.3, 1], backgroundColor: '#58cc02' } : {}}
-            className={`w-10 h-10 rounded-full border-2 ${
-              i < tapCount ? 'bg-[#58cc02] border-[#46a302]' : 'bg-[#e5e5e5] dark:bg-[#2a3f4a] border-[#ccc] dark:border-[#3a4f5a]'
-            } transition-colors`}
+            animate={i < tapCount ? { scale: [1, 1.2, 1] } : {}}
+            className={`w-8 h-8 rounded-full transition-colors ${
+              i < tapCount ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8] dark:bg-[#2a3545]'
+            }`}
           />
         ))}
       </div>
 
       <motion.button
-        whileTap={{ scale: 0.9 }}
+        whileTap={{ scale: 0.92 }}
         onClick={handleTap}
-        className="w-28 h-28 rounded-full bg-[#1cb0f6] text-white text-2xl font-bold shadow-lg active:bg-[#1899d6]"
+        className="w-24 h-24 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332] text-sm font-bold shadow-lg"
       >
-        TAP!
+        TAP
       </motion.button>
-      <p className="text-lg font-bold text-[#3c3c3c] dark:text-white mt-4">{tapCount}/{targetTaps}</p>
+      <p className="text-sm font-medium text-[#5a6577] dark:text-[#9aa3b0] mt-4">{tapCount}/{targetTaps}</p>
     </div>
   );
 }
@@ -236,38 +251,36 @@ function FillOrderExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div>
-      <p className="text-xl font-bold text-[#3c3c3c] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
       
-      {/* Selected order */}
-      <div className="min-h-[60px] bg-[#f7f7f7] dark:bg-[#131f24] border-2 border-dashed border-[#e5e5e5] dark:border-[#2a3f4a] rounded-xl p-3 mb-4 flex flex-wrap gap-2">
+      <div className="min-h-[56px] bg-[#f0f0f0] dark:bg-[#0f1720] border border-dashed border-[#e2e4e8] dark:border-[#2a3545] rounded-lg p-3 mb-4 flex flex-wrap gap-2">
         {selected.map((item, idx) => (
           <motion.button
             key={`${item}-${idx}`}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             onClick={() => handleRemove(idx)}
-            className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+            className={`px-3 py-1.5 rounded-md font-semibold text-sm transition-all ${
               submitted
                 ? exercise.correctOrder?.[idx] === item
-                  ? 'bg-[#58cc02] text-white'
-                  : 'bg-[#ff4b4b] text-white'
-                : 'bg-[#1cb0f6] text-white'
+                  ? 'bg-[#3a8a5c] text-white'
+                  : 'bg-[#c44536] text-white'
+                : 'bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332]'
             }`}
           >
             {item}
           </motion.button>
         ))}
-        {selected.length === 0 && <span className="text-[#aaa] text-sm self-center mx-auto">Tap items below in order</span>}
+        {selected.length === 0 && <span className="text-[#9aa3b0] text-sm self-center mx-auto">Tap items below in order</span>}
       </div>
 
-      {/* Available items */}
       <div className="flex flex-wrap gap-2 justify-center mb-4">
         {remaining.map(item => (
           <motion.button
             key={item}
             whileTap={{ scale: 0.95 }}
             onClick={() => handleSelect(item)}
-            className="px-4 py-2 rounded-lg font-bold text-sm border-2 border-[#e5e5e5] dark:border-[#2a3f4a] bg-white dark:bg-[#1a2c34] text-[#3c3c3c] dark:text-white hover:border-[#1cb0f6]"
+            className="px-3 py-1.5 rounded-md font-semibold text-sm border border-[#e2e4e8] dark:border-[#2a3545] bg-white dark:bg-[#1a2332] text-[#1a2332] dark:text-white hover:border-[#c9a84c] transition-colors"
           >
             {item}
           </motion.button>
@@ -279,9 +292,9 @@ function FillOrderExercise({ exercise, onComplete }: { exercise: Exercise; onCom
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={handleSubmit}
-          className="btn-primary w-full"
+          className="btn-accent w-full"
         >
-          CHECK
+          Check Answer
         </motion.button>
       )}
     </div>
@@ -315,22 +328,21 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div>
-      <p className="text-xl font-bold text-[#3c3c3c] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
       
       <div className="grid grid-cols-2 gap-4 mb-4">
-        {/* Notes column */}
         <div className="space-y-2">
-          <p className="text-xs font-bold text-[#777] dark:text-[#aaa] uppercase text-center mb-2">Notes</p>
+          <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase text-center mb-2">Terms</p>
           {notes.map(note => (
             <button
               key={note}
               onClick={() => setSelectedNote(note)}
-              className={`w-full p-3 rounded-xl font-bold text-center transition-all ${
+              className={`w-full p-3 rounded-lg font-medium text-center text-sm transition-all ${
                 selectedNote === note
-                  ? 'bg-[#1cb0f6] text-white border-2 border-[#1899d6]'
+                  ? 'bg-[#c9a84c] text-[#1a2332] border border-[#a68a3a]'
                   : Object.values(matches).includes(note)
-                  ? 'bg-[#58cc02]/20 text-[#58cc02] border-2 border-[#58cc02]'
-                  : 'bg-white dark:bg-[#1a2c34] border-2 border-[#e5e5e5] dark:border-[#2a3f4a] text-[#3c3c3c] dark:text-white'
+                  ? 'bg-[#3a8a5c]/10 text-[#3a8a5c] border border-[#3a8a5c]'
+                  : 'bg-white dark:bg-[#1a2332] border border-[#e2e4e8] dark:border-[#2a3545] text-[#1a2332] dark:text-white'
               }`}
             >
               {note}
@@ -338,32 +350,31 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
           ))}
         </div>
 
-        {/* Positions column */}
         <div className="space-y-2">
-          <p className="text-xs font-bold text-[#777] dark:text-[#aaa] uppercase text-center mb-2">Match to</p>
+          <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase text-center mb-2">Definitions</p>
           {positions.map(pos => (
             <button
               key={pos}
               onClick={() => handleMatch(pos)}
-              className={`w-full p-3 rounded-xl font-bold text-center text-sm transition-all ${
+              className={`w-full p-3 rounded-lg font-medium text-center text-xs transition-all ${
                 matches[pos]
                   ? submitted
                     ? exercise.notePairs?.find(p => p.position === pos)?.note === matches[pos]
-                      ? 'bg-[#58cc02]/20 border-2 border-[#58cc02] text-[#58cc02]'
-                      : 'bg-[#ff4b4b]/20 border-2 border-[#ff4b4b] text-[#ff4b4b]'
-                    : 'bg-[#1cb0f6]/10 border-2 border-[#1cb0f6] text-[#1cb0f6]'
-                  : 'bg-[#f7f7f7] dark:bg-[#131f24] border-2 border-dashed border-[#e5e5e5] dark:border-[#2a3f4a] text-[#777] dark:text-[#aaa]'
+                      ? 'bg-[#3a8a5c]/10 border border-[#3a8a5c] text-[#3a8a5c]'
+                      : 'bg-[#c44536]/10 border border-[#c44536] text-[#c44536]'
+                    : 'bg-[#c9a84c]/10 border border-[#c9a84c] text-[#c9a84c]'
+                  : 'bg-[#f0f0f0] dark:bg-[#0f1720] border border-dashed border-[#e2e4e8] dark:border-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
               }`}
             >
-              {matches[pos] ? `${pos} ← ${matches[pos]}` : pos}
+              {matches[pos] ? `${matches[pos]} →` : pos}
             </button>
           ))}
         </div>
       </div>
 
       {allMatched && !submitted && (
-        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleSubmit} className="btn-primary w-full">
-          CHECK
+        <motion.button initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={handleSubmit} className="btn-accent w-full">
+          Check Answer
         </motion.button>
       )}
     </div>
@@ -375,7 +386,6 @@ export default function LessonView() {
   const [step, setStep] = useState<LessonStep>('intro');
   const [noSax, setNoSax] = useState(false);
   const [exerciseIdx, setExerciseIdx] = useState(0);
-  const [mascotMood, setMascotMood] = useState<'idle' | 'happy' | 'excited'>('idle');
   const [correctCount, setCorrectCount] = useState(0);
 
   const lesson = currentLessonId ? getLessonById(currentLessonId) : null;
@@ -390,20 +400,15 @@ export default function LessonView() {
   const currentExercise = exercises[exerciseIdx];
 
   const handleExerciseComplete = (correct: boolean) => {
-    if (correct) {
-      setCorrectCount(c => c + 1);
-      setMascotMood('happy');
-      setTimeout(() => setMascotMood('idle'), 1500);
-    }
+    if (correct) setCorrectCount(c => c + 1);
     
     setTimeout(() => {
       if (exerciseIdx < totalExercises - 1) {
         setExerciseIdx(i => i + 1);
       } else {
-        // All exercises done
         completeLesson(lesson.id, lesson.xp);
         setStep('complete');
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       }
     }, correct ? 600 : 1200);
   };
@@ -413,18 +418,18 @@ export default function LessonView() {
     setCurrentView('dashboard');
   };
 
-  const progressPercent = step === 'intro' ? 10 : step === 'learn' ? 30 : step === 'practice' ? 50 : step === 'quiz' ? 50 + ((exerciseIdx + 1) / totalExercises) * 45 : 100;
+  const progressPercent = step === 'intro' ? 10 : step === 'learn' ? 30 : step === 'quiz' ? 50 + ((exerciseIdx + 1) / totalExercises) * 45 : 100;
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] dark:bg-[#131f24]">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720]">
       {/* Top Bar */}
-      <div className="sticky top-0 z-50 bg-white dark:bg-[#1a2c34] border-b-2 border-[#e5e5e5] dark:border-[#2a3f4a] px-4 py-3">
+      <div className="sticky top-0 z-50 bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545] px-4 py-3">
         <div className="max-w-xl mx-auto flex items-center gap-3">
-          <button onClick={handleBackToPath} className="text-[#777] dark:text-[#aaa] font-bold text-xl hover:text-[#ff4b4b] transition-colors">
-            ✕
+          <button onClick={handleBackToPath} className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#c44536] transition-colors">
+            <CloseIcon />
           </button>
           <div className="flex-1">
-            <div className="progress-bar h-3">
+            <div className="progress-bar">
               <motion.div
                 className="progress-bar-fill"
                 animate={{ width: `${progressPercent}%` }}
@@ -432,7 +437,7 @@ export default function LessonView() {
               />
             </div>
           </div>
-          <div className="xp-badge text-xs">+{lesson.xp}</div>
+          <div className="xp-badge text-xs">+{lesson.xp} XP</div>
         </div>
       </div>
 
@@ -442,22 +447,20 @@ export default function LessonView() {
           {step === 'intro' && (
             <motion.div
               key="intro"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-center py-8"
+              exit={{ opacity: 0, y: -12 }}
+              className="text-center py-10"
             >
-              <motion.span
-                animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="text-7xl block mb-6"
-              >
-                {lesson.emoji}
-              </motion.span>
-              <h1 className="text-3xl font-extrabold text-[#3c3c3c] dark:text-white mb-3">
+              <div className="w-16 h-16 rounded-full bg-[#c9a84c]/10 flex items-center justify-center mx-auto mb-6">
+                <span className="text-[#c9a84c] font-bold text-sm uppercase">
+                  {lesson.type === 'exam' ? 'Exam' : lesson.type === 'rhythm' ? 'Rhythm' : lesson.type === 'theory' ? 'Theory' : 'Play'}
+                </span>
+              </div>
+              <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2">
                 {lesson.title}
               </h1>
-              <p className="text-lg text-[#777] dark:text-[#aaa] mb-8">
+              <p className="text-[#5a6577] dark:text-[#9aa3b0] mb-8">
                 {lesson.description}
               </p>
 
@@ -465,22 +468,22 @@ export default function LessonView() {
                 <div className="mb-8">
                   <button
                     onClick={() => setNoSax(!noSax)}
-                    className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
-                      noSax ? 'bg-[#1cb0f6] text-white' : 'bg-[#e5e5e5] dark:bg-[#2a3f4a] text-[#777] dark:text-[#aaa]'
+                    className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                      noSax ? 'bg-[#c9a84c] text-[#1a2332]' : 'bg-[#f0f0f0] dark:bg-[#1a2332] text-[#5a6577] dark:text-[#9aa3b0] border border-[#e2e4e8] dark:border-[#2a3545]'
                     }`}
                   >
-                    {noSax ? '🎮 Tap Mode Active' : "🎷 Don't have your sax?"}
+                    {noSax ? 'Tap Mode Active' : "Don't have your sax?"}
                   </button>
                   {noSax && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-[#777] dark:text-[#aaa] mt-2">
-                      We'll use tapping and quizzes instead!
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-2">
+                      We'll use tapping and quizzes instead.
                     </motion.p>
                   )}
                 </div>
               )}
 
-              <button onClick={() => setStep('learn')} className="btn-primary text-lg px-10 py-4">
-                LET'S GO!
+              <button onClick={() => setStep('learn')} className="btn-accent px-8 py-3.5">
+                <span className="flex items-center gap-2">Begin Lesson <ArrowRightIcon /></span>
               </button>
             </motion.div>
           )}
@@ -488,29 +491,29 @@ export default function LessonView() {
           {step === 'learn' && learnContent && (
             <motion.div
               key="learn"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
+              exit={{ opacity: 0, y: -12 }}
               className="py-6"
             >
-              <Mascot mood="idle" message="Read this, then let's practice!" />
-              
-              <h2 className="text-2xl font-bold text-[#3c3c3c] dark:text-white mb-4">
-                {learnContent.visual} {learnContent.title}
+              <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-4">
+                {learnContent.title}
               </h2>
               
-              <div className="bg-white dark:bg-[#1a2c34] rounded-2xl p-6 border-2 border-[#e5e5e5] dark:border-[#2a3f4a] mb-6">
-                <div className="text-[#3c3c3c] dark:text-white text-lg leading-relaxed whitespace-pre-line">
+              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#e2e4e8] dark:border-[#2a3545] mb-5">
+                <div className="text-[#1a2332] dark:text-white leading-relaxed whitespace-pre-line text-[15px]">
                   {learnContent.content}
                 </div>
               </div>
 
-              <div className="bg-[#ffc800]/10 border-2 border-[#ffc800] rounded-xl p-4 mb-8">
-                <p className="text-[#3c3c3c] dark:text-white font-medium">{learnContent.tip}</p>
+              <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4 mb-8">
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                  <span className="font-semibold text-[#1a2332] dark:text-white">Tip: </span>{learnContent.tip}
+                </p>
               </div>
 
-              <button onClick={() => setStep('quiz')} className="btn-primary w-full text-lg py-4">
-                SHOW WHAT YOU KNOW →
+              <button onClick={() => setStep('quiz')} className="btn-accent w-full py-3.5">
+                <span className="flex items-center justify-center gap-2">Continue to Practice <ArrowRightIcon /></span>
               </button>
             </motion.div>
           )}
@@ -518,24 +521,24 @@ export default function LessonView() {
           {step === 'quiz' && currentExercise && (
             <motion.div
               key={`quiz-${exerciseIdx}`}
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
+              exit={{ opacity: 0, x: -20 }}
               className="py-6"
             >
               {/* Exercise counter */}
-              <div className="flex items-center justify-center gap-2 mb-6">
+              <div className="flex items-center justify-center gap-1.5 mb-6">
                 {exercises.map((_, i) => (
                   <div
                     key={i}
-                    className={`w-3 h-3 rounded-full transition-colors ${
-                      i < exerciseIdx ? 'bg-[#58cc02]' : i === exerciseIdx ? 'bg-[#1cb0f6]' : 'bg-[#e5e5e5] dark:bg-[#2a3f4a]'
+                    className={`w-2 h-2 rounded-full transition-colors ${
+                      i < exerciseIdx ? 'bg-[#3a8a5c]' : i === exerciseIdx ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8] dark:bg-[#2a3545]'
                     }`}
                   />
                 ))}
               </div>
 
-              <div className="bg-white dark:bg-[#1a2c34] rounded-2xl p-6 border-2 border-[#e5e5e5] dark:border-[#2a3f4a]">
+              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#e2e4e8] dark:border-[#2a3545]">
                 {currentExercise.type === 'multiple-choice' && (
                   <MultipleChoiceExercise exercise={currentExercise} onComplete={handleExerciseComplete} />
                 )}
@@ -558,33 +561,29 @@ export default function LessonView() {
           {step === 'complete' && (
             <motion.div
               key="complete"
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="py-12 text-center"
             >
-              <motion.div
-                animate={{ rotate: [0, -10, 10, -10, 0], scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.8 }}
-                className="text-7xl mb-6"
-              >
-                🎉
-              </motion.div>
-              <h2 className="text-3xl font-extrabold text-[#3c3c3c] dark:text-white mb-2">
-                Lesson Complete!
+              <div className="w-16 h-16 rounded-full bg-[#3a8a5c]/10 flex items-center justify-center mx-auto mb-5">
+                <span className="text-[#3a8a5c]"><CheckIcon /></span>
+              </div>
+              <h2 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2">
+                Lesson Complete
               </h2>
-              <p className="text-lg text-[#777] dark:text-[#aaa] mb-2">
-                Great work on "{lesson.title}"
+              <p className="text-[#5a6577] dark:text-[#9aa3b0] mb-1">
+                {lesson.title}
               </p>
-              <p className="text-sm text-[#777] dark:text-[#aaa] mb-6">
-                {correctCount}/{totalExercises} exercises correct
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">
+                {correctCount}/{totalExercises} correct
               </p>
 
-              <div className="flex items-center justify-center gap-3 mb-8 flex-wrap">
+              <div className="flex items-center justify-center gap-3 mb-8">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.2, type: 'spring' }}
-                  className="xp-badge text-lg px-4 py-2"
+                  className="xp-badge"
                 >
                   +{lesson.xp} XP
                 </motion.div>
@@ -592,16 +591,16 @@ export default function LessonView() {
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    transition={{ delay: 0.4, type: 'spring' }}
+                    transition={{ delay: 0.3, type: 'spring' }}
                     className="streak-badge"
                   >
-                    🔥 {user.progress.streak} days
+                    {user.progress.streak} day streak
                   </motion.div>
                 )}
               </div>
 
-              <button onClick={handleBackToPath} className="btn-primary text-lg px-10 py-4">
-                CONTINUE →
+              <button onClick={handleBackToPath} className="btn-accent px-8 py-3.5">
+                <span className="flex items-center gap-2">Continue <ArrowRightIcon /></span>
               </button>
             </motion.div>
           )}

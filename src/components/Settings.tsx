@@ -1,23 +1,59 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useStore, AVATARS, Instrument } from '../store';
+import { useStore, Instrument } from '../store';
 import { BASIC_SONGS, LEVEL_A_SONGS, LEVEL_B_SONGS } from '../data';
+
+const ChevronLeftIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
+const MusicIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 18V5l12-2v13" />
+    <circle cx="6" cy="18" r="3" />
+    <circle cx="18" cy="16" r="3" />
+  </svg>
+);
+
+const ListIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="8" y1="6" x2="21" y2="6" />
+    <line x1="8" y1="12" x2="21" y2="12" />
+    <line x1="8" y1="18" x2="21" y2="18" />
+    <line x1="3" y1="6" x2="3.01" y2="6" />
+    <line x1="3" y1="12" x2="3.01" y2="12" />
+    <line x1="3" y1="18" x2="3.01" y2="18" />
+  </svg>
+);
 
 export default function Settings() {
   const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode } = useStore();
   const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'songs'>('profile');
-  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
 
   if (!user) return null;
 
-  const instruments: { id: Instrument; name: string; emoji: string; scale: string }[] = [
-    { id: 'alto', name: 'Alto Sax', emoji: '🎷', scale: 'E♭ (G Major)' },
-    { id: 'tenor', name: 'Tenor Sax', emoji: '🎷', scale: 'B♭ (C Major)' },
-    { id: 'baritone', name: 'Baritone Sax', emoji: '🎷', scale: 'E♭ (G Major)' },
-    { id: 'soprano', name: 'Soprano Sax', emoji: '🎷', scale: 'B♭ (C Major)' },
+  const instruments: { id: Instrument; name: string; scale: string; desc: string }[] = [
+    { id: 'alto', name: 'Alto Saxophone', scale: 'E♭ (G Major)', desc: 'Most common, versatile' },
+    { id: 'tenor', name: 'Tenor Saxophone', scale: 'B♭ (C Major)', desc: 'Jazz & rock standard' },
+    { id: 'baritone', name: 'Baritone Saxophone', scale: 'E♭ (G Major)', desc: 'Deep, powerful tone' },
+    { id: 'soprano', name: 'Soprano Saxophone', scale: 'B♭ (C Major)', desc: 'Highest pitch, bright' },
   ];
 
-  const currentSongs = user.instrumentLevel === 0 ? BASIC_SONGS : [...LEVEL_A_SONGS, ...LEVEL_B_SONGS];
   const songLists = user.instrumentLevel === 0 
     ? [{ title: 'Basic Songs', songs: BASIC_SONGS }]
     : [
@@ -34,39 +70,42 @@ export default function Settings() {
     }
   };
 
+  const tabs = [
+    { id: 'profile' as const, label: 'Profile', icon: <UserIcon /> },
+    { id: 'instrument' as const, label: 'Instrument', icon: <MusicIcon /> },
+    { id: 'songs' as const, label: 'Songs', icon: <ListIcon /> },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#f7f7f7] dark:bg-[#131f24]">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-[#0f1720]">
       {/* Header */}
-      <div className="bg-white dark:bg-[#1a2c34] border-b-2 border-[#e5e5e5] dark:border-[#2a3f4a] px-4 py-4">
+      <div className="bg-white dark:bg-[#1a2332] border-b border-[#e2e4e8] dark:border-[#2a3545] px-4 py-4">
         <div className="max-w-xl mx-auto flex items-center gap-4">
           <button
             onClick={() => setCurrentView('dashboard')}
-            className="text-[#777] dark:text-[#aaa] font-bold text-xl hover:text-[#3c3c3c] dark:hover:text-white"
+            className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors"
           >
-            ←
+            <ChevronLeftIcon />
           </button>
-          <h1 className="text-xl font-bold text-[#3c3c3c] dark:text-white">Settings</h1>
+          <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Settings</h1>
         </div>
       </div>
 
       {/* Tabs */}
       <div className="max-w-xl mx-auto px-4 pt-4">
-        <div className="flex gap-2 mb-6">
-          {[
-            { id: 'profile' as const, label: '👤 Profile' },
-            { id: 'instrument' as const, label: '🎷 Instrument' },
-            { id: 'songs' as const, label: '🎵 Songs' },
-          ].map(tab => (
+        <div className="flex gap-1 bg-[#f0f0f0] dark:bg-[#1a2332] rounded-lg p-1 mb-6">
+          {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-3 rounded-xl font-bold text-sm transition-all ${
+              className={`flex-1 py-2.5 rounded-md font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === tab.id
-                  ? 'bg-[#58cc02] text-white'
-                  : 'bg-white dark:bg-[#1a2c34] text-[#777] dark:text-[#aaa] border-2 border-[#e5e5e5] dark:border-[#2a3f4a]'
+                  ? 'bg-white dark:bg-[#2a3545] text-[#1a2332] dark:text-white shadow-sm'
+                  : 'text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white'
               }`}
             >
-              {tab.label}
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -76,58 +115,33 @@ export default function Settings() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
             {/* Avatar */}
             <div className="card text-center">
-              <p className="text-sm font-bold text-[#777] dark:text-[#aaa] uppercase tracking-wide mb-3">Avatar</p>
-              <button
-                onClick={() => setAvatarPickerOpen(!avatarPickerOpen)}
-                className="w-20 h-20 rounded-full bg-[#58cc02] flex items-center justify-center text-4xl border-4 border-[#46a302] mx-auto mb-3 hover:scale-105 transition-transform"
-              >
-                {user.avatar}
-              </button>
-              <p className="text-[#777] dark:text-[#aaa] text-sm">Tap to change</p>
-              
-              {avatarPickerOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-4 grid grid-cols-6 gap-2"
-                >
-                  {AVATARS.map(a => (
-                    <button
-                      key={a}
-                      onClick={() => {
-                        useStore.getState().setUser({ ...user, avatar: a });
-                        setAvatarPickerOpen(false);
-                      }}
-                      className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all ${
-                        user.avatar === a ? 'bg-[#58cc02] scale-110' : 'bg-[#f7f7f7] dark:bg-[#131f24] hover:bg-[#e5e5e5] dark:hover:bg-[#2a3f4a]'
-                      }`}
-                    >
-                      {a}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
+              <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">Profile</p>
+              <div className="w-16 h-16 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-2xl font-bold mx-auto mb-3">
+                {user.username.charAt(0).toUpperCase()}
+              </div>
+              <p className="text-lg font-semibold text-[#1a2332] dark:text-white">{user.username}</p>
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">{user.instrument} saxophone</p>
             </div>
 
             {/* Stats */}
             <div className="card">
-              <p className="text-sm font-bold text-[#777] dark:text-[#aaa] uppercase tracking-wide mb-3">Your Stats</p>
+              <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-4">Statistics</p>
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <p className="text-2xl font-extrabold text-[#3c3c3c] dark:text-white">{user.progress.xp}</p>
-                  <p className="text-xs text-[#777] dark:text-[#aaa]">Total XP</p>
+                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.xp}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Total XP</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-extrabold text-[#3c3c3c] dark:text-white">{user.progress.streak}</p>
-                  <p className="text-xs text-[#777] dark:text-[#aaa]">Day Streak 🔥</p>
+                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.streak}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Day Streak</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-extrabold text-[#3c3c3c] dark:text-white">{user.progress.completedLessons.length}</p>
-                  <p className="text-xs text-[#777] dark:text-[#aaa]">Lessons Done</p>
+                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.completedLessons.length}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Lessons Done</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-2xl font-extrabold text-[#3c3c3c] dark:text-white">Lv.{user.progress.level}</p>
-                  <p className="text-xs text-[#777] dark:text-[#aaa]">Your Level</p>
+                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">Lv.{user.progress.level}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Your Level</p>
                 </div>
               </div>
             </div>
@@ -136,26 +150,20 @@ export default function Settings() {
             <div className="card">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-bold text-[#3c3c3c] dark:text-white">Dark Mode</p>
-                  <p className="text-sm text-[#777] dark:text-[#aaa]">Easier on the eyes</p>
+                  <p className="font-semibold text-sm text-[#1a2332] dark:text-white">Dark Mode</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Switch between light and dark themes</p>
                 </div>
                 <button
                   onClick={() => setDarkMode(!darkMode)}
-                  className={`w-14 h-7 rounded-full transition-colors relative ${
-                    darkMode ? 'bg-[#1cb0f6]' : 'bg-[#e5e5e5]'
+                  className={`w-11 h-6 rounded-full transition-colors relative ${
+                    darkMode ? 'bg-[#c9a84c]' : 'bg-[#e2e4e8]'
                   }`}
                 >
-                  <div className={`w-6 h-6 bg-white rounded-full absolute top-0.5 transition-transform shadow ${
-                    darkMode ? 'translate-x-7' : 'translate-x-0.5'
+                  <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform shadow-sm ${
+                    darkMode ? 'translate-x-5' : 'translate-x-0.5'
                   }`} />
                 </button>
               </div>
-            </div>
-
-            {/* Name */}
-            <div className="card">
-              <p className="text-sm font-bold text-[#777] dark:text-[#aaa] uppercase tracking-wide mb-2">Name</p>
-              <p className="text-xl font-bold text-[#3c3c3c] dark:text-white">{user.username}</p>
             </div>
           </motion.div>
         )}
@@ -163,7 +171,7 @@ export default function Settings() {
         {/* Instrument Tab */}
         {activeTab === 'instrument' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <p className="text-sm text-[#777] dark:text-[#aaa] mb-4">
+            <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-4">
               Select your instrument. This adjusts scales, fingerings, and transpositions.
             </p>
             {instruments.map(inst => (
@@ -171,16 +179,22 @@ export default function Settings() {
                 key={inst.id}
                 onClick={() => setInstrument(inst.id)}
                 className={`w-full card flex items-center gap-4 text-left transition-all ${
-                  user.instrument === inst.id ? 'border-[#58cc02] bg-[#58cc02]/5' : ''
+                  user.instrument === inst.id ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
                 }`}
               >
-                <span className="text-3xl">{inst.emoji}</span>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                  user.instrument === inst.id 
+                    ? 'bg-[#c9a84c] text-[#1a2332]' 
+                    : 'bg-[#f0f0f0] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
+                }`}>
+                  <MusicIcon />
+                </div>
                 <div className="flex-1">
-                  <p className="font-bold text-[#3c3c3c] dark:text-white">{inst.name}</p>
-                  <p className="text-sm text-[#777] dark:text-[#aaa]">{inst.scale}</p>
+                  <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{inst.name}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{inst.scale} · {inst.desc}</p>
                 </div>
                 {user.instrument === inst.id && (
-                  <span className="text-[#58cc02] text-xl font-bold">✓</span>
+                  <span className="text-[#c9a84c]"><CheckIcon /></span>
                 )}
               </button>
             ))}
@@ -191,18 +205,18 @@ export default function Settings() {
         {activeTab === 'songs' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             <div>
-              <p className="text-sm text-[#777] dark:text-[#aaa] mb-2">
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-2">
                 Choose {user.instrumentLevel === 0 ? '2' : '1 from List A + 1 from List B'} focus songs.
               </p>
-              <p className="text-sm text-[#777] dark:text-[#aaa]">
-                Selected: <span className="font-bold text-[#58cc02]">{user.activeSongs.length}/2</span>
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                Selected: <span className="font-semibold text-[#c9a84c]">{user.activeSongs.length}/2</span>
               </p>
             </div>
 
             {songLists.map(list => (
               <div key={list.title}>
-                <h3 className="font-bold text-[#3c3c3c] dark:text-white mb-3">{list.title}</h3>
-                <div className="grid grid-cols-1 gap-3">
+                <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white mb-3">{list.title}</h3>
+                <div className="grid grid-cols-1 gap-2">
                   {list.songs.map(song => {
                     const isSelected = user.activeSongs.includes(song.id);
                     const canSelect = isSelected || user.activeSongs.length < 2;
@@ -212,17 +226,23 @@ export default function Settings() {
                         key={song.id}
                         onClick={() => canSelect && toggleSong(song.id)}
                         disabled={!canSelect}
-                        className={`card flex items-center gap-4 text-left transition-all ${
-                          isSelected ? 'border-[#58cc02] bg-[#58cc02]/5' : ''
-                        } ${!canSelect ? 'opacity-50' : ''}`}
+                        className={`card flex items-center gap-3 text-left transition-all ${
+                          isSelected ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
+                        } ${!canSelect ? 'opacity-40 cursor-not-allowed' : ''}`}
                       >
-                        <span className="text-3xl">{song.emoji}</span>
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                          isSelected 
+                            ? 'bg-[#c9a84c] text-[#1a2332]' 
+                            : 'bg-[#f0f0f0] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
+                        }`}>
+                          <MusicIcon />
+                        </div>
                         <div className="flex-1">
-                          <p className="font-bold text-[#3c3c3c] dark:text-white">{song.title}</p>
-                          <p className="text-sm text-[#777] dark:text-[#aaa]">{song.composer}</p>
+                          <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
+                          <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.composer}</p>
                         </div>
                         {isSelected && (
-                          <span className="text-[#58cc02] text-xl font-bold">✓</span>
+                          <span className="text-[#c9a84c]"><CheckIcon /></span>
                         )}
                       </button>
                     );
@@ -232,9 +252,9 @@ export default function Settings() {
             ))}
 
             {user.activeSongs.length > 0 && (
-              <div className="card bg-[#ffc800]/10 border-[#ffc800]">
-                <p className="text-sm text-[#3c3c3c] dark:text-white">
-                  ⚠️ Switching songs will reset progress for the removed song. Your XP is kept!
+              <div className="card bg-[#c9a84c]/5 border-[#c9a84c]/30 dark:bg-[#c9a84c]/10">
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                  Note: Switching songs will reset progress for the removed song. Your XP is preserved.
                 </p>
               </div>
             )}
