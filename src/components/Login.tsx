@@ -4,10 +4,12 @@ import { useStore } from '../store';
 
 export default function Login() {
   const { login, darkMode, setDarkMode } = useStore();
+  const [isSignUp, setIsSignUp] = useState(false);
   const [rank, setRank] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,8 +29,12 @@ export default function Login() {
       setError('Please use your .cadets.gc.ca email address');
       return;
     }
-    if (password.length < 1) {
-      setError('Please enter your password');
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    if (isSignUp && password !== confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
 
@@ -61,10 +67,10 @@ export default function Login() {
         </div>
 
         <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center">
-          Sign in
+          {isSignUp ? 'Create account' : 'Sign in'}
         </h1>
         <p className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center">
-          Enter your credentials to continue
+          {isSignUp ? 'Join Cadet Music today' : 'Enter your credentials to continue'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -103,7 +109,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              placeholder="name@1234.cadets.gc.ca"
+              placeholder="name@cdt.cadets.gc.ca"
               className="input-field"
             />
           </div>
@@ -116,10 +122,25 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setError(''); }}
-              placeholder="Enter your password"
+              placeholder={isSignUp ? 'Min. 6 characters' : 'Enter your password'}
               className="input-field"
             />
           </div>
+
+          {isSignUp && (
+            <div>
+              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                Confirm password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
+                placeholder="Re-enter your password"
+                className="input-field"
+              />
+            </div>
+          )}
 
           {error && (
             <motion.p
@@ -142,16 +163,27 @@ export default function Login() {
                   <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
                   <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>
-                Signing in...
+                {isSignUp ? 'Creating account...' : 'Signing in...'}
               </span>
             ) : (
-              'Sign in'
+              isSignUp ? 'Create account' : 'Sign in'
             )}
           </button>
         </form>
 
+        {/* Switch mode */}
+        <p className="text-center text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-8">
+          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <button
+            onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
+            className="text-[#c9a84c] hover:text-[#a68a3a] font-semibold transition-colors"
+          >
+            {isSignUp ? 'Sign in' : 'Sign up'}
+          </button>
+        </p>
+
         {/* Theme toggle */}
-        <div className="flex items-center justify-center mt-8">
+        <div className="flex items-center justify-center mt-6">
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="flex items-center gap-2 text-xs text-[#9aa3b0] hover:text-[#5a6577] dark:hover:text-[#e8eaed] transition-colors"
