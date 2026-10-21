@@ -56,15 +56,33 @@ export default function Leaderboard() {
       <div className="max-w-xl mx-auto px-4 py-6">
         {/* Profile Card */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="card mb-6 text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-3xl font-bold mx-auto mb-3">
+          <motion.div 
+            className="w-20 h-20 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-3xl font-bold mx-auto mb-3"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+          >
             {user.username.charAt(0).toUpperCase()}
-          </div>
-          <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-1">{user.username}</h2>
-          <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">{user.instrument} saxophone</p>
+          </motion.div>
+          <motion.h2 
+            className="text-xl font-semibold text-[#1a2332] dark:text-white mb-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {user.username}
+          </motion.h2>
+          <motion.p 
+            className="text-sm text-[#5a6577] dark:text-[#9aa3b0]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            {user.instrument} saxophone
+          </motion.p>
         </motion.div>
 
         {/* Stats Grid */}
@@ -72,18 +90,33 @@ export default function Leaderboard() {
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="card"
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: i * 0.08, type: 'spring', stiffness: 200 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="card cursor-pointer"
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide">
                   {stat.label}
                 </span>
-                <span className="text-lg">{stat.icon}</span>
+                <motion.span 
+                  className="text-lg"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                >
+                  {stat.icon}
+                </motion.span>
               </div>
-              <p className="text-2xl font-bold text-[#1a2332] dark:text-white">{stat.value}</p>
+              <motion.p 
+                className="text-2xl font-bold text-[#1a2332] dark:text-white"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: i * 0.08 + 0.2, type: 'spring', stiffness: 200 }}
+              >
+                {stat.value}
+              </motion.p>
             </motion.div>
           ))}
         </div>

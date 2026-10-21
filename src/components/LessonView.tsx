@@ -115,7 +115,13 @@ function MultipleChoiceExercise({ exercise, onComplete }: { exercise: Exercise; 
 
   return (
     <div>
-      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <motion.p 
+        className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {exercise.question}
+      </motion.p>
       <div className="space-y-2.5">
         {exercise.options?.map((opt, idx) => {
           let borderColor = 'border-[#c8c8c8] dark:border-[#2a3545]';
@@ -125,15 +131,20 @@ function MultipleChoiceExercise({ exercise, onComplete }: { exercise: Exercise; 
             else if (idx === selected) { borderColor = 'border-[#c44536]'; bgColor = 'bg-[#c44536]/5 dark:bg-[#c44536]/10'; }
           }
           return (
-            <button
+            <motion.button
               key={idx}
               onClick={() => handleSelect(idx)}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={selected === null ? { scale: 1.02, x: 5 } : {}}
+              whileTap={selected === null ? { scale: 0.98 } : {}}
               className={`w-full p-4 rounded-lg text-left font-medium transition-all border ${borderColor} ${bgColor} ${
                 selected === null ? 'hover:border-[#c9a84c] hover:bg-[#c9a84c]/5 dark:hover:bg-[#c9a84c]/10' : ''
               } text-[#1a2332] dark:text-white`}
             >
               {opt.text}
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -153,10 +164,21 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div>
-      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center">{exercise.question}</p>
+      <motion.p 
+        className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6 text-center"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {exercise.question}
+      </motion.p>
       <div className="grid grid-cols-2 gap-3">
-        <button
+        <motion.button
           onClick={() => handleSelect('true')}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          whileHover={selected === null ? { scale: 1.05 } : {}}
+          whileTap={selected === null ? { scale: 0.95 } : {}}
           className={`p-5 rounded-lg font-semibold border transition-all ${
             selected === 'true'
               ? exercise.correctAnswer === 'true'
@@ -166,9 +188,14 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
           }`}
         >
           True
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           onClick={() => handleSelect('false')}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 }}
+          whileHover={selected === null ? { scale: 1.05 } : {}}
+          whileTap={selected === null ? { scale: 0.95 } : {}}
           className={`p-5 rounded-lg font-semibold border transition-all ${
             selected === 'false'
               ? exercise.correctAnswer === 'false'
@@ -178,7 +205,7 @@ function TrueFalseExercise({ exercise, onComplete }: { exercise: Exercise; onCom
           }`}
         >
           False
-        </button>
+        </motion.button>
       </div>
     </div>
   );
@@ -198,14 +225,32 @@ function RhythmTapExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-2">{exercise.question}</p>
-      <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">Tap {targetTaps} times</p>
+      <motion.p 
+        className="text-lg font-semibold text-[#1a2332] dark:text-white mb-2"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {exercise.question}
+      </motion.p>
+      <motion.p 
+        className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      >
+        Tap {targetTaps} times
+      </motion.p>
       
       <div className="flex justify-center gap-2 mb-6">
         {exercise.items?.map((_, i) => (
           <motion.div
             key={i}
-            animate={i < tapCount ? { scale: [1, 1.2, 1] } : {}}
+            initial={{ scale: 0 }}
+            animate={{ 
+              scale: i < tapCount ? [1, 1.3, 1] : 1,
+              backgroundColor: i < tapCount ? '#c9a84c' : undefined
+            }}
+            transition={{ delay: i * 0.05 }}
             className={`w-8 h-8 rounded-full transition-colors ${
               i < tapCount ? 'bg-[#c9a84c]' : 'bg-[#d0d0d0] dark:bg-[#2a3545]'
             }`}
@@ -214,13 +259,23 @@ function RhythmTapExercise({ exercise, onComplete }: { exercise: Exercise; onCom
       </div>
 
       <motion.button
-        whileTap={{ scale: 0.92 }}
+        whileTap={{ scale: 0.85 }}
+        whileHover={{ scale: 1.05 }}
         onClick={handleTap}
-        className="w-24 h-24 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332] text-sm font-bold shadow-lg"
+        className={`w-24 h-24 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332] text-sm font-bold shadow-lg ${
+          tapCount < targetTaps ? 'animate-pulse' : ''
+        }`}
       >
         TAP
       </motion.button>
-      <p className="text-sm font-medium text-[#5a6577] dark:text-[#9aa3b0] mt-4">{tapCount}/{targetTaps}</p>
+      <motion.p 
+        className="text-sm font-medium text-[#5a6577] dark:text-[#9aa3b0] mt-4"
+        key={tapCount}
+        initial={{ scale: 1.2 }}
+        animate={{ scale: 1 }}
+      >
+        {tapCount}/{targetTaps}
+      </motion.p>
     </div>
   );
 }
@@ -452,39 +507,75 @@ export default function LessonView() {
               exit={{ opacity: 0, y: -12 }}
               className="text-center py-10"
             >
-              <div className="w-16 h-16 rounded-full bg-[#c9a84c]/10 flex items-center justify-center mx-auto mb-6">
+              <motion.div 
+                className="w-20 h-20 rounded-full bg-[#c9a84c]/10 flex items-center justify-center mx-auto mb-6"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                  rotate: [0, 5, -5, 0]
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
                 <span className="text-[#c9a84c] font-bold text-sm uppercase">
                   {lesson.type === 'exam' ? 'Exam' : lesson.type === 'rhythm' ? 'Rhythm' : lesson.type === 'theory' ? 'Theory' : 'Play'}
                 </span>
-              </div>
-              <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2">
+              </motion.div>
+              <motion.h1 
+                className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
                 {lesson.title}
-              </h1>
-              <p className="text-[#5a6577] dark:text-[#9aa3b0] mb-8">
+              </motion.h1>
+              <motion.p 
+                className="text-[#5a6577] dark:text-[#9aa3b0] mb-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
                 {lesson.description}
-              </p>
+              </motion.p>
 
               {(isPlayingLesson || isRhythmLesson) && (
-                <div className="mb-8">
-                  <button
+                <motion.div 
+                  className="mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <motion.button
                     onClick={() => setNoSax(!noSax)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     className={`px-5 py-2.5 rounded-lg font-medium text-sm transition-all ${
                       noSax ? 'bg-[#c9a84c] text-[#1a2332]' : 'bg-[#f0f0f0] dark:bg-[#1a2332] text-[#5a6577] dark:text-[#9aa3b0] border border-[#e2e4e8] dark:border-[#2a3545]'
                     }`}
                   >
                     {noSax ? 'Tap Mode Active' : "Don't have your sax?"}
-                  </button>
+                  </motion.button>
                   {noSax && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-2">
+                    <motion.p 
+                      initial={{ opacity: 0, height: 0 }} 
+                      animate={{ opacity: 1, height: 'auto' }} 
+                      className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-2"
+                    >
                       We'll use tapping and quizzes instead.
                     </motion.p>
                   )}
-                </div>
+                </motion.div>
               )}
 
-              <button onClick={() => setStep('learn')} className="btn-accent px-8 py-3.5">
+              <motion.button 
+                onClick={() => setStep('learn')} 
+                className="btn-accent px-8 py-3.5"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
                 <span className="flex items-center gap-2">Begin Lesson <ArrowRightIcon /></span>
-              </button>
+              </motion.button>
             </motion.div>
           )}
 
@@ -561,37 +652,64 @@ export default function LessonView() {
           {step === 'complete' && (
             <motion.div
               key="complete"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200 }}
               className="py-12 text-center"
             >
-              <div className="w-16 h-16 rounded-full bg-[#3a8a5c]/10 flex items-center justify-center mx-auto mb-5">
-                <span className="text-[#3a8a5c]"><CheckIcon /></span>
-              </div>
-              <h2 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2">
-                Lesson Complete
-              </h2>
-              <p className="text-[#5a6577] dark:text-[#9aa3b0] mb-1">
+              <motion.div 
+                className="w-20 h-20 rounded-full bg-[#3a8a5c]/10 flex items-center justify-center mx-auto mb-5"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 200, delay: 0.1 }}
+              >
+                <motion.span 
+                  className="text-[#3a8a5c]"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                  <CheckIcon />
+                </motion.span>
+              </motion.div>
+              <motion.h2 
+                className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                Lesson Complete!
+              </motion.h2>
+              <motion.p 
+                className="text-[#5a6577] dark:text-[#9aa3b0] mb-1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
                 {lesson.title}
-              </p>
-              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">
+              </motion.p>
+              <motion.p 
+                className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 {correctCount}/{totalExercises} correct
-              </p>
+              </motion.p>
 
               <div className="flex items-center justify-center gap-3 mb-8">
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: 'spring' }}
+                  initial={{ scale: 0, rotate: -180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
                   className="xp-badge"
                 >
                   +{lesson.xp} XP
                 </motion.div>
                 {user.progress.streak > 0 && (
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.3, type: 'spring' }}
+                    initial={{ scale: 0, rotate: 180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
                     className="streak-badge"
                   >
                     {user.progress.streak} day streak
@@ -599,9 +717,17 @@ export default function LessonView() {
                 )}
               </div>
 
-              <button onClick={handleBackToPath} className="btn-accent px-8 py-3.5">
+              <motion.button 
+                onClick={handleBackToPath} 
+                className="btn-accent px-8 py-3.5"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+              >
                 <span className="flex items-center gap-2">Continue <ArrowRightIcon /></span>
-              </button>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>

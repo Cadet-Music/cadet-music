@@ -109,54 +109,62 @@ export default function Onboarding() {
             </div>
 
             {/* Question */}
-            <motion.div
-              key={currentQ}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2 }}
+          <motion.div
+            key={currentQ}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.h2 
+              className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              <h2 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-6">
-                {QUESTIONS[currentQ].question}
-              </h2>
+              {QUESTIONS[currentQ].question}
+            </motion.h2>
 
-              <div className="space-y-2.5">
-                {QUESTIONS[currentQ].options.map((option, idx) => {
-                  const isSelected = selected === idx;
-                  const isCorrect = idx === QUESTIONS[currentQ].correct;
-                  const showResult = selected !== null;
+            <div className="space-y-2.5">
+              {QUESTIONS[currentQ].options.map((option, idx) => {
+                const isSelected = selected === idx;
+                const isCorrect = idx === QUESTIONS[currentQ].correct;
+                const showResult = selected !== null;
 
-                  let borderColor = 'border-[#c8c8c8] dark:border-[#2a3545]';
-                  let bgColor = '';
-                  let textColor = 'text-[#1a2332] dark:text-white';
+                let borderColor = 'border-[#c8c8c8] dark:border-[#2a3545]';
+                let bgColor = '';
+                let textColor = 'text-[#1a2332] dark:text-white';
 
-                  if (showResult) {
-                    if (isCorrect) {
-                      borderColor = 'border-[#3a8a5c]';
-                      bgColor = 'bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10';
-                      textColor = 'text-[#3a8a5c]';
-                    } else if (isSelected && !isCorrect) {
-                      borderColor = 'border-[#c44536]';
-                      bgColor = 'bg-[#c44536]/5 dark:bg-[#c44536]/10';
-                      textColor = 'text-[#c44536]';
-                    }
+                if (showResult) {
+                  if (isCorrect) {
+                    borderColor = 'border-[#3a8a5c]';
+                    bgColor = 'bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10';
+                    textColor = 'text-[#3a8a5c]';
+                  } else if (isSelected && !isCorrect) {
+                    borderColor = 'border-[#c44536]';
+                    bgColor = 'bg-[#c44536]/5 dark:bg-[#c44536]/10';
+                    textColor = 'text-[#c44536]';
                   }
+                }
 
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleAnswer(idx)}
-                      disabled={selected !== null}
-                      className={`w-full text-left px-4 py-3.5 rounded-lg border ${borderColor} ${bgColor} transition-all ${
-                        !showResult ? 'hover:border-[#c9a84c] hover:bg-[#c9a84c]/5 dark:hover:bg-[#c9a84c]/10' : ''
-                      } ${selected !== null ? 'cursor-default' : 'cursor-pointer'}`}
-                    >
-                      <span className={`text-sm font-medium ${textColor}`}>{option}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </div>
+                return (
+                  <motion.button
+                    key={idx}
+                    onClick={() => handleAnswer(idx)}
+                    disabled={selected !== null}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    whileHover={selected === null ? { scale: 1.02, x: 5 } : {}}
+                    whileTap={selected === null ? { scale: 0.98 } : {}}
+                    className={`w-full text-left px-4 py-3.5 rounded-lg border ${borderColor} ${bgColor} transition-all ${
+                      !showResult ? 'hover:border-[#c9a84c] hover:bg-[#c9a84c]/5 dark:hover:bg-[#c9a84c]/10' : ''
+                    } ${selected !== null ? 'cursor-default' : 'cursor-pointer'}`}
+                  >
+                    <span className={`text-sm font-medium ${textColor}`}>{option}</span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}

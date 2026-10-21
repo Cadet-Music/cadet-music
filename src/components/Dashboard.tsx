@@ -242,51 +242,82 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="max-w-lg mx-auto px-4 py-6">
         {/* Daily Goal */}
-        <div className="card mb-5">
+        <motion.div 
+          className="card mb-5 cursor-pointer hover:scale-[1.02] transition-transform"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#c9a84c]/10 flex items-center justify-center text-[#c9a84c]">
+            <motion.div 
+              className="w-10 h-10 rounded-lg bg-[#c9a84c]/10 flex items-center justify-center text-[#c9a84c]"
+              animate={{ rotate: completedCount >= 3 ? [0, 360] : 0 }}
+              transition={{ duration: 2, repeat: completedCount >= 3 ? Infinity : 0 }}
+            >
               <TargetIcon />
-            </div>
+            </motion.div>
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1.5">
                 <p className="font-semibold text-sm text-[#1a2332] dark:text-white">Daily Goal</p>
-                <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
-                  {Math.min(completedCount, 3)}/3 lessons
-                </span>
+                <motion.span 
+                  className="text-xs font-bold text-[#c9a84c]"
+                  key={completedCount}
+                  initial={{ scale: 1.3 }}
+                  animate={{ scale: 1 }}
+                >
+                  {Math.min(completedCount, 3)}/3
+                </motion.span>
               </div>
               <div className="progress-bar">
                 <motion.div
                   className="progress-bar-fill"
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((completedCount / 3) * 100, 100)}%` }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 />
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Progress Overview */}
-        <div className="card mb-8">
+        <motion.div 
+          className="card mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-sm text-[#1a2332] dark:text-white">Progress</h2>
-            <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">{completedCount}/{totalLessons} lessons</span>
+            <motion.span 
+              className="text-xs font-bold text-[#c9a84c]"
+              key={progressPercent}
+              initial={{ scale: 1.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              {progressPercent}%
+            </motion.span>
           </div>
           <div className="progress-bar">
             <motion.div
               className="progress-bar-fill"
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
+              transition={{ duration: 1, ease: 'easeOut' }}
             />
           </div>
           <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{progressPercent}% complete</span>
+            <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{completedCount}/{totalLessons} lessons</span>
             {user.activeSongs.length > 0 && (
-              <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{user.activeSongs.length} active songs</span>
+              <motion.span 
+                className="text-xs text-[#5a6577] dark:text-[#9aa3b0]"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {user.activeSongs.length} active songs
+              </motion.span>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Learning Path */}
         <div className="relative">
@@ -329,19 +360,39 @@ export default function Dashboard() {
                       className="relative"
                       style={{ transform: `translateX(${offset}px)` }}
                     >
-                      <button
+                      <motion.button
                         onClick={() => handleNodeClick(lesson.id)}
                         className={`path-node ${status} ${isBoss ? 'boss' : ''}`}
                         title={lesson.title}
+                        whileHover={status !== 'locked' ? { scale: 1.15 } : {}}
+                        whileTap={status !== 'locked' ? { scale: 0.9 } : {}}
+                        animate={status === 'available' ? { 
+                          boxShadow: ['0 0 0 0 rgba(201, 168, 76, 0.4)', '0 0 0 10px rgba(201, 168, 76, 0)', '0 0 0 0 rgba(201, 168, 76, 0)']
+                        } : {}}
+                        transition={status === 'available' ? { duration: 2, repeat: Infinity } : {}}
                       >
                         {status === 'locked' ? (
-                          <LockIcon />
+                          <motion.div animate={{ rotate: [0, -10, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+                            <LockIcon />
+                          </motion.div>
                         ) : status === 'completed' ? (
-                          <CheckIcon />
+                          <motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            animate={{ scale: 1, rotate: 0 }}
+                            transition={{ type: 'spring', stiffness: 200 }}
+                          >
+                            <CheckIcon />
+                          </motion.div>
                         ) : (
-                          <span className="text-xs font-bold">{sIdx * 3 + lIdx + 1}</span>
+                          <motion.span 
+                            className="text-xs font-bold"
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            {sIdx * 3 + lIdx + 1}
+                          </motion.span>
                         )}
-                      </button>
+                      </motion.button>
 
                       {/* Lesson label */}
                       <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap">
@@ -362,47 +413,58 @@ export default function Dashboard() {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1a2332] border-t border-[#c8c8c8] dark:border-[#2a3545]">
         <div className="max-w-lg mx-auto flex items-center justify-around py-2">
-          <button
+          <motion.button
             onClick={() => setCurrentView('dashboard')}
             className="flex flex-col items-center gap-0.5 p-2 text-[#c9a84c]"
+            whileTap={{ scale: 0.9 }}
           >
             <HomeIcon active={true} />
             <span className="text-[10px] font-semibold">Home</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => setCurrentView('leaderboard')}
             className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+            whileTap={{ scale: 0.9 }}
           >
             <TrophyIcon />
             <span className="text-[10px] font-semibold">Stats</span>
-          </button>
+          </motion.button>
           {nextLesson ? (
-            <button
+            <motion.button
               onClick={() => { setCurrentLesson(nextLesson.id); setCurrentView('lesson'); }}
               className="flex flex-col items-center gap-0.5 p-2 -mt-5"
+              whileTap={{ scale: 0.9 }}
             >
-              <div className="w-12 h-12 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#1a2332] shadow-md">
+              <motion.div 
+                className="w-12 h-12 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#1a2332] shadow-md"
+                animate={{ 
+                  scale: [1, 1.05, 1],
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
                 <PlayIcon />
-              </div>
+              </motion.div>
               <span className="text-[10px] font-semibold text-[#c9a84c]">Start</span>
-            </button>
+            </motion.button>
           ) : (
             <div className="w-12 h-12" />
           )}
-          <button
+          <motion.button
             onClick={() => setCurrentView('settings')}
             className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+            whileTap={{ scale: 0.9 }}
           >
             <MusicIcon />
             <span className="text-[10px] font-semibold">Songs</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => { setDarkMode(!darkMode); }}
             className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+            whileTap={{ scale: 0.9 }}
           >
             {darkMode ? <SunIcon /> : <MoonIcon />}
             <span className="text-[10px] font-semibold">Theme</span>
-          </button>
+          </motion.button>
         </div>
       </nav>
 

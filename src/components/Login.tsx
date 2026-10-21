@@ -55,23 +55,42 @@ export default function Login() {
         className="w-full max-w-sm"
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 mb-10 justify-center">
-          <div className="w-10 h-10 rounded-lg bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center">
+        <motion.div 
+          className="flex items-center gap-3 mb-10 justify-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="w-10 h-10 rounded-lg bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={darkMode ? '#1a2332' : '#c9a84c'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 18V5l12-2v13" />
               <circle cx="6" cy="18" r="3" />
               <circle cx="18" cy="16" r="3" />
             </svg>
-          </div>
+          </motion.div>
           <span className="font-semibold text-[#1a2332] dark:text-white text-lg tracking-tight">Cadet Music</span>
-        </div>
+        </motion.div>
 
-        <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center">
+        <motion.h1 
+          className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
           {isSignUp ? 'Create account' : 'Sign in'}
-        </h1>
-        <p className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center">
+        </motion.h1>
+        <motion.p 
+          className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           {isSignUp ? 'Join Cadet Music today' : 'Enter your credentials to continue'}
-        </p>
+        </motion.p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
