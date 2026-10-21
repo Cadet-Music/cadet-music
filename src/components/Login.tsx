@@ -4,10 +4,10 @@ import { useStore } from '../store';
 
 export default function Login() {
   const { login, darkMode, setDarkMode } = useStore();
+  const [rank, setRank] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -15,264 +15,168 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    if (isSignUp) {
-      if (name.trim().length < 2) {
-        setError('Please enter your full name');
-        return;
-      }
-      if (email.trim().length < 3 || !email.includes('@')) {
-        setError('Please enter a valid email address');
-        return;
-      }
-      if (password.length < 6) {
-        setError('Password must be at least 6 characters');
-        return;
-      }
-    } else {
-      if (email.trim().length < 3 || !email.includes('@')) {
-        setError('Please enter a valid email address');
-        return;
-      }
-      if (password.length < 1) {
-        setError('Please enter your password');
-        return;
-      }
+    if (rank.trim().length < 1) {
+      setError('Please enter your rank');
+      return;
+    }
+    if (lastName.trim().length < 1) {
+      setError('Please enter your last name');
+      return;
+    }
+    if (!email.trim().toLowerCase().endsWith('.cadets.gc.ca')) {
+      setError('Please use your .cadets.gc.ca email address');
+      return;
+    }
+    if (password.length < 1) {
+      setError('Please enter your password');
+      return;
     }
 
     setLoading(true);
-    // Simulate API call
     setTimeout(() => {
-      const displayName = isSignUp ? name.trim() : email.split('@')[0];
+      const displayName = `${rank.trim()} ${lastName.trim()}`;
       login(displayName);
       setLoading(false);
     }, 600);
   };
 
   return (
-    <div className="min-h-screen flex bg-[#fafafa] dark:bg-[#0f1720]">
-      {/* Left Panel - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#1a2332] relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1a2332] via-[#1a2332] to-[#2d3a4a]" />
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          {/* Logo */}
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-lg bg-[#c9a84c] flex items-center justify-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a2332" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 18V5l12-2v13" />
-                  <circle cx="6" cy="18" r="3" />
-                  <circle cx="18" cy="16" r="3" />
-                </svg>
-              </div>
-              <span className="text-white font-semibold text-lg tracking-tight">Cadet Music</span>
-            </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#fafafa] dark:bg-[#0f1720] p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-sm"
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3 mb-10 justify-center">
+          <div className="w-10 h-10 rounded-lg bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={darkMode ? '#1a2332' : '#c9a84c'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
+            </svg>
           </div>
-
-          {/* Center content */}
-          <div className="flex-1 flex flex-col justify-center max-w-md">
-            <h2 className="text-3xl font-semibold text-white leading-tight mb-4">
-              Master the saxophone,<br />one lesson at a time.
-            </h2>
-            <p className="text-[#9aa3b0] text-base leading-relaxed mb-8">
-              Structured curriculum covering music theory, technique, and repertoire. 
-              Track your progress and build consistent practice habits.
-            </p>
-            <div className="space-y-4">
-              {[
-                { label: 'Structured curriculum', desc: 'From fundamentals to advanced repertoire' },
-                { label: 'Theory & practice', desc: 'Balanced approach to musicianship' },
-                { label: 'Progress tracking', desc: 'See your improvement over time' },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + i * 0.1 }}
-                  className="flex items-start gap-3"
-                >
-                  <div className="w-5 h-5 rounded-full bg-[#c9a84c]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white text-sm font-medium">{item.label}</p>
-                    <p className="text-[#6b7a8d] text-sm">{item.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Footer */}
-          <p className="text-[#5a6577] text-sm">
-            Trusted by 2,000+ students worldwide
-          </p>
+          <span className="font-semibold text-[#1a2332] dark:text-white text-lg tracking-tight">Cadet Music</span>
         </div>
-      </div>
 
-      {/* Right Panel - Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-sm"
-        >
-          {/* Mobile Logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-9 h-9 rounded-lg bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={darkMode ? '#1a2332' : '#c9a84c'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18V5l12-2v13" />
-                <circle cx="6" cy="18" r="3" />
-                <circle cx="18" cy="16" r="3" />
-              </svg>
-            </div>
-            <span className="font-semibold text-[#1a2332] dark:text-white tracking-tight">Cadet Music</span>
-          </div>
+        <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center">
+          Sign in
+        </h1>
+        <p className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center">
+          Enter your credentials to continue
+        </p>
 
-          <h1 className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1">
-            {isSignUp ? 'Create your account' : 'Welcome back'}
-          </h1>
-          <p className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8">
-            {isSignUp ? 'Start your learning journey today' : 'Sign in to continue your practice'}
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div>
-                <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                  Full name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => { setName(e.target.value); setError(''); }}
-                  placeholder="John Doe"
-                  className="input-field"
-                />
-              </div>
-            )}
-
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                Email address
+                Rank
               </label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                placeholder="you@example.com"
+                type="text"
+                value={rank}
+                onChange={(e) => { setRank(e.target.value); setError(''); }}
+                placeholder="Cpl"
                 className="input-field"
               />
             </div>
-
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed]">
-                  Password
-                </label>
-                {!isSignUp && (
-                  <button type="button" className="text-xs text-[#c9a84c] hover:text-[#a68a3a] font-medium transition-colors">
-                    Forgot password?
-                  </button>
-                )}
-              </div>
+              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                Last name
+              </label>
               <input
-                type="password"
-                value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(''); }}
-                placeholder={isSignUp ? 'Min. 6 characters' : 'Enter your password'}
+                type="text"
+                value={lastName}
+                onChange={(e) => { setLastName(e.target.value); setError(''); }}
+                placeholder="Smith"
                 className="input-field"
               />
             </div>
+          </div>
 
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-[#c44536] text-sm font-medium"
-              >
-                {error}
-              </motion.p>
+          <div>
+            <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+              Cadet365 email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); setError(''); }}
+              placeholder="name@1234.cadets.gc.ca"
+              className="input-field"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(''); }}
+              placeholder="Enter your password"
+              className="input-field"
+            />
+          </div>
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-[#c44536] text-sm font-medium"
+            >
+              {error}
+            </motion.p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full py-3.5 mt-2 disabled:opacity-60"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+                Signing in...
+              </span>
+            ) : (
+              'Sign in'
             )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-3.5 mt-2 disabled:opacity-60"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
-                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                  </svg>
-                  {isSignUp ? 'Creating account...' : 'Signing in...'}
-                </span>
-              ) : (
-                isSignUp ? 'Create account' : 'Sign in'
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-[#e2e4e8] dark:bg-[#2a3545]" />
-            <span className="text-xs text-[#9aa3b0] font-medium">OR</span>
-            <div className="flex-1 h-px bg-[#e2e4e8] dark:bg-[#2a3545]" />
-          </div>
-
-          {/* Social login */}
-          <button className="w-full flex items-center justify-center gap-3 py-3 px-4 border-1.5 border-[#e2e4e8] dark:border-[#2a3545] rounded-lg hover:bg-[#f0f0f0] dark:hover:bg-[#1a2332] transition-colors">
-            <svg width="18" height="18" viewBox="0 0 24 24">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-            </svg>
-            <span className="text-sm font-medium text-[#1a2332] dark:text-[#e8eaed]">Continue with Google</span>
           </button>
+        </form>
 
-          {/* Switch mode */}
-          <p className="text-center text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-8">
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-            <button
-              onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-              className="text-[#c9a84c] hover:text-[#a68a3a] font-semibold transition-colors"
-            >
-              {isSignUp ? 'Sign in' : 'Sign up'}
-            </button>
-          </p>
-
-          {/* Theme toggle */}
-          <div className="flex items-center justify-center mt-8">
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="flex items-center gap-2 text-xs text-[#9aa3b0] hover:text-[#5a6577] dark:hover:text-[#e8eaed] transition-colors"
-            >
-              {darkMode ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
-              )}
-              {darkMode ? 'Light mode' : 'Dark mode'}
-            </button>
-          </div>
-        </motion.div>
-      </div>
+        {/* Theme toggle */}
+        <div className="flex items-center justify-center mt-8">
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="flex items-center gap-2 text-xs text-[#9aa3b0] hover:text-[#5a6577] dark:hover:text-[#e8eaed] transition-colors"
+          >
+            {darkMode ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="5" />
+                <line x1="12" y1="1" x2="12" y2="3" />
+                <line x1="12" y1="21" x2="12" y2="23" />
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                <line x1="1" y1="12" x2="3" y2="12" />
+                <line x1="21" y1="12" x2="23" y2="12" />
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            )}
+            {darkMode ? 'Light mode' : 'Dark mode'}
+          </button>
+        </div>
+      </motion.div>
     </div>
   );
 }
