@@ -64,15 +64,49 @@ function getExercisesForLesson(lessonId: string): Exercise[] {
   ];
 }
 
-function getLearnContent(lessonId: string): { title: string; content: string; tip: string } {
-  const content: Record<string, { title: string; content: string; tip: string }> = {
-    'pb-1': { title: 'Meet Your Saxophone', content: 'The saxophone has 4 main parts:\n\nMouthpiece — where you blow\nNeck — connects mouthpiece to body\nBody — the main tube with keys\nBell — the flared end\n\nThe reed is a thin piece of cane that vibrates when air passes over it.', tip: 'Always wet your reed before playing.' },
-    'pb-2': { title: 'Assembly Steps', content: '1. Attach neck to body\n2. Wet the reed\n3. Place reed on mouthpiece\n4. Slide ligature over & tighten\n5. Attach mouthpiece to neck', tip: 'Handle by the bell & body — never by the keys.' },
-    'n-1': { title: 'Your First Notes: B, A, G', content: 'B — Left hand: index finger\nA — Left hand: index + middle\nG — Left hand: all 3 fingers\n\nPractice: B-B-B → A-A-A → G-G-G', tip: 'Keep fingers curved like holding a ball.' },
-    'r-1': { title: 'Quarter Notes', content: 'A quarter note = 1 beat\n\nCount: 1 - 2 - 3 - 4\n\nEach number = one quarter note\n\n4 quarter notes = 4 taps', tip: 'Start at 60 BPM — one tap per second.' },
-    'r-4': { title: 'Eighth Notes', content: 'Eighth notes = half a beat each\n\nCount: "1-and, 2-and, 3-and, 4-and"\n\n8 eighth notes = 8 taps in 4 beats', tip: 'Think "hot-dog, hot-dog" — two taps per beat.' },
-    't-1': { title: 'Time Signatures', content: '4/4 — 4 beats, quarter = 1 beat\n3/4 — 3 beats (waltz)\n2/4 — 2 beats (march)\n\nTop number = beats per measure\nBottom = which note gets 1 beat', tip: '4/4 is the most common time signature.' },
-    't-3': { title: 'Dynamics', content: 'pp = pianissimo (very soft)\np = piano (soft)\nmp = mezzo piano (medium soft)\nmf = mezzo forte (medium loud)\nf = forte (loud)\nff = fortissimo (very loud)', tip: 'Dynamics add expression to your music.' },
+function getLearnContent(lessonId: string): { title: string; content: string; tip: string; image?: string } {
+  const content: Record<string, { title: string; content: string; tip: string; image?: string }> = {
+    'pb-1': { 
+      title: 'Meet Your Saxophone', 
+      content: 'The saxophone has 4 main parts:\n\nMouthpiece — where you blow\nNeck — connects mouthpiece to body\nBody — the main tube with keys\nBell — the flared end\n\nThe reed is a thin piece of cane that vibrates when air passes over it.', 
+      tip: 'Always wet your reed before playing.',
+      image: 'https://image.qwenlm.ai/generated-images/fd6a03c2-7031-47b1-8955-86ec8e6007f1/_result.png'
+    },
+    'pb-2': { 
+      title: 'Assembly Steps', 
+      content: '1. Attach neck to body\n2. Wet the reed\n3. Place reed on mouthpiece\n4. Slide ligature over & tighten\n5. Attach mouthpiece to neck', 
+      tip: 'Handle by the bell & body — never by the keys.',
+      image: 'https://image.qwenlm.ai/generated-images/280f89c2-89c5-4eb0-9878-f1af364176cc/_result.png'
+    },
+    'n-1': { 
+      title: 'Your First Notes: B, A, G', 
+      content: 'B — Left hand: index finger\nA — Left hand: index + middle\nG — Left hand: all 3 fingers\n\nPractice: B-B-B → A-A-A → G-G-G', 
+      tip: 'Keep fingers curved like holding a ball.',
+      image: 'https://image.qwenlm.ai/generated-images/c401d953-df85-4c9d-bf1a-74062e3fbc39/_result.png'
+    },
+    'r-1': { 
+      title: 'Quarter Notes', 
+      content: 'A quarter note = 1 beat\n\nCount: 1 - 2 - 3 - 4\n\nEach number = one quarter note\n\n4 quarter notes = 4 taps', 
+      tip: 'Start at 60 BPM — one tap per second.',
+      image: 'https://image.qwenlm.ai/generated-images/2035579c-9e7f-4e50-b1db-049573a0ae18/_result.png'
+    },
+    'r-4': { 
+      title: 'Eighth Notes', 
+      content: 'Eighth notes = half a beat each\n\nCount: "1-and, 2-and, 3-and, 4-and"\n\n8 eighth notes = 8 taps in 4 beats', 
+      tip: 'Think "hot-dog, hot-dog" — two taps per beat.',
+      image: 'https://image.qwenlm.ai/generated-images/2035579c-9e7f-4e50-b1db-049573a0ae18/_result.png'
+    },
+    't-1': { 
+      title: 'Time Signatures', 
+      content: '4/4 — 4 beats, quarter = 1 beat\n3/4 — 3 beats (waltz)\n2/4 — 2 beats (march)\n\nTop number = beats per measure\nBottom = which note gets 1 beat', 
+      tip: '4/4 is the most common time signature.'
+    },
+    't-3': { 
+      title: 'Dynamics', 
+      content: 'pp = pianissimo (very soft)\np = piano (soft)\nmp = mezzo piano (medium soft)\nmf = mezzo forte (medium loud)\nf = forte (loud)\nff = fortissimo (very loud)', 
+      tip: 'Dynamics add expression to your music.',
+      image: 'https://image.qwenlm.ai/generated-images/75559c54-0718-4c3d-8e1f-2bb21a3a558d/_result.png'
+    },
   };
 
   return content[lessonId] || {
@@ -590,6 +624,21 @@ export default function LessonView() {
               <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-4">
                 {learnContent.title}
               </h2>
+              
+              {learnContent.image && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-5 rounded-lg overflow-hidden border border-[#c8c8c8] dark:border-[#2a3545]"
+                >
+                  <img 
+                    src={learnContent.image} 
+                    alt={learnContent.title}
+                    className="w-full h-auto"
+                  />
+                </motion.div>
+              )}
               
               <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-5">
                 <div className="text-[#1a2332] dark:text-white leading-relaxed whitespace-pre-line text-[15px]">
