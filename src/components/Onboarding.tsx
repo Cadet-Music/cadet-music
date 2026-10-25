@@ -12,16 +12,37 @@ interface QuizQuestion {
 }
 
 const QUESTIONS: QuizQuestion[] = [
+  // BASIC level (awareness)
   { id: 1, question: 'How many lines are on a music staff?', options: ['3', '4', '5', '6'], correct: 2, category: 'basic' },
   { id: 2, question: 'Which note gets 1 beat in 4/4 time?', options: ['Whole note', 'Half note', 'Quarter note', 'Eighth note'], correct: 2, category: 'basic' },
   { id: 3, question: 'What does "forte" (f) mean?', options: ['Soft', 'Loud', 'Fast', 'Slow'], correct: 1, category: 'basic' },
-  { id: 4, question: 'Which clef does saxophone use?', options: ['Bass clef', 'Alto clef', 'Treble clef', 'Tenor clef'], correct: 2, category: 'intermediate' },
-  { id: 5, question: 'How many sharps are in G major?', options: ['0', '1', '2', '3'], correct: 1, category: 'intermediate' },
-  { id: 6, question: 'What is the relative minor of C major?', options: ['A minor', 'D minor', 'E minor', 'G minor'], correct: 0, category: 'intermediate' },
-  { id: 7, question: 'What is a dominant seventh chord built on?', options: ['1st degree', '3rd degree', '5th degree', '7th degree'], correct: 2, category: 'advanced' },
-  { id: 8, question: 'In 6/8 time, how many beats are in a measure?', options: ['2 beats (compound duple)', '3 beats (compound triple)', '6 beats (simple)', '8 beats'], correct: 0, category: 'advanced' },
-  { id: 9, question: 'What is the interval between C and G?', options: ['Major third', 'Perfect fourth', 'Perfect fifth', 'Major sixth'], correct: 2, category: 'advanced' },
-  { id: 10, question: 'Which scale has a raised 7th degree when ascending?', options: ['Natural minor', 'Harmonic minor', 'Melodic minor', 'Dorian mode'], correct: 2, category: 'advanced' },
+  
+  // LEVEL ONE (basic knowledge)
+  { id: 4, question: 'Which clef does saxophone use?', options: ['Bass clef', 'Alto clef', 'Treble clef', 'Tenor clef'], correct: 2, category: 'basic' },
+  { id: 5, question: 'How many sharps are in G major?', options: ['0', '1', '2', '3'], correct: 1, category: 'basic' },
+  { id: 6, question: 'What is the relative minor of C major?', options: ['A minor', 'D minor', 'E minor', 'G minor'], correct: 0, category: 'basic' },
+  
+  // LEVEL TWO (basic knowledge, limited skill)
+  { id: 7, question: 'What does a dot added to a note do?', options: ['Doubles the value', 'Adds half the value', 'Adds a quarter', 'Subtracts half'], correct: 1, category: 'intermediate' },
+  { id: 8, question: 'In 6/8 time, how many beats are in a measure?', options: ['2 beats (compound duple)', '3 beats (compound triple)', '6 beats (simple)', '8 beats'], correct: 0, category: 'intermediate' },
+  { id: 9, question: 'What is the order of sharps in key signatures?', options: ['F C G D A E B', 'B E A D G C F', 'C G D A E B F', 'F B E A D G C'], correct: 0, category: 'intermediate' },
+  
+  // LEVEL THREE (detailed knowledge)
+  { id: 10, question: 'What is the interval between C and G?', options: ['Major third', 'Perfect fourth', 'Perfect fifth', 'Major sixth'], correct: 2, category: 'intermediate' },
+  { id: 11, question: 'Which scale has raised 6th and 7th degrees ascending?', options: ['Natural minor', 'Harmonic minor', 'Melodic minor', 'Dorian mode'], correct: 2, category: 'intermediate' },
+  { id: 12, question: 'What are the three notes in a C major triad?', options: ['C D E', 'C E G', 'C F G', 'C E F'], correct: 1, category: 'intermediate' },
+  
+  // LEVEL FOUR (detailed knowledge, skilled)
+  { id: 13, question: 'What is a dominant seventh chord built on?', options: ['1st degree', '3rd degree', '5th degree', '7th degree'], correct: 2, category: 'advanced' },
+  { id: 14, question: 'What is a V-I cadence called?', options: ['Plagal', 'Perfect', 'Imperfect', 'Deceptive'], correct: 1, category: 'advanced' },
+  { id: 15, question: 'How do you transpose for Bb tenor sax?', options: ['Up major 2nd', 'Down major 2nd', 'Up major 6th', 'Down major 6th'], correct: 0, category: 'advanced' },
+  
+  // LEVEL FIVE (comprehensive knowledge)
+  { id: 16, question: 'What clef does viola use?', options: ['Treble', 'Bass', 'Alto', 'Tenor'], correct: 2, category: 'advanced' },
+  { id: 17, question: 'What intervals make up a diminished chord?', options: ['Major 3rd + Perfect 5th', 'Minor 3rd + Diminished 5th', 'Major 3rd + Augmented 5th', 'Minor 3rd + Perfect 5th'], correct: 1, category: 'advanced' },
+  { id: 18, question: 'How is Eb alto sax transposed?', options: ['Up major 2nd', 'Down major 2nd', 'Up major 6th', 'Down minor 3rd'], correct: 2, category: 'advanced' },
+  { id: 19, question: 'What is the first inversion of a chord?', options: ['Root in bass', 'Third in bass', 'Fifth in bass', 'Seventh in bass'], correct: 1, category: 'advanced' },
+  { id: 20, question: 'What are the four notes in a dominant seventh chord?', options: ['Root, 3rd, 5th, 7th', 'Root, major 3rd, perfect 5th, minor 7th', 'Root, minor 3rd, perfect 5th, major 7th', 'Root, 3rd, 5th, octave'], correct: 1, category: 'advanced' },
 ];
 
 const getLevelFromNumber = (num: number): CadetLevel => {
@@ -37,12 +58,14 @@ export default function Onboarding() {
   const [step, setStep] = useState<'quiz' | 'result' | 'levels'>('quiz');
   const [theoryLevel, setLocalTheoryLevel] = useState<CadetLevel>('BASIC');
   const [playingLevel, setLocalPlayingLevel] = useState<CadetLevel>('BASIC');
+  const [recommendedLevel, setRecommendedLevel] = useState<{theory: CadetLevel, instrument: CadetLevel, label: string, desc: string} | null>(null);
 
   const handleAnswer = (idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
     const isCorrect = idx === QUESTIONS[currentQ].correct;
-    if (isCorrect) setScore(s => s + 1);
+    const newScore = isCorrect ? score + 1 : score;
+    if (isCorrect) setScore(newScore);
     
     setShowFeedback(true);
     setTimeout(() => {
@@ -51,7 +74,8 @@ export default function Onboarding() {
         setCurrentQ(q => q + 1);
         setSelected(null);
       } else {
-        const rec = getRecommendedLevel();
+        const rec = getRecommendedLevel(newScore);
+        setRecommendedLevel(rec);
         setLocalTheoryLevel(rec.theory);
         setLocalPlayingLevel(rec.instrument);
         setStep('result');
@@ -59,11 +83,15 @@ export default function Onboarding() {
     }, 800);
   };
 
-  const getRecommendedLevel = () => {
-    if (score >= 8) return { theory: 'THREE' as CadetLevel, instrument: 'TWO' as CadetLevel, label: 'Advanced', desc: 'Strong theory foundation.' };
-    if (score >= 6) return { theory: 'TWO' as CadetLevel, instrument: 'ONE' as CadetLevel, label: 'Intermediate', desc: 'Good understanding.' };
-    if (score >= 3) return { theory: 'ONE' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Beginner', desc: 'Some knowledge detected.' };
-    return { theory: 'BASIC' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Complete Beginner', desc: "Starting from the beginning." };
+  const getRecommendedLevel = (finalScore: number) => {
+    // With 20 questions total, map scores to 6 levels
+    // BASIC (0-3), ONE (4-7), TWO (8-11), THREE (12-14), FOUR (15-17), FIVE (18-20)
+    if (finalScore >= 18) return { theory: 'FIVE' as CadetLevel, instrument: 'FOUR' as CadetLevel, label: 'Level Five', desc: 'Comprehensive knowledge, highly skilled.' };
+    if (finalScore >= 15) return { theory: 'FOUR' as CadetLevel, instrument: 'THREE' as CadetLevel, label: 'Level Four', desc: 'Detailed knowledge, skilled.' };
+    if (finalScore >= 12) return { theory: 'THREE' as CadetLevel, instrument: 'TWO' as CadetLevel, label: 'Level Three', desc: 'Detailed knowledge, skilled.' };
+    if (finalScore >= 8) return { theory: 'TWO' as CadetLevel, instrument: 'ONE' as CadetLevel, label: 'Level Two', desc: 'Basic knowledge, limited skill.' };
+    if (finalScore >= 4) return { theory: 'ONE' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Level One', desc: 'Basic knowledge, limited skill.' };
+    return { theory: 'BASIC' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Basic Level', desc: 'Starting from awareness.' };
   };
 
   const handleComplete = () => {
@@ -187,10 +215,10 @@ export default function Onboarding() {
               Assessment Complete
             </h2>
             <p className="text-sm font-medium text-[#1a2332] dark:text-white mb-1">
-              Recommended: {getRecommendedLevel().label}
+              Recommended: {recommendedLevel?.label || 'Level'}
             </p>
             <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">
-              {getRecommendedLevel().desc}
+              {recommendedLevel?.desc || 'Choose your starting level'}
             </p>
 
             <button

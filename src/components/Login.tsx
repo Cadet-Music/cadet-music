@@ -37,6 +37,18 @@ export default function Login() {
     }
   };
 
+  // Simple password storage for demo (in production, use proper backend auth)
+  const getStoredPassword = (identifier: string): string | null => {
+    const users = JSON.parse(localStorage.getItem('cadet_music_users') || '{}');
+    return users[identifier]?.password || null;
+  };
+
+  const storePassword = (identifier: string, password: string) => {
+    const users = JSON.parse(localStorage.getItem('cadet_music_users') || '{}');
+    users[identifier] = { password, createdAt: new Date().toISOString() };
+    localStorage.setItem('cadet_music_users', JSON.stringify(users));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -57,6 +69,30 @@ export default function Login() {
       if (isSignUp && password !== confirmPassword) {
         setError('Passwords do not match');
         return;
+      }
+
+      const identifier = `${rank.trim()}.${lastName.trim()}`.toLowerCase();
+      
+      if (isSignUp) {
+        // Check if user already exists
+        const existingPassword = getStoredPassword(identifier);
+        if (existingPassword) {
+          setError('An account with this name already exists. Please sign in.');
+          return;
+        }
+        // Store password for new user
+        storePassword(identifier, password);
+      } else {
+        // Validate password for existing user
+        const storedPassword = getStoredPassword(identifier);
+        if (storedPassword && storedPassword !== password) {
+          setError('Incorrect password. Please try again.');
+          return;
+        }
+        // If no stored password (legacy user), store it now
+        if (!storedPassword) {
+          storePassword(identifier, password);
+        }
       }
 
       setLoading(true);
@@ -81,6 +117,30 @@ export default function Login() {
       if (isSignUp && password !== confirmPassword) {
         setError('Passwords do not match');
         return;
+      }
+
+      const identifier = email.trim().toLowerCase();
+      
+      if (isSignUp) {
+        // Check if user already exists
+        const existingPassword = getStoredPassword(identifier);
+        if (existingPassword) {
+          setError('An account with this email already exists. Please sign in.');
+          return;
+        }
+        // Store password for new user
+        storePassword(identifier, password);
+      } else {
+        // Validate password for existing user
+        const storedPassword = getStoredPassword(identifier);
+        if (storedPassword && storedPassword !== password) {
+          setError('Incorrect password. Please try again.');
+          return;
+        }
+        // If no stored password (legacy user), store it now
+        if (!storedPassword) {
+          storePassword(identifier, password);
+        }
       }
 
       setLoading(true);
