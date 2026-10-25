@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { getLessonById } from '../data';
+import { CONCEPTS, Concept } from '../competency';
 import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 
@@ -21,42 +22,47 @@ interface Exercise {
   correctOrder?: string[];
   correctAnswer?: string;
   notePairs?: { note: string; position: string }[];
+  concept?: Concept; // Which concept this exercise tests
 }
 
 function getExercisesForLesson(lessonId: string): Exercise[] {
   const exercises: Record<string, Exercise[]> = {
     'pb-1': [
-      { type: 'multiple-choice', question: 'Which part vibrates to make sound?', options: [{ text: 'The reed', correct: true }, { text: 'The bell', correct: false }, { text: 'The keys', correct: false }, { text: 'The neck', correct: false }] },
-      { type: 'true-false', question: 'The bell is where sound comes out of the saxophone.', correctAnswer: 'true' },
-      { type: 'note-match', question: 'Match the parts to their function:', notePairs: [{ note: 'Mouthpiece', position: 'Where you blow' }, { note: 'Reed', position: 'Vibrates to make sound' }, { note: 'Bell', position: 'Sound exits here' }] },
+      { type: 'multiple-choice', question: 'Which part vibrates to make sound?', options: [{ text: 'The reed', correct: true }, { text: 'The bell', correct: false }, { text: 'The keys', correct: false }, { text: 'The neck', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'true-false', question: 'The bell is where sound comes out of the saxophone.', correctAnswer: 'true', concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'note-match', question: 'Match the parts to their function:', notePairs: [{ note: 'Mouthpiece', position: 'Where you blow' }, { note: 'Reed', position: 'Vibrates to make sound' }, { note: 'Bell', position: 'Sound exits here' }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+    ],
+    'pb-2': [
+      { type: 'multiple-choice', question: 'What should you do before attaching the reed?', options: [{ text: 'Wet it', correct: true }, { text: 'Dry it', correct: false }, { text: 'Cut it', correct: false }, { text: 'Ignore it', correct: false }], concept: CONCEPTS.MAINTENANCE },
+      { type: 'true-false', question: 'You should handle the saxophone by the keys.', correctAnswer: 'false', concept: CONCEPTS.MAINTENANCE },
     ],
     'pb-3': [
-      { type: 'multiple-choice', question: 'What creates sound on saxophone?', options: [{ text: 'Reed vibrating against mouthpiece', correct: true }, { text: 'Blowing air only', correct: false }, { text: 'Pressing keys', correct: false }, { text: 'Tapping the bell', correct: false }] },
-      { type: 'true-false', question: 'You should always wet your reed before playing.', correctAnswer: 'true' },
+      { type: 'multiple-choice', question: 'What creates sound on saxophone?', options: [{ text: 'Reed vibrating against mouthpiece', correct: true }, { text: 'Blowing air only', correct: false }, { text: 'Pressing keys', correct: false }, { text: 'Tapping the bell', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'true-false', question: 'You should always wet your reed before playing.', correctAnswer: 'true', concept: CONCEPTS.MAINTENANCE },
     ],
     'n-1': [
-      { type: 'multiple-choice', question: 'Which fingers play the note B?', options: [{ text: 'Left hand index finger', correct: true }, { text: 'Right hand only', correct: false }, { text: 'All fingers', correct: false }, { text: 'No fingers', correct: false }] },
-      { type: 'fill-order', question: 'Put the notes in order from highest to lowest:', items: ['B', 'A', 'G'], correctOrder: ['B', 'A', 'G'] },
+      { type: 'multiple-choice', question: 'Which fingers play the note B?', options: [{ text: 'Left hand index finger', correct: true }, { text: 'Right hand only', correct: false }, { text: 'All fingers', correct: false }, { text: 'No fingers', correct: false }], concept: CONCEPTS.NOTE_NAMES },
+      { type: 'fill-order', question: 'Put the notes in order from highest to lowest:', items: ['B', 'A', 'G'], correctOrder: ['B', 'A', 'G'], concept: CONCEPTS.NOTE_NAMES },
     ],
     'n-2': [
-      { type: 'multiple-choice', question: 'On the staff, notes go from ___ to ___', options: [{ text: 'Bottom to top = low to high', correct: true }, { text: 'Left to right', correct: false }, { text: 'Top to bottom = low to high', correct: false }, { text: 'Outside to inside', correct: false }] },
-      { type: 'true-false', question: 'The treble clef is also called the G clef.', correctAnswer: 'true' },
+      { type: 'multiple-choice', question: 'On the staff, notes go from ___ to ___', options: [{ text: 'Bottom to top = low to high', correct: true }, { text: 'Left to right', correct: false }, { text: 'Top to bottom = low to high', correct: false }, { text: 'Outside to inside', correct: false }], concept: CONCEPTS.MUSIC_STAFF },
+      { type: 'true-false', question: 'The treble clef is also called the G clef.', correctAnswer: 'true', concept: CONCEPTS.MUSIC_STAFF },
     ],
     'r-1': [
-      { type: 'rhythm-tap', question: 'Tap 4 quarter notes (1 beat each):', items: ['1', '2', '3', '4'] },
-      { type: 'multiple-choice', question: 'How many beats does a quarter note get?', options: [{ text: '1 beat', correct: true }, { text: '2 beats', correct: false }, { text: '4 beats', correct: false }, { text: '1/2 beat', correct: false }] },
+      { type: 'rhythm-tap', question: 'Tap 4 quarter notes (1 beat each):', items: ['1', '2', '3', '4'], concept: CONCEPTS.RHYTHM },
+      { type: 'multiple-choice', question: 'How many beats does a quarter note get?', options: [{ text: '1 beat', correct: true }, { text: '2 beats', correct: false }, { text: '4 beats', correct: false }, { text: '1/2 beat', correct: false }], concept: CONCEPTS.NOTE_VALUES },
     ],
     'r-4': [
-      { type: 'rhythm-tap', question: 'Tap 8 eighth notes (2 per beat):', items: ['1-and', '2-and', '3-and', '4-and'] },
-      { type: 'multiple-choice', question: 'How many eighth notes fit in one beat?', options: [{ text: '2', correct: true }, { text: '1', correct: false }, { text: '3', correct: false }, { text: '4', correct: false }] },
+      { type: 'rhythm-tap', question: 'Tap 8 eighth notes (2 per beat):', items: ['1-and', '2-and', '3-and', '4-and'], concept: CONCEPTS.RHYTHM },
+      { type: 'multiple-choice', question: 'How many eighth notes fit in one beat?', options: [{ text: '2', correct: true }, { text: '1', correct: false }, { text: '3', correct: false }, { text: '4', correct: false }], concept: CONCEPTS.NOTE_VALUES },
     ],
     't-1': [
-      { type: 'multiple-choice', question: 'What does 4/4 time mean?', options: [{ text: '4 beats per measure, quarter = 1 beat', correct: true }, { text: '4 notes per song', correct: false }, { text: 'Play 4 times fast', correct: false }, { text: '4 instruments', correct: false }] },
-      { type: 'true-false', question: '3/4 time has 3 beats per measure.', correctAnswer: 'true' },
+      { type: 'multiple-choice', question: 'What does 4/4 time mean?', options: [{ text: '4 beats per measure, quarter = 1 beat', correct: true }, { text: '4 notes per song', correct: false }, { text: 'Play 4 times fast', correct: false }, { text: '4 instruments', correct: false }], concept: CONCEPTS.TIME_SIGNATURES },
+      { type: 'true-false', question: '3/4 time has 3 beats per measure.', correctAnswer: 'true', concept: CONCEPTS.TIME_SIGNATURES },
     ],
     't-3': [
-      { type: 'multiple-choice', question: 'What does "piano" (p) mean?', options: [{ text: 'Soft', correct: true }, { text: 'Loud', correct: false }, { text: 'Fast', correct: false }, { text: 'Slow', correct: false }] },
-      { type: 'fill-order', question: 'Order dynamics from softest to loudest:', items: ['pp', 'p', 'mp', 'mf', 'f', 'ff'], correctOrder: ['pp', 'p', 'mp', 'mf', 'f', 'ff'] },
+      { type: 'multiple-choice', question: 'What does "piano" (p) mean?', options: [{ text: 'Soft', correct: true }, { text: 'Loud', correct: false }, { text: 'Fast', correct: false }, { text: 'Slow', correct: false }], concept: CONCEPTS.DYNAMICS },
+      { type: 'fill-order', question: 'Order dynamics from softest to loudest:', items: ['pp', 'p', 'mp', 'mf', 'f', 'ff'], correctOrder: ['pp', 'p', 'mp', 'mf', 'f', 'ff'], concept: CONCEPTS.DYNAMICS },
     ],
   };
 
@@ -472,7 +478,7 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 }
 
 export default function LessonView() {
-  const { user, currentLessonId, setCurrentView, completeLesson, setCurrentLesson } = useStore();
+  const { user, currentLessonId, setCurrentView, completeLesson, setCurrentLesson, recordCorrectAnswer, recordIncorrectAnswer } = useStore();
   const [step, setStep] = useState<LessonStep>('intro');
   const [noSax, setNoSax] = useState(false);
   const [exerciseIdx, setExerciseIdx] = useState(0);
@@ -490,7 +496,18 @@ export default function LessonView() {
   const currentExercise = exercises[exerciseIdx];
 
   const handleExerciseComplete = (correct: boolean) => {
-    if (correct) setCorrectCount(c => c + 1);
+    if (correct) {
+      setCorrectCount(c => c + 1);
+      // Record correct answer for competency tracking
+      if (currentExercise.concept) {
+        recordCorrectAnswer(currentExercise.concept);
+      }
+    } else {
+      // Record incorrect answer for competency tracking
+      if (currentExercise.concept) {
+        recordIncorrectAnswer(currentExercise.concept);
+      }
+    }
     
     setTimeout(() => {
       if (exerciseIdx < totalExercises - 1) {

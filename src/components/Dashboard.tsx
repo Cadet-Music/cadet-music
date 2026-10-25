@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons, getLessonStatus, STICKER_INFO } from '../data';
+import {
+  calculateOverallAccuracy,
+  getMasteredConcepts,
+  getStrongestTopic,
+  getWeakestTopic,
+  getRecommendedTraining,
+  CONCEPT_NAMES,
+} from '../competency';
 
 // SVG Icons
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -318,6 +326,85 @@ export default function Dashboard() {
             )}
           </div>
         </motion.div>
+
+        {/* Music Readiness Report */}
+        {Object.keys(user.progress.conceptMastery).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="card mb-8 cursor-pointer hover:scale-[1.02] transition-transform"
+            onClick={() => setCurrentView('analytics')}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-sm text-[#1a2332] dark:text-white">Music Readiness Report</h2>
+              <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">View Details →</span>
+            </div>
+
+            {/* Overall Accuracy */}
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex-1">
+                <div className="text-3xl font-bold text-[#c9a84c]">
+                  {calculateOverallAccuracy(user.progress.conceptMastery)}%
+                </div>
+                <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Overall Accuracy</div>
+              </div>
+              <div className="flex-1 text-center">
+                <div className="text-2xl font-bold text-[#3a8a5c]">
+                  {getMasteredConcepts(user.progress.conceptMastery).length}
+                </div>
+                <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Mastered</div>
+              </div>
+            </div>
+
+            {/* Strongest and Weakest */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {getStrongestTopic(user.progress.conceptMastery) && (
+                <div className="bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10 rounded-lg p-3">
+                  <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-1">Strongest</div>
+                  <div className="text-sm font-semibold text-[#1a2332] dark:text-white truncate">
+                    {CONCEPT_NAMES[getStrongestTopic(user.progress.conceptMastery)!]}
+                  </div>
+                  <div className="text-xs text-[#3a8a5c] font-bold">
+                    {user.progress.conceptMastery[getStrongestTopic(user.progress.conceptMastery)!]?.masteryScore}%
+                  </div>
+                </div>
+              )}
+              {getWeakestTopic(user.progress.conceptMastery) && (
+                <div className="bg-[#c44536]/5 dark:bg-[#c44536]/10 rounded-lg p-3">
+                  <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-1">Needs Work</div>
+                  <div className="text-sm font-semibold text-[#1a2332] dark:text-white truncate">
+                    {CONCEPT_NAMES[getWeakestTopic(user.progress.conceptMastery)!]}
+                  </div>
+                  <div className="text-xs text-[#c44536] font-bold">
+                    {user.progress.conceptMastery[getWeakestTopic(user.progress.conceptMastery)!]?.masteryScore}%
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Recommendation */}
+            {(() => {
+              const rec = getRecommendedTraining(user.progress.conceptMastery);
+              if (rec.concept) {
+                return (
+                  <div className="bg-gradient-to-r from-[#c9a84c]/10 to-[#a68a3a]/10 dark:from-[#c9a84c]/20 dark:to-[#a68a3a]/20 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">💡</span>
+                      <div className="flex-1">
+                        <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Recommended</div>
+                        <div className="text-sm font-semibold text-[#1a2332] dark:text-white">
+                          {rec.reason}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </motion.div>
+        )}
 
         {/* Learning Path */}
         <div className="relative">

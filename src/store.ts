@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CadetLevel, LEVEL_INFO } from './data';
+import { ConceptStats, Concept, recordCorrectAnswer, recordIncorrectAnswer, initializeConceptMastery } from './competency';
 
 export type Instrument = 'alto' | 'tenor' | 'baritone' | 'soprano';
 export type LessonStatus = 'locked' | 'available' | 'completed';
@@ -27,6 +28,7 @@ export interface UserProgress {
   accuracy: number;
   stickers: string[];
   goalsCompleted: number;
+  conceptMastery: Record<string, ConceptStats>;
 }
 
 export interface BannerSticker {
@@ -54,7 +56,7 @@ export interface User {
   bannerStickers: BannerSticker[];
 }
 
-export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner';
+export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics';
 
 interface AppState {
   user: User | null;
@@ -87,6 +89,10 @@ interface AppState {
   removeBannerSticker: (id: string) => void;
   updateBannerSticker: (id: string, updates: Partial<BannerSticker>) => void;
   resetAll: () => void;
+  
+  // Competency tracking
+  recordCorrectAnswer: (concept: Concept) => void;
+  recordIncorrectAnswer: (concept: Concept) => void;
 }
 
 const BANNER_BGS = [
@@ -126,6 +132,7 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
     accuracy: 0,
     stickers: [],
     goalsCompleted: 0,
+    conceptMastery: {},
   },
   activeSongs: [],
   theoryLevel: 'BASIC',
@@ -301,6 +308,41 @@ export const useStore = create<AppState>()(
         set({ user: { ...user, bannerStickers: user.bannerStickers.map(s => s.id === id ? { ...s, ...updates } : s) } });
       },
       
+      // Competency tracking actions
+      recordCorrectAnswer: (concept) => {
+        const user = get().user;
+        if (!user) return;
+        
+        const updatedMastery = recordCorrectAnswer(user.progress.conceptMastery, concept);
+        
+        set({
+          user: {
+            ...user,
+            progress: {
+              ...user.progress,
+              conceptMastery: updatedMastery,
+            },
+          },
+        });
+      },
+      
+      recordIncorrectAnswer: (concept) => {
+        const user = get().user;
+        if (!user) return;
+        
+        const updatedMastery = recordIncorrectAnswer(user.progress.conceptMastery, concept);
+        
+        set({
+          user: {
+            ...user,
+            progress: {
+              ...user.progress,
+              conceptMastery: updatedMastery,
+            },
+          },
+        });
+      },
+      
       resetAll: () => {
         localStorage.clear();
         set({ user: null, currentView: 'login', darkMode: false });
@@ -309,6 +351,16 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'cadet-music-storage',
+      version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Migration from version 0 to 1: Add conceptMastery
+        if (version === 0 && persistedState.user?.progress) {
+          persistedState.user.progress.conceptMastery = initializeConceptMastery(
+            persistedState.user.progress.conceptMastery
+          );
+        }
+        return persistedState;
+      },
     }
   )
 );

@@ -10,11 +10,12 @@
 7. [Lesson System](#lesson-system)
 8. [Song Selection](#song-selection)
 9. [Gamification](#gamification)
-10. [Admin Panel](#admin-panel)
-11. [Security Features](#security-features)
-12. [UI/UX Features](#uiux-features)
-13. [Backend Migration Guide](#backend-migration-guide)
-14. [Technical Details](#technical-details)
+10. [Competency Tracking & Adaptive Learning](#competency-tracking--adaptive-learning)
+11. [Admin Panel](#admin-panel)
+12. [Security Features](#security-features)
+13. [UI/UX Features](#uiux-features)
+14. [Backend Migration Guide](#backend-migration-guide)
+15. [Technical Details](#technical-details)
 
 ---
 
@@ -27,6 +28,9 @@
 - Official Canadian Cadet Organization standards compliance
 - Interactive lessons with theory and playing components
 - Song selection from official prepared music lists
+- **Competency tracking with 21 music concepts**
+- **Personalized learning recommendations**
+- **Music Readiness Report with analytics**
 - Gamification with XP, streaks, and achievements
 - Customizable banners with sticker placement
 - Secret admin panel with password protection
@@ -44,10 +48,12 @@ src/
 ├── store.ts                   # Zustand state management
 ├── data.ts                    # Curriculum data and standards
 ├── theory.ts                  # Theory curriculum (A-CR-CCP-166/PT-004)
+├── competency.ts              # Competency tracking & adaptive learning
 ├── index.css                  # Global styles
 ├── components/
 │   ├── Login.tsx              # Authentication (sign in/sign up)
 │   ├── Onboarding.tsx         # Placement assessment
+│   ├── Analytics.tsx          # Music Readiness Report & analytics
 │   ├── Dashboard.tsx          # Main learning path view
 │   ├── LessonView.tsx         # Lesson content and exercises
 │   ├── Songs.tsx              # Song selection interface
@@ -476,6 +482,360 @@ interface Lesson {
 - Shows XP, level, streak
 - Current user highlighted
 - Animated transitions
+
+---
+
+## Competency Tracking & Adaptive Learning
+
+### Overview
+The platform includes a comprehensive competency tracking system that monitors individual concept mastery, identifies weak areas, and provides personalized learning recommendations. This creates an adaptive learning experience that feels like having a personal instructor.
+
+### Concept Catalog
+The system tracks 21 standardized music concepts:
+
+**Basic Theory:**
+- Note Values
+- Rhythm
+- Time Signatures
+- Compound Time
+- Dynamics
+- Articulations
+
+**Intermediate Theory:**
+- Accidentals
+- Key Signatures
+- Scales
+- Intervals
+- Transposition
+- Tempo Terms
+
+**Foundational:**
+- Music Staff
+- Note Names
+
+**Performance:**
+- Saxophone Assembly
+- Maintenance
+- Intonation
+- Sight Reading
+- Aural Skills
+- Band Drill
+- Prepared Music
+
+### Data Model
+
+#### ConceptStats Interface
+```typescript
+interface ConceptStats {
+  correct: number;        // Number of correct answers
+  incorrect: number;      // Number of incorrect answers
+  attempts: number;       // Total attempts (correct + incorrect)
+  lastReviewed: string;   // ISO date string of last attempt
+  masteryScore: number;   // 0-100 calculated score
+}
+```
+
+#### Mastery Score Calculation
+```typescript
+masteryScore = (correct / attempts) * 100
+```
+
+#### Mastery Levels
+- **0-39**: Learning (Red)
+- **40-69**: Developing (Orange)
+- **70-89**: Proficient (Gold)
+- **90-100**: Mastered (Green)
+
+### Tracking System
+
+#### Recording Answers
+Every exercise in the lesson system is mapped to a concept. When a user completes an exercise:
+
+**Correct Answer:**
+- Increments `correct` count
+- Increments `attempts` count
+- Updates `lastReviewed` timestamp
+- Recalculates `masteryScore`
+- Persists immediately to localStorage
+
+**Incorrect Answer:**
+- Increments `incorrect` count
+- Increments `attempts` count
+- Updates `lastReviewed` timestamp
+- Recalculates `masteryScore`
+- Persists immediately to localStorage
+
+#### Exercise-to-Concept Mapping
+Each exercise in `LessonView.tsx` includes a `concept` field that maps to one of the 21 tracked concepts. For example:
+```typescript
+{
+  type: 'multiple-choice',
+  question: 'How many beats does a quarter note get?',
+  options: [...],
+  concept: CONCEPTS.NOTE_VALUES  // Maps to noteValues concept
+}
+```
+
+### Analytics Dashboard
+
+#### Music Readiness Report Card
+Displayed on the main Dashboard when the user has attempted at least one concept:
+
+**Shows:**
+- Overall Accuracy (percentage)
+- Number of Mastered Concepts
+- Strongest Topic (highest mastery score)
+- Weakest Topic (lowest mastery score with 5+ attempts)
+- Personalized Recommendation
+
+**Interactive:**
+- Clicking the card navigates to the full Analytics page
+
+#### Full Analytics Page
+Accessible via the Music Readiness Report card or direct navigation.
+
+**Displays:**
+1. **Overall Performance**
+   - Overall Accuracy %
+   - Total Questions Answered
+   - Correct Answers
+   - Incorrect Answers
+
+2. **Recommended Next Training**
+   - Personalized recommendation based on weak topics
+   - Shows concept name and reason for recommendation
+
+3. **Concept Mastery Overview**
+   - Number of Mastered Concepts (90%+)
+   - Number of Developing Concepts (40-89%)
+   - Strongest Topic with mastery score
+   - Weakest Topic with mastery score
+
+4. **Topics Needing Attention**
+   - Top 3 weak topics (minimum 5 attempts)
+   - Sorted by mastery score (ascending)
+   - Shows attempts, correct count, and mastery %
+
+5. **All Concepts Breakdown**
+   - Complete list of all attempted concepts
+   - Sorted by mastery score (highest first)
+   - Shows attempts, correct/incorrect counts
+   - Visual progress bar for each concept
+   - Color-coded mastery level badges
+
+### Weak Topic Detection
+
+#### Algorithm
+```typescript
+function getWeakTopics(conceptMastery): Concept[] {
+  const MIN_ATTEMPTS = 5;
+  
+  return Object.entries(conceptMastery)
+    .filter(([_, stats]) => stats.attempts >= MIN_ATTEMPTS)
+    .sort((a, b) => {
+      // Primary: mastery score ascending (weakest first)
+      if (a[1].masteryScore !== b[1].masteryScore) {
+        return a[1].masteryScore - b[1].masteryScore;
+      }
+      // Secondary: attempts descending (more data = more reliable)
+      return b[1].attempts - a[1].attempts;
+    })
+    .slice(0, 3)
+    .map(([concept]) => concept);
+}
+```
+
+#### Why 5 Attempts Minimum?
+- Prevents premature labeling of concepts as "weak"
+- Ensures statistical significance
+- Avoids discouraging users based on 1-2 mistakes
+
+### Personalized Recommendations
+
+#### Recommendation Engine
+```typescript
+function getRecommendedTraining(conceptMastery, currentLessonId?) {
+  // Priority 1: Weakest topic (if exists)
+  const weakTopics = getWeakTopics(conceptMastery);
+  if (weakTopics.length > 0) {
+    return {
+      concept: weakTopics[0],
+      reason: `Review ${CONCEPT_NAMES[weakTopics[0]]} (${masteryScore}% mastery)`
+    };
+  }
+
+  // Priority 2: Least recently reviewed (if > 3 days)
+  const leastRecent = getLeastRecentlyReviewed(conceptMastery);
+  if (leastRecent && daysSinceReview > 3) {
+    return {
+      concept: leastRecent,
+      reason: `Practice ${CONCEPT_NAMES[leastRecent]} (not reviewed in ${days} days)`
+    };
+  }
+
+  // Priority 3: Lowest mastery score (if any attempts)
+  const lowest = getAllConceptStats().sort(byMastery)[0];
+  if (lowest && lowest.attempts > 0) {
+    return {
+      concept: lowest.concept,
+      reason: `Improve ${CONCEPT_NAMES[lowest.concept]} (${masteryScore}% mastery)`
+    };
+  }
+
+  // Priority 4: Current curriculum lesson (fallback)
+  if (currentLessonId) {
+    return { concept: null, reason: 'Continue with current lesson' };
+  }
+
+  return { concept: null, reason: 'Start with Basic lessons' };
+}
+```
+
+#### Recommendation Priority
+1. **Weakest Topic**: Focus on areas needing most improvement
+2. **Least Recently Reviewed**: Spaced repetition for retention
+3. **Lowest Mastery**: General improvement areas
+4. **Current Lesson**: Continue curriculum progression
+
+### Competency Badges Framework
+
+#### Badge Structure
+```typescript
+interface CompetencyBadge {
+  id: string;
+  name: string;
+  description: string;
+  concept: Concept;
+  requiredMastery: number;  // 0-100
+  requiredAttempts: number;
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
+}
+```
+
+#### Example Badges
+- **Rhythm Specialist Bronze**: 70% mastery, 20 attempts
+- **Rhythm Specialist Silver**: 85% mastery, 50 attempts
+- **Rhythm Specialist Gold**: 95% mastery, 100 attempts
+- **Key Signature Expert**: Multiple tiers
+- **Interval Master**: Multiple tiers
+- **Sight Reading Specialist**: Multiple tiers
+- **Aural Skills**: Bronze/Silver/Gold tiers
+
+#### Badge Checking
+```typescript
+function hasEarnedBadge(conceptMastery, badge): boolean {
+  const stats = conceptMastery[badge.concept];
+  if (!stats) return false;
+  
+  return (
+    stats.masteryScore >= badge.requiredMastery &&
+    stats.attempts >= badge.requiredAttempts
+  );
+}
+```
+
+#### Future Implementation
+- Badge UI not yet created
+- Framework ready for badge display
+- Can show earned badges on profile
+- Can show "close to earning" badges for motivation
+
+### Backward Compatibility
+
+#### Migration for Existing Users
+```typescript
+// In store.ts persist middleware
+migrate: (persistedState, version) => {
+  if (version === 0 && persistedState.user?.progress) {
+    // Initialize conceptMastery for existing users
+    persistedState.user.progress.conceptMastery = 
+      initializeConceptMastery(persistedState.user.progress.conceptMastery);
+  }
+  return persistedState;
+}
+```
+
+#### Preserved Features
+- ✅ Existing XP system unchanged
+- ✅ Existing lesson progression unchanged
+- ✅ Existing leaderboard unchanged
+- ✅ Existing banner system unchanged
+- ✅ Existing authentication unchanged
+- ✅ Existing streak system unchanged
+- ✅ All existing achievements work
+
+### Technical Implementation
+
+#### Files Created/Modified
+
+**New Files:**
+- `src/competency.ts` - Core tracking logic and utilities
+- `src/components/Analytics.tsx` - Full analytics dashboard
+
+**Modified Files:**
+- `src/store.ts` - Added conceptMastery to UserProgress, added tracking actions
+- `src/components/LessonView.tsx` - Added concept mapping to exercises, records answers
+- `src/components/Dashboard.tsx` - Added Music Readiness Report card
+- `src/App.tsx` - Added analytics route
+
+#### Key Functions
+
+**Tracking:**
+- `recordCorrectAnswer(conceptMastery, concept)` - Records correct answer
+- `recordIncorrectAnswer(conceptMastery, concept)` - Records incorrect answer
+- `calculateMasteryScore(stats)` - Calculates mastery percentage
+
+**Analytics:**
+- `calculateOverallAccuracy(conceptMastery)` - Overall accuracy %
+- `getMasteredConcepts(conceptMastery)` - Concepts with 90%+ mastery
+- `getDevelopingConcepts(conceptMastery)` - Concepts with 40-89% mastery
+- `getStrongestTopic(conceptMastery)` - Highest mastery concept
+- `getWeakestTopic(conceptMastery)` - Lowest mastery concept (5+ attempts)
+- `getWeakTopics(conceptMastery)` - Top 3 weakest concepts
+
+**Recommendations:**
+- `getRecommendedTraining(conceptMastery, currentLessonId)` - Personalized recommendation
+- `getLeastRecentlyReviewed(conceptMastery)` - Oldest reviewed concept
+
+**Badges:**
+- `hasEarnedBadge(conceptMastery, badge)` - Check if badge earned
+- `getEarnedBadges(conceptMastery)` - Get all earned badges
+- `getCloseToBadges(conceptMastery)` - Get badges within 30% of completion
+
+### Future Enhancements
+
+#### Adaptive Learning
+- Automatically suggest review lessons for weak topics
+- Adjust lesson difficulty based on mastery
+- Create personalized learning paths
+- Spaced repetition scheduling
+
+#### Advanced Analytics
+- Learning velocity (mastery improvement over time)
+- Time spent per concept
+- Best/worst times of day for learning
+- Comparison with curriculum standards
+
+#### Social Features
+- Share mastery achievements
+- Compare progress with peers (anonymized)
+- Study groups for weak topics
+- Mentor matching based on strengths
+
+#### Instrument-Specific Tracking
+- Separate mastery tracking per instrument
+- Instrument-specific concepts (e.g., embouchure for wind instruments)
+- Transposition mastery for different instruments
+
+### Benefits
+
+1. **Personalized Learning**: Each user gets recommendations based on their unique weaknesses
+2. **Data-Driven Insights**: Clear visibility into what needs work
+3. **Motivation**: Visual progress tracking encourages continued practice
+4. **Efficiency**: Focus practice time on areas that need improvement
+5. **Confidence**: See mastery grow over time
+6. **Instructor Support**: Clear data for instructors to guide students
+7. **Adaptive Future**: Foundation for AI-driven personalized learning paths
 
 ---
 

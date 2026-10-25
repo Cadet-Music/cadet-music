@@ -9,6 +9,7 @@ import Leaderboard from './components/Leaderboard';
 import AdminPanel from './components/AdminPanel';
 import Songs from './components/Songs';
 import Banner from './components/Banner';
+import Analytics from './components/Analytics';
 import KonamiListener from './components/KonamiListener';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
@@ -99,6 +100,8 @@ function App() {
       return <><Leaderboard /><KonamiListener /><SecretCornerListener /></>;
     case 'banner':
       return <><Banner /><KonamiListener /><SecretCornerListener /></>;
+    case 'analytics':
+      return <><Analytics /><KonamiListener /><SecretCornerListener /></>;
     default:
       return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
   }
