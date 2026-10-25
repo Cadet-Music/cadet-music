@@ -13,12 +13,15 @@ import KonamiListener from './components/KonamiListener';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
 const CORNER_THRESHOLD = 120;
+const ADMIN_RESET_PASSWORD = 'password';
 
 function SecretCornerListener() {
-  const { unlockAdmin, adminUnlocked, resetAll, setCurrentView } = useStore();
+  const { unlockAdmin, adminUnlocked, resetAll } = useStore();
   const [sequence, setSequence] = useState<number[]>([]);
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const [resetPassword, setResetPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const CORNER_SEQUENCE = [0, 1, 2, 3];
 
   const getCorner = useCallback((x: number, y: number): number | null => {
@@ -41,7 +44,7 @@ function SecretCornerListener() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       // If reset dialog is showing, ignore corner clicks
-      if (showResetConfirm) return;
+      if (showResetDialog) return;
       
       const corner = getCorner(e.clientX, e.clientY);
       if (corner === null) {
@@ -56,8 +59,10 @@ function SecretCornerListener() {
         
         if (newSequence.length === CORNER_SEQUENCE.length) {
           if (adminUnlocked) {
-            // Already in admin mode, show reset option
-            setShowResetConfirm(true);
+            // Already in admin mode, show password-protected reset
+            setShowResetDialog(true);
+            setResetPassword('');
+            setPasswordError('');
           } else {
             // First time, unlock admin
             unlockAdmin();
@@ -71,36 +76,61 @@ function SecretCornerListener() {
 
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
-  }, [sequence, getCorner, unlockAdmin, adminUnlocked, showResetConfirm]);
+  }, [sequence, getCorner, unlockAdmin, adminUnlocked, showResetDialog]);
 
   const handleReset = () => {
+    if (resetPassword !== ADMIN_RESET_PASSWORD) {
+      setPasswordError('Incorrect password');
+      return;
+    }
     resetAll();
-    setShowResetConfirm(false);
+    setShowResetDialog(false);
+    setResetPassword('');
+    setPasswordError('');
   };
 
   const handleCancelReset = () => {
-    setShowResetConfirm(false);
+    setShowResetDialog(false);
+    setResetPassword('');
+    setPasswordError('');
   };
 
   return (
     <>
-      {showResetConfirm && (
+      {showResetDialog && (
         <div className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#1a2332] rounded-xl p-6 max-w-md w-full border-2 border-[#c44536]">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-[#c44536]/10 flex items-center justify-center">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c44536" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                  <line x1="12" y1="9" x2="12" y2="13" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[#1a2332] dark:text-white">Reset All Data?</h3>
-                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">This action cannot be undone</p>
+                <h3 className="text-lg font-bold text-[#1a2332] dark:text-white">Admin Reset</h3>
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">Enter password to confirm</p>
               </div>
             </div>
             
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-2">
+                Admin Password
+              </label>
+              <input
+                type="password"
+                value={resetPassword}
+                onChange={(e) => { setResetPassword(e.target.value); setPasswordError(''); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleReset(); }}
+                placeholder="Enter admin password"
+                className="input-field"
+                autoFocus
+              />
+              {passwordError && (
+                <p className="text-sm text-[#c44536] mt-2 font-medium">{passwordError}</p>
+              )}
+            </div>
+
             <div className="bg-[#c44536]/5 border border-[#c44536]/20 rounded-lg p-3 mb-4">
               <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
                 <span className="font-semibold text-[#c44536]">Warning:</span> This will delete:
