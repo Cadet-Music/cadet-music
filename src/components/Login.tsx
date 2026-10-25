@@ -286,14 +286,14 @@ export default function Login() {
                         className="input-field"
                       >
                         <option value="">Select rank</option>
-                        <option value="AC">AC</option>
-                        <option value="LAC">LAC</option>
-                        <option value="CPL">CPL</option>
-                        <option value="FCPL">FCPL</option>
-                        <option value="SGT">SGT</option>
-                        <option value="FSGT">FSGT</option>
-                        <option value="WO2">WO2</option>
-                        <option value="WO1">WO1</option>
+                        <option value="Air Cadet">Air Cadet</option>
+                        <option value="Leading Air Cadet">Leading Air Cadet</option>
+                        <option value="Corporal">Corporal</option>
+                        <option value="Flight Corporal">Flight Corporal</option>
+                        <option value="Sergeant">Sergeant</option>
+                        <option value="Flight Sergeant">Flight Sergeant</option>
+                        <option value="Warrant Officer 2nd Class">Warrant Officer 2nd Class</option>
+                        <option value="Warrant Officer 1st Class">Warrant Officer 1st Class</option>
                       </select>
                     </div>
                     <div>
