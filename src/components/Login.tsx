@@ -66,8 +66,8 @@ export default function Login() {
     setError('');
 
     if (loginMethod === 'name') {
-      if (rank.trim().length < 1) {
-        setError('Please enter your rank');
+      if (!rank) {
+        setError('Please select your rank');
         return;
       }
       if (lastName.trim().length < 1) {
@@ -83,7 +83,7 @@ export default function Login() {
         return;
       }
 
-      const identifier = `${rank.trim()}.${lastName.trim()}`.toLowerCase();
+      const identifier = `${rank}.${lastName.trim()}`.toLowerCase();
       
       if (isSignUp) {
         // Check if user already exists
@@ -93,7 +93,7 @@ export default function Login() {
           return;
         }
         // Store password for new user
-        const displayName = `${rank.trim()} ${lastName.trim()}`;
+        const displayName = `${rank} ${lastName.trim()}`;
         storePassword(identifier, password, displayName);
       } else {
         // Validate password for existing user
@@ -280,13 +280,21 @@ export default function Login() {
                       <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
                         Rank
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={rank}
                         onChange={(e) => { setRank(e.target.value); setError(''); }}
-                        placeholder="Cpl"
                         className="input-field"
-                      />
+                      >
+                        <option value="">Select rank</option>
+                        <option value="AC">AC</option>
+                        <option value="LAC">LAC</option>
+                        <option value="CPL">CPL</option>
+                        <option value="FCPL">FCPL</option>
+                        <option value="SGT">SGT</option>
+                        <option value="FSGT">FSGT</option>
+                        <option value="WO2">WO2</option>
+                        <option value="WO1">WO1</option>
+                      </select>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
