@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
-import { BASIC_SONGS, LEVEL_A_SONGS, LEVEL_B_SONGS } from '../data';
+import { getSongsForLevel } from '../data';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -37,38 +37,19 @@ export default function Songs() {
 
   if (!user) return null;
 
-  const requiredSongs = user.instrumentLevel === 0 ? 2 : 2; // 1 from List A + 1 from List B, or 2 basic
-  const songLists = user.instrumentLevel === 0 
-    ? [{ title: 'Basic Songs', songs: BASIC_SONGS, required: 2 }]
-    : [
-        { title: 'List A', songs: LEVEL_A_SONGS, required: 1 },
-        { title: 'List B', songs: LEVEL_B_SONGS, required: 1 },
-      ];
+  const songs = getSongsForLevel(user.instrumentLevel);
+  const requiredSongs = 2; // 1 from List A + 1 from List B
 
-  const toggleSong = (songId: string, listIndex: number) => {
+  const toggleSong = (songId: string) => {
     const current = user.activeSongs;
-    const list = songLists[listIndex];
-    const songsInList = list.songs.map(s => s.id);
-    const selectedInList = current.filter(s => songsInList.includes(s));
-    
     if (current.includes(songId)) {
-      // Remove
       setActiveSongs(current.filter(s => s !== songId));
-    } else {
-      // Check if we can add (respecting per-list limit)
-      if (selectedInList.length >= list.required) {
-        // Replace the existing one in this list
-        const newSongs = current.filter(s => !songsInList.includes(s));
-        setActiveSongs([...newSongs, songId]);
-      } else {
-        // Add
-        setActiveSongs([...current, songId]);
-      }
+    } else if (current.length < requiredSongs) {
+      setActiveSongs([...current, songId]);
     }
   };
 
-  const totalRequired = songLists.reduce((sum, l) => sum + l.required, 0);
-  const canContinue = user.activeSongs.length >= totalRequired;
+  const canContinue = user.activeSongs.length >= requiredSongs;
 
   const handleContinue = () => {
     if (!canContinue) {
@@ -103,7 +84,7 @@ export default function Songs() {
                 ? 'bg-[#3a8a5c]/10 text-[#3a8a5c]' 
                 : 'bg-[#c44536]/10 text-[#c44536]'
             }`}>
-              {user.activeSongs.length}/{totalRequired} selected
+              {user.activeSongs.length}/{requiredSongs} selected
             </span>
           </div>
         </div>
@@ -119,57 +100,102 @@ export default function Songs() {
           >
             <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
               <span className="font-semibold text-[#1a2332] dark:text-white">Required: </span>
-              {user.instrumentLevel === 0 
-                ? 'Choose 2 basic songs to practice'
-                : 'Choose 1 song from List A and 1 from List B'}
+              Choose 1 song from List A and 1 from List B for Level {user.instrumentLevel}
             </p>
           </motion.div>
         )}
 
-        {songLists.map((list, listIdx) => (
-          <div key={list.title} className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide">
-                {list.title}
-              </h3>
-              <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
-                {user.activeSongs.filter(s => list.songs.map(ls => ls.id).includes(s)).length}/{list.required} selected
-              </span>
-            </div>
-            <div className="grid grid-cols-1 gap-2">
-              {list.songs.map(song => {
-                const isSelected = user.activeSongs.includes(song.id);
-                
-                return (
-                  <motion.button
-                    key={song.id}
-                    onClick={() => toggleSong(song.id, listIdx)}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    className={`card flex items-center gap-3 text-left py-3 px-4 transition-all ${
-                      isSelected ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
-                    }`}
-                  >
-                    <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                      isSelected 
-                        ? 'bg-[#c9a84c] text-[#1a2332]' 
-                        : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
-                    }`}>
-                      <MusicIcon />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
-                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.composer}</p>
-                    </div>
-                    {isSelected && (
-                      <span className="text-[#c9a84c]"><CheckIcon /></span>
-                    )}
-                  </motion.button>
-                );
-              })}
-            </div>
+        {/* List A */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide">
+              List A
+            </h3>
+            <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
+              {user.activeSongs.filter(s => songs.listA.map(ls => ls.id).includes(s)).length}/1 selected
+            </span>
           </div>
-        ))}
+          <div className="grid grid-cols-1 gap-2">
+            {songs.listA.map(song => {
+              const isSelected = user.activeSongs.includes(song.id);
+              
+              return (
+                <motion.button
+                  key={song.id}
+                  onClick={() => toggleSong(song.id)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className={`card flex items-center gap-3 text-left py-3 px-4 transition-all ${
+                    isSelected ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
+                  }`}
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                    isSelected 
+                      ? 'bg-[#c9a84c] text-[#1a2332]' 
+                      : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                  }`}>
+                    <MusicIcon />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
+                    {song.rcmEquivalent && (
+                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.rcmEquivalent}</p>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <span className="text-[#c9a84c]"><CheckIcon /></span>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* List B */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide">
+              List B
+            </h3>
+            <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
+              {user.activeSongs.filter(s => songs.listB.map(ls => ls.id).includes(s)).length}/1 selected
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-2">
+            {songs.listB.map(song => {
+              const isSelected = user.activeSongs.includes(song.id);
+              
+              return (
+                <motion.button
+                  key={song.id}
+                  onClick={() => toggleSong(song.id)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className={`card flex items-center gap-3 text-left py-3 px-4 transition-all ${
+                    isSelected ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
+                  }`}
+                >
+                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                    isSelected 
+                      ? 'bg-[#c9a84c] text-[#1a2332]' 
+                      : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                  }`}>
+                    <MusicIcon />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
+                    {song.rcmEquivalent && (
+                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.rcmEquivalent}</p>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <span className="text-[#c9a84c]"><CheckIcon /></span>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Continue button */}
         <motion.div
@@ -213,10 +239,7 @@ export default function Songs() {
                   <h3 className="font-semibold text-[#1a2332] dark:text-white">Songs Required</h3>
                 </div>
                 <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-5">
-                  You must select {totalRequired} song{totalRequired > 1 ? 's' : ''} before continuing. 
-                  {user.instrumentLevel === 0 
-                    ? ' Choose 2 basic songs to practice.'
-                    : ' Pick 1 from List A and 1 from List B.'}
+                  You must select 2 songs before continuing. Pick 1 from List A and 1 from List B.
                 </p>
                 <button
                   onClick={() => setShowWarning(false)}

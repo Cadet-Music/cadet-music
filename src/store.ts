@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { CadetLevel, LEVEL_INFO } from './data';
 
 export type Instrument = 'alto' | 'tenor' | 'baritone' | 'soprano';
 export type LessonStatus = 'locked' | 'available' | 'completed';
@@ -45,8 +46,8 @@ export interface User {
   instrument: Instrument;
   progress: UserProgress;
   activeSongs: string[];
-  theoryLevel: number;
-  instrumentLevel: number;
+  theoryLevel: CadetLevel;
+  instrumentLevel: CadetLevel;
   onboarded: boolean;
   songsSelected: boolean;
   bannerBg: string;
@@ -77,8 +78,8 @@ interface AppState {
   setActiveSongs: (songs: string[]) => void;
   setSongsSelected: (val: boolean) => void;
   setOnboarded: (val: boolean) => void;
-  setTheoryLevel: (level: number) => void;
-  setInstrumentLevel: (level: number) => void;
+  setTheoryLevel: (level: CadetLevel) => void;
+  setInstrumentLevel: (level: CadetLevel) => void;
   addSticker: (sticker: string) => void;
   updateStreak: () => void;
   setBannerBg: (bg: string) => void;
@@ -127,8 +128,8 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
     goalsCompleted: 0,
   },
   activeSongs: [],
-  theoryLevel: 0,
-  instrumentLevel: 0,
+  theoryLevel: 'BASIC',
+  instrumentLevel: 'BASIC',
   onboarded: false,
   songsSelected: false,
   bannerBg: BANNER_BGS[0],
@@ -189,7 +190,7 @@ export const useStore = create<AppState>()(
         if (newXp >= 1000 && !newStickers.includes('xp-1000')) newStickers.push('xp-1000');
         if (user.progress.streak >= 7 && !newStickers.includes('week-streak')) newStickers.push('week-streak');
         if (user.progress.streak >= 30 && !newStickers.includes('month-streak')) newStickers.push('month-streak');
-        if (user.theoryLevel >= 3 && !newStickers.includes('theory-master')) newStickers.push('theory-master');
+        if (LEVEL_INFO[user.theoryLevel].number >= 3 && !newStickers.includes('theory-master')) newStickers.push('theory-master');
         if (newLevel >= 5 && !newStickers.includes('level-5')) newStickers.push('level-5');
         
         set({

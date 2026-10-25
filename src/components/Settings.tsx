@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore, Instrument } from '../store';
-import { BASIC_SONGS, LEVEL_A_SONGS, LEVEL_B_SONGS } from '../data';
+import { CadetLevel, LEVELS, LEVEL_INFO, getSongsForLevel } from '../data';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -43,36 +43,20 @@ const ListIcon = () => (
 
 export default function Settings() {
   const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode, setTheoryLevel, setInstrumentLevel } = useStore();
-  const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'songs' | 'levels'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'levels' | 'songs'>('profile');
   const [showLevelWarning, setShowLevelWarning] = useState(false);
 
   if (!user) return null;
 
   const instruments: { id: Instrument; name: string; scale: string; desc: string }[] = [
-    { id: 'alto', name: 'Alto Saxophone', scale: 'E♭ (G Major)', desc: 'Most common, versatile' },
-    { id: 'tenor', name: 'Tenor Saxophone', scale: 'B♭ (C Major)', desc: 'Jazz & rock standard' },
-    { id: 'baritone', name: 'Baritone Saxophone', scale: 'E♭ (G Major)', desc: 'Deep, powerful tone' },
-    { id: 'soprano', name: 'Soprano Saxophone', scale: 'B♭ (C Major)', desc: 'Highest pitch, bright' },
+    { id: 'alto', name: 'Alto Saxophone', scale: 'E♭', desc: 'Most common' },
+    { id: 'tenor', name: 'Tenor Saxophone', scale: 'B♭', desc: 'Jazz & rock' },
+    { id: 'baritone', name: 'Baritone Saxophone', scale: 'E♭', desc: 'Deep tone' },
+    { id: 'soprano', name: 'Soprano Saxophone', scale: 'B♭', desc: 'Highest pitch' },
   ];
 
-  const songLists = user.instrumentLevel === 0 
-    ? [{ title: 'Basic Songs', songs: BASIC_SONGS }]
-    : [
-        { title: 'List A', songs: LEVEL_A_SONGS },
-        { title: 'List B', songs: LEVEL_B_SONGS },
-      ];
-
-  const toggleSong = (songId: string) => {
-    const current = user.activeSongs;
-    if (current.includes(songId)) {
-      setActiveSongs(current.filter(s => s !== songId));
-    } else if (current.length < 2) {
-      setActiveSongs([...current, songId]);
-    }
-  };
-
-  const handleInstrumentLevelChange = (newLevel: number) => {
-    if (newLevel > user.theoryLevel) {
+  const handleInstrumentLevelChange = (newLevel: CadetLevel) => {
+    if (LEVEL_INFO[newLevel].number > LEVEL_INFO[user.theoryLevel].number) {
       setShowLevelWarning(true);
       return;
     }
@@ -83,7 +67,6 @@ export default function Settings() {
     { id: 'profile' as const, label: 'Profile', icon: <UserIcon /> },
     { id: 'instrument' as const, label: 'Instrument', icon: <MusicIcon /> },
     { id: 'levels' as const, label: 'Levels', icon: <ListIcon /> },
-    { id: 'songs' as const, label: 'Songs', icon: <ListIcon /> },
   ];
 
   return (
@@ -123,7 +106,6 @@ export default function Settings() {
         {/* Profile Tab */}
         {activeTab === 'profile' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            {/* Avatar */}
             <div className="card text-center">
               <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">Profile</p>
               <div className="w-16 h-16 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-2xl font-bold mx-auto mb-3">
@@ -133,7 +115,6 @@ export default function Settings() {
               <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">{user.instrument} saxophone</p>
             </div>
 
-            {/* Stats */}
             <div className="card">
               <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-4">Statistics</p>
               <div className="grid grid-cols-2 gap-4">
@@ -141,22 +122,21 @@ export default function Settings() {
                   <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.xp}</p>
                   <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Total XP</p>
                 </div>
-                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                <div className="text-center p-3 bg-[#e8e8e8] dark:bg-[#0f1720] rounded-lg">
                   <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.streak}</p>
                   <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Day Streak</p>
                 </div>
-                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
+                <div className="text-center p-3 bg-[#e8e8e8] dark:bg-[#0f1720] rounded-lg">
                   <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.progress.completedLessons.length}</p>
                   <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Lessons Done</p>
                 </div>
-                <div className="text-center p-3 bg-[#f0f0f0] dark:bg-[#0f1720] rounded-lg">
-                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">Lv.{user.progress.level}</p>
-                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Your Level</p>
+                <div className="text-center p-3 bg-[#e8e8e8] dark:bg-[#0f1720] rounded-lg">
+                  <p className="text-xl font-bold text-[#1a2332] dark:text-white">{user.theoryLevel}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">Theory Level</p>
                 </div>
               </div>
             </div>
 
-            {/* Appearance */}
             <div className="card">
               <div className="flex items-center justify-between">
                 <div>
@@ -182,7 +162,7 @@ export default function Settings() {
         {activeTab === 'instrument' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
             <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-4">
-              Select your instrument. This adjusts scales, fingerings, and transpositions.
+              Select your instrument. This adjusts scales and transpositions.
             </p>
             {instruments.map(inst => (
               <button
@@ -227,11 +207,11 @@ export default function Settings() {
                 Theory Level
               </p>
               <div className="flex gap-2">
-                {[0, 1, 2, 3, 4].map(level => (
+                {LEVELS.map(level => (
                   <button
                     key={level}
                     onClick={() => setTheoryLevel(level)}
-                    className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                    className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                       user.theoryLevel === level
                         ? 'bg-[#c9a84c] text-[#1a2332]'
                         : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] hover:bg-[#d0d0d0] dark:hover:bg-[#3a4a5a]'
@@ -242,7 +222,7 @@ export default function Settings() {
                 ))}
               </div>
               <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2">
-                Current: Level {user.theoryLevel}
+                Current: {user.theoryLevel} · {LEVEL_INFO[user.theoryLevel].description}
               </p>
             </div>
 
@@ -252,14 +232,14 @@ export default function Settings() {
                 Playing Level
               </p>
               <div className="flex gap-2">
-                {[0, 1, 2, 3, 4].map(level => {
-                  const isDisabled = level > user.theoryLevel;
+                {LEVELS.map(level => {
+                  const isDisabled = LEVEL_INFO[level].number > LEVEL_INFO[user.theoryLevel].number;
                   return (
                     <button
                       key={level}
                       onClick={() => !isDisabled && handleInstrumentLevelChange(level)}
                       disabled={isDisabled}
-                      className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                      className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                         user.instrumentLevel === level
                           ? 'bg-[#c9a84c] text-[#1a2332]'
                           : isDisabled
@@ -273,72 +253,9 @@ export default function Settings() {
                 })}
               </div>
               <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2">
-                Current: Level {user.instrumentLevel}
-                {user.instrumentLevel > user.theoryLevel && (
-                  <span className="text-[#c44536] ml-2">(Warning: Must be ≤ theory level)</span>
-                )}
+                Current: {user.instrumentLevel} · {LEVEL_INFO[user.instrumentLevel].description}
               </p>
             </div>
-          </motion.div>
-        )}
-
-        {/* Songs Tab */}
-        {activeTab === 'songs' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            <div>
-              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-2">
-                Choose {user.instrumentLevel === 0 ? '2' : '1 from List A + 1 from List B'} focus songs.
-              </p>
-              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-                Selected: <span className="font-semibold text-[#c9a84c]">{user.activeSongs.length}/2</span>
-              </p>
-            </div>
-
-            {songLists.map(list => (
-              <div key={list.title}>
-                <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white mb-3">{list.title}</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {list.songs.map(song => {
-                    const isSelected = user.activeSongs.includes(song.id);
-                    const canSelect = isSelected || user.activeSongs.length < 2;
-                    
-                    return (
-                      <button
-                        key={song.id}
-                        onClick={() => canSelect && toggleSong(song.id)}
-                        disabled={!canSelect}
-                        className={`card flex items-center gap-3 text-left transition-all ${
-                          isSelected ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
-                        } ${!canSelect ? 'opacity-40 cursor-not-allowed' : ''}`}
-                      >
-                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-                          isSelected 
-                            ? 'bg-[#c9a84c] text-[#1a2332]' 
-                            : 'bg-[#e8e8e8] dark:bg-[#0f1720] text-[#5a6577] dark:text-[#9aa3b0]'
-                        }`}>
-                          <MusicIcon />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
-                          <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.composer}</p>
-                        </div>
-                        {isSelected && (
-                          <span className="text-[#c9a84c]"><CheckIcon /></span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-
-            {user.activeSongs.length > 0 && (
-              <div className="card bg-[#c9a84c]/5 border-[#c9a84c]/30 dark:bg-[#c9a84c]/10">
-                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-                  Note: Switching songs will reset progress for the removed song. Your XP is preserved.
-                </p>
-              </div>
-            )}
           </motion.div>
         )}
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
+import { CadetLevel, LEVELS, LEVEL_INFO } from '../data';
 
 interface QuizQuestion {
   id: number;
@@ -23,6 +24,10 @@ const QUESTIONS: QuizQuestion[] = [
   { id: 10, question: 'Which scale has a raised 7th degree when ascending?', options: ['Natural minor', 'Harmonic minor', 'Melodic minor', 'Dorian mode'], correct: 2, category: 'advanced' },
 ];
 
+const getLevelFromNumber = (num: number): CadetLevel => {
+  return LEVELS[num] || 'BASIC';
+};
+
 export default function Onboarding() {
   const { setOnboarded, setTheoryLevel, setInstrumentLevel } = useStore();
   const [currentQ, setCurrentQ] = useState(0);
@@ -30,8 +35,8 @@ export default function Onboarding() {
   const [selected, setSelected] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [step, setStep] = useState<'quiz' | 'result' | 'levels'>('quiz');
-  const [theoryLevel, setLocalTheoryLevel] = useState(0);
-  const [playingLevel, setLocalPlayingLevel] = useState(0);
+  const [theoryLevel, setLocalTheoryLevel] = useState<CadetLevel>('BASIC');
+  const [playingLevel, setLocalPlayingLevel] = useState<CadetLevel>('BASIC');
 
   const handleAnswer = (idx: number) => {
     if (selected !== null) return;
@@ -48,17 +53,17 @@ export default function Onboarding() {
       } else {
         const rec = getRecommendedLevel();
         setLocalTheoryLevel(rec.theory);
-        setLocalPlayingLevel(Math.min(rec.theory, rec.instrument));
+        setLocalPlayingLevel(rec.instrument);
         setStep('result');
       }
     }, 800);
   };
 
   const getRecommendedLevel = () => {
-    if (score >= 8) return { theory: 3, instrument: 2, label: 'Advanced', desc: 'Strong theory foundation.' };
-    if (score >= 6) return { theory: 2, instrument: 1, label: 'Intermediate', desc: 'Good understanding.' };
-    if (score >= 3) return { theory: 1, instrument: 0, label: 'Beginner', desc: 'Some knowledge detected.' };
-    return { theory: 0, instrument: 0, label: 'Complete Beginner', desc: "Starting from the beginning." };
+    if (score >= 8) return { theory: 'THREE' as CadetLevel, instrument: 'TWO' as CadetLevel, label: 'Advanced', desc: 'Strong theory foundation.' };
+    if (score >= 6) return { theory: 'TWO' as CadetLevel, instrument: 'ONE' as CadetLevel, label: 'Intermediate', desc: 'Good understanding.' };
+    if (score >= 3) return { theory: 'ONE' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Beginner', desc: 'Some knowledge detected.' };
+    return { theory: 'BASIC' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Complete Beginner', desc: "Starting from the beginning." };
   };
 
   const handleComplete = () => {
@@ -216,14 +221,16 @@ export default function Onboarding() {
                   Theory Level
                 </p>
                 <div className="flex gap-2">
-                  {[0, 1, 2, 3, 4].map(level => (
+                  {LEVELS.map(level => (
                     <button
                       key={level}
                       onClick={() => {
                         setLocalTheoryLevel(level);
-                        if (playingLevel > level) setLocalPlayingLevel(level);
+                        if (LEVEL_INFO[level].number < LEVEL_INFO[playingLevel].number) {
+                          setLocalPlayingLevel(level);
+                        }
                       }}
-                      className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                      className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                         theoryLevel === level
                           ? 'bg-[#c9a84c] text-[#1a2332]'
                           : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
@@ -240,14 +247,14 @@ export default function Onboarding() {
                   Playing Level
                 </p>
                 <div className="flex gap-2">
-                  {[0, 1, 2, 3, 4].map(level => {
-                    const isDisabled = level > theoryLevel;
+                  {LEVELS.map(level => {
+                    const isDisabled = LEVEL_INFO[level].number > LEVEL_INFO[theoryLevel].number;
                     return (
                       <button
                         key={level}
                         onClick={() => !isDisabled && setLocalPlayingLevel(level)}
                         disabled={isDisabled}
-                        className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                        className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                           playingLevel === level
                             ? 'bg-[#c9a84c] text-[#1a2332]'
                             : isDisabled
