@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useStore } from './store';
 import Login from './components/Login';
 import Onboarding from './components/Onboarding';
@@ -16,7 +16,7 @@ const CORNER_THRESHOLD = 120;
 
 function SecretCornerListener() {
   const { unlockAdmin, adminUnlocked } = useStore();
-  const [sequence, setSequence] = useState<number[]>([]);
+  const sequenceRef = useRef<number[]>([]);
 
   const CORNER_SEQUENCE = [0, 1, 2, 3];
 
@@ -41,29 +41,28 @@ function SecretCornerListener() {
     const handleClick = (e: MouseEvent) => {
       const corner = getCorner(e.clientX, e.clientY);
       if (corner === null) {
-        if (sequence.length > 0) setSequence([]);
+        sequenceRef.current = [];
         return;
       }
       
-      const nextExpected = CORNER_SEQUENCE[sequence.length];
+      const nextExpected = CORNER_SEQUENCE[sequenceRef.current.length];
       if (corner === nextExpected) {
-        const newSequence = [...sequence, corner];
-        setSequence(newSequence);
+        sequenceRef.current = [...sequenceRef.current, corner];
         
-        if (newSequence.length === CORNER_SEQUENCE.length) {
+        if (sequenceRef.current.length === CORNER_SEQUENCE.length) {
           if (!adminUnlocked) {
             unlockAdmin();
           }
-          setSequence([]);
+          sequenceRef.current = [];
         }
       } else {
-        setSequence(corner === CORNER_SEQUENCE[0] ? [corner] : []);
+        sequenceRef.current = corner === CORNER_SEQUENCE[0] ? [corner] : [];
       }
     };
 
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
-  }, [sequence, getCorner, unlockAdmin, adminUnlocked]);
+  }, [getCorner, unlockAdmin, adminUnlocked]);
 
   return null;
 }
