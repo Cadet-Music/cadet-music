@@ -20,7 +20,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
 
-  // Check for saved session
   useEffect(() => {
     const saved = localStorage.getItem('cadet_music_session');
     if (saved) {
@@ -34,15 +33,13 @@ export default function Login() {
 
   const handleQuickLogin = () => {
     if (savedSession) {
-      login(savedSession.username);
+      login({ username: savedSession.username });
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    let displayName = '';
 
     if (loginMethod === 'name') {
       if (rank.trim().length < 1) {
@@ -53,7 +50,25 @@ export default function Login() {
         setError('Please enter your last name');
         return;
       }
-      displayName = `${rank.trim()} ${lastName.trim()}`;
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+      if (isSignUp && password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      setLoading(true);
+      setTimeout(() => {
+        const displayName = `${rank.trim()} ${lastName.trim()}`;
+        localStorage.setItem('cadet_music_session', JSON.stringify({
+          username: displayName,
+          lastLogin: new Date().toISOString()
+        }));
+        login({ username: displayName, rank: rank.trim(), lastName: lastName.trim() });
+        setLoading(false);
+      }, 600);
     } else {
       if (!email.trim().toLowerCase().endsWith('.cadets.gc.ca')) {
         setError('Please use your .cadets.gc.ca email address');
@@ -67,22 +82,20 @@ export default function Login() {
         setError('Passwords do not match');
         return;
       }
-      // Extract name from email
-      const emailParts = email.split('@')[0].split('.');
-      const lastNameFromEmail = emailParts[1] || 'Cadet';
-      displayName = `Cdt ${lastNameFromEmail}`;
-    }
 
-    setLoading(true);
-    setTimeout(() => {
-      // Save session
-      localStorage.setItem('cadet_music_session', JSON.stringify({
-        username: displayName,
-        lastLogin: new Date().toISOString()
-      }));
-      login(displayName);
-      setLoading(false);
-    }, 600);
+      setLoading(true);
+      setTimeout(() => {
+        const emailParts = email.split('@')[0].split('.');
+        const lastNameFromEmail = emailParts[1] || 'Cadet';
+        const displayName = `Cdt ${lastNameFromEmail.charAt(0).toUpperCase() + lastNameFromEmail.slice(1)}`;
+        localStorage.setItem('cadet_music_session', JSON.stringify({
+          username: displayName,
+          lastLogin: new Date().toISOString()
+        }));
+        login({ username: displayName, email: email.trim() });
+        setLoading(false);
+      }, 600);
+    }
   };
 
   return (
@@ -179,38 +192,52 @@ export default function Login() {
                     : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
                 }`}
               >
-                Email + Password
+                Email
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {loginMethod === 'name' ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                      Rank
-                    </label>
-                    <input
-                      type="text"
-                      value={rank}
-                      onChange={(e) => { setRank(e.target.value); setError(''); }}
-                      placeholder="Cpl"
-                      className="input-field"
-                    />
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                        Rank
+                      </label>
+                      <input
+                        type="text"
+                        value={rank}
+                        onChange={(e) => { setRank(e.target.value); setError(''); }}
+                        placeholder="Cpl"
+                        className="input-field"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                        Last name
+                      </label>
+                      <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => { setLastName(e.target.value); setError(''); }}
+                        placeholder="Smith"
+                        className="input-field"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                      Last name
+                      Password
                     </label>
                     <input
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => { setLastName(e.target.value); setError(''); }}
-                      placeholder="Smith"
+                      type="password"
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                      placeholder={isSignUp ? 'Min. 6 characters' : 'Enter your password'}
                       className="input-field"
                     />
                   </div>
-                </div>
+                </>
               ) : (
                 <>
                   <div>
@@ -237,21 +264,22 @@ export default function Login() {
                       className="input-field"
                     />
                   </div>
-                  {isSignUp && (
-                    <div>
-                      <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                        Confirm password
-                      </label>
-                      <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
-                        placeholder="Re-enter your password"
-                        className="input-field"
-                      />
-                    </div>
-                  )}
                 </>
+              )}
+
+              {isSignUp && (
+                <div>
+                  <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                    Confirm password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
+                    placeholder="Re-enter your password"
+                    className="input-field"
+                  />
+                </div>
               )}
 
               {error && (
@@ -283,7 +311,6 @@ export default function Login() {
               </button>
             </form>
 
-            {/* Switch mode */}
             <p className="text-center text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-8">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button
@@ -296,7 +323,6 @@ export default function Login() {
           </>
         )}
 
-        {/* Theme toggle */}
         <div className="flex items-center justify-center mt-6">
           <button
             onClick={() => setDarkMode(!darkMode)}

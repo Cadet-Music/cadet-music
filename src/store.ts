@@ -14,6 +14,7 @@ export interface Lesson {
   xp: number;
   description: string;
   interactive: boolean;
+  requiredLevel?: number;
 }
 
 export interface UserProgress {
@@ -24,11 +25,22 @@ export interface UserProgress {
   level: number;
   accuracy: number;
   stickers: string[];
+  goalsCompleted: number;
+}
+
+export interface BannerSticker {
+  id: string;
+  x: number;
+  y: number;
+  rotation: number;
 }
 
 export interface User {
   id: string;
   username: string;
+  rank: string;
+  lastName: string;
+  email: string;
   avatar: string;
   instrument: Instrument;
   progress: UserProgress;
@@ -36,41 +48,72 @@ export interface User {
   theoryLevel: number;
   instrumentLevel: number;
   onboarded: boolean;
+  songsSelected: boolean;
+  bannerBg: string;
+  bannerStickers: BannerSticker[];
 }
+
+export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner';
 
 interface AppState {
   user: User | null;
   darkMode: boolean;
-  currentView: 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'leaderboard' | 'admin';
+  currentView: ViewType;
   currentLessonId: string | null;
   lessonComplete: boolean;
   adminUnlocked: boolean;
   
   // Actions
   setUser: (user: User | null) => void;
-  login: (username: string) => void;
+  login: (data: { username: string; rank?: string; lastName?: string; email?: string }) => void;
   unlockAdmin: () => void;
   lockAdmin: () => void;
   logout: () => void;
   setDarkMode: (dark: boolean) => void;
-  setCurrentView: (view: AppState['currentView']) => void;
+  setCurrentView: (view: ViewType) => void;
   setCurrentLesson: (lessonId: string | null) => void;
   completeLesson: (lessonId: string, xp: number) => void;
   setInstrument: (instrument: Instrument) => void;
   setActiveSongs: (songs: string[]) => void;
+  setSongsSelected: (val: boolean) => void;
   setOnboarded: (val: boolean) => void;
   setTheoryLevel: (level: number) => void;
   setInstrumentLevel: (level: number) => void;
   addSticker: (sticker: string) => void;
   updateStreak: () => void;
+  setBannerBg: (bg: string) => void;
+  addBannerSticker: (sticker: BannerSticker) => void;
+  removeBannerSticker: (id: string) => void;
+  updateBannerSticker: (id: string, updates: Partial<BannerSticker>) => void;
   resetAll: () => void;
 }
 
-const AVATARS = ['🎵', '🎶', '🎷', '🎼', '🎹', '🥁', '🎺', '🎸', '🎻', '🪗', '🎤', '🎧'];
+const BANNER_BGS = [
+  'linear-gradient(135deg, #1a2332 0%, #2d3a4a 100%)',
+  'linear-gradient(135deg, #c9a84c 0%, #a68a3a 100%)',
+  'linear-gradient(135deg, #3a8a5c 0%, #2d6d48 100%)',
+  'linear-gradient(135deg, #4a7c8a 0%, #2d5a66 100%)',
+  'linear-gradient(135deg, #c44536 0%, #a33628 100%)',
+  'linear-gradient(135deg, #6b4c8a 0%, #4a3566 100%)',
+];
 
-const defaultUser = (username: string): User => ({
+export const STICKER_DEFS: Record<string, { name: string; icon: string }> = {
+  'first-5': { name: 'First Steps', icon: '⭐' },
+  'dedicated': { name: 'Dedicated', icon: '🏅' },
+  'xp-500': { name: '500 XP', icon: '💫' },
+  'xp-1000': { name: '1000 XP', icon: '✨' },
+  'week-streak': { name: 'Week Streak', icon: '🔥' },
+  'month-streak': { name: 'Month Streak', icon: '💎' },
+  'theory-master': { name: 'Theory Master', icon: '📚' },
+  'level-5': { name: 'Level 5', icon: '🎯' },
+};
+
+const defaultUser = (data: { username: string; rank?: string; lastName?: string; email?: string }): User => ({
   id: crypto.randomUUID(),
-  username,
+  username: data.username,
+  rank: data.rank || '',
+  lastName: data.lastName || '',
+  email: data.email || '',
   avatar: '🎵',
   instrument: 'alto',
   progress: {
@@ -81,11 +124,15 @@ const defaultUser = (username: string): User => ({
     level: 0,
     accuracy: 0,
     stickers: [],
+    goalsCompleted: 0,
   },
   activeSongs: [],
   theoryLevel: 0,
   instrumentLevel: 0,
   onboarded: false,
+  songsSelected: false,
+  bannerBg: BANNER_BGS[0],
+  bannerStickers: [],
 });
 
 export const useStore = create<AppState>()(
@@ -97,11 +144,11 @@ export const useStore = create<AppState>()(
       currentLessonId: null,
       lessonComplete: false,
       adminUnlocked: false,
-
+      
       setUser: (user) => set({ user }),
       
-      login: (username) => {
-        const user = defaultUser(username);
+      login: (data) => {
+        const user = defaultUser(data);
         set({ user, currentView: 'onboarding' });
       },
 
@@ -133,14 +180,17 @@ export const useStore = create<AppState>()(
           : [...user.progress.completedLessons, lessonId];
         const newXp = alreadyCompleted ? user.progress.xp : user.progress.xp + xp;
         const newLevel = Math.floor(newXp / 100);
+        const newGoalsCompleted = alreadyCompleted ? user.progress.goalsCompleted : user.progress.goalsCompleted + 1;
         
-        // Check for stickers
         const newStickers = [...user.progress.stickers];
         if (newCompleted.length >= 5 && !newStickers.includes('first-5')) newStickers.push('first-5');
         if (newCompleted.length >= 20 && !newStickers.includes('dedicated')) newStickers.push('dedicated');
         if (newXp >= 500 && !newStickers.includes('xp-500')) newStickers.push('xp-500');
         if (newXp >= 1000 && !newStickers.includes('xp-1000')) newStickers.push('xp-1000');
         if (user.progress.streak >= 7 && !newStickers.includes('week-streak')) newStickers.push('week-streak');
+        if (user.progress.streak >= 30 && !newStickers.includes('month-streak')) newStickers.push('month-streak');
+        if (user.theoryLevel >= 3 && !newStickers.includes('theory-master')) newStickers.push('theory-master');
+        if (newLevel >= 5 && !newStickers.includes('level-5')) newStickers.push('level-5');
         
         set({
           user: {
@@ -151,6 +201,7 @@ export const useStore = create<AppState>()(
               xp: newXp,
               level: newLevel,
               stickers: newStickers,
+              goalsCompleted: newGoalsCompleted,
               lastActiveDate: new Date().toISOString().split('T')[0],
             },
           },
@@ -167,13 +218,20 @@ export const useStore = create<AppState>()(
       setActiveSongs: (songs) => {
         const user = get().user;
         if (!user) return;
-        set({ user: { ...user, activeSongs: songs } });
+        set({ user: { ...user, activeSongs: songs, songsSelected: songs.length > 0 } });
+      },
+
+      setSongsSelected: (val) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, songsSelected: val } });
       },
       
       setOnboarded: (val) => {
         const user = get().user;
         if (!user) return;
-        set({ user: { ...user, onboarded: val }, currentView: 'dashboard' });
+        // Force song selection after onboarding
+        set({ user: { ...user, onboarded: val }, currentView: val ? 'songs' : 'dashboard' });
       },
       
       setTheoryLevel: (level) => {
@@ -203,7 +261,7 @@ export const useStore = create<AppState>()(
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         
         let newStreak = user.progress.streak;
-        if (lastActive === today) return; // Already counted today
+        if (lastActive === today) return;
         if (lastActive === yesterday) {
           newStreak += 1;
         } else if (lastActive !== today) {
@@ -216,6 +274,30 @@ export const useStore = create<AppState>()(
             progress: { ...user.progress, streak: newStreak, lastActiveDate: today },
           },
         });
+      },
+
+      setBannerBg: (bg) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, bannerBg: bg } });
+      },
+
+      addBannerSticker: (sticker) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, bannerStickers: [...user.bannerStickers, sticker] } });
+      },
+
+      removeBannerSticker: (id) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, bannerStickers: user.bannerStickers.filter(s => s.id !== id) } });
+      },
+
+      updateBannerSticker: (id, updates) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, bannerStickers: user.bannerStickers.map(s => s.id === id ? { ...s, ...updates } : s) } });
       },
       
       resetAll: () => {
@@ -230,4 +312,4 @@ export const useStore = create<AppState>()(
   )
 );
 
-export { AVATARS };
+export { BANNER_BGS };

@@ -11,79 +11,16 @@ interface QuizQuestion {
 }
 
 const QUESTIONS: QuizQuestion[] = [
-  // Basic
-  {
-    id: 1,
-    question: 'How many lines are on a music staff?',
-    options: ['3', '4', '5', '6'],
-    correct: 2,
-    category: 'basic',
-  },
-  {
-    id: 2,
-    question: 'Which note gets 1 beat in 4/4 time?',
-    options: ['Whole note', 'Half note', 'Quarter note', 'Eighth note'],
-    correct: 2,
-    category: 'basic',
-  },
-  {
-    id: 3,
-    question: 'What does "forte" (f) mean?',
-    options: ['Soft', 'Loud', 'Fast', 'Slow'],
-    correct: 1,
-    category: 'basic',
-  },
-  // Intermediate
-  {
-    id: 4,
-    question: 'Which clef does saxophone use?',
-    options: ['Bass clef', 'Alto clef', 'Treble clef', 'Tenor clef'],
-    correct: 2,
-    category: 'intermediate',
-  },
-  {
-    id: 5,
-    question: 'How many sharps are in G major?',
-    options: ['0', '1', '2', '3'],
-    correct: 1,
-    category: 'intermediate',
-  },
-  {
-    id: 6,
-    question: 'What is the relative minor of C major?',
-    options: ['A minor', 'D minor', 'E minor', 'G minor'],
-    correct: 0,
-    category: 'intermediate',
-  },
-  // Advanced
-  {
-    id: 7,
-    question: 'What is a dominant seventh chord built on?',
-    options: ['1st degree', '3rd degree', '5th degree', '7th degree'],
-    correct: 2,
-    category: 'advanced',
-  },
-  {
-    id: 8,
-    question: 'In 6/8 time, how many beats are in a measure?',
-    options: ['2 beats (compound duple)', '3 beats (compound triple)', '6 beats (simple)', '8 beats'],
-    correct: 0,
-    category: 'advanced',
-  },
-  {
-    id: 9,
-    question: 'What is the interval between C and G?',
-    options: ['Major third', 'Perfect fourth', 'Perfect fifth', 'Major sixth'],
-    correct: 2,
-    category: 'advanced',
-  },
-  {
-    id: 10,
-    question: 'Which scale has a raised 7th degree when ascending?',
-    options: ['Natural minor', 'Harmonic minor', 'Melodic minor', 'Dorian mode'],
-    correct: 2,
-    category: 'advanced',
-  },
+  { id: 1, question: 'How many lines are on a music staff?', options: ['3', '4', '5', '6'], correct: 2, category: 'basic' },
+  { id: 2, question: 'Which note gets 1 beat in 4/4 time?', options: ['Whole note', 'Half note', 'Quarter note', 'Eighth note'], correct: 2, category: 'basic' },
+  { id: 3, question: 'What does "forte" (f) mean?', options: ['Soft', 'Loud', 'Fast', 'Slow'], correct: 1, category: 'basic' },
+  { id: 4, question: 'Which clef does saxophone use?', options: ['Bass clef', 'Alto clef', 'Treble clef', 'Tenor clef'], correct: 2, category: 'intermediate' },
+  { id: 5, question: 'How many sharps are in G major?', options: ['0', '1', '2', '3'], correct: 1, category: 'intermediate' },
+  { id: 6, question: 'What is the relative minor of C major?', options: ['A minor', 'D minor', 'E minor', 'G minor'], correct: 0, category: 'intermediate' },
+  { id: 7, question: 'What is a dominant seventh chord built on?', options: ['1st degree', '3rd degree', '5th degree', '7th degree'], correct: 2, category: 'advanced' },
+  { id: 8, question: 'In 6/8 time, how many beats are in a measure?', options: ['2 beats (compound duple)', '3 beats (compound triple)', '6 beats (simple)', '8 beats'], correct: 0, category: 'advanced' },
+  { id: 9, question: 'What is the interval between C and G?', options: ['Major third', 'Perfect fourth', 'Perfect fifth', 'Major sixth'], correct: 2, category: 'advanced' },
+  { id: 10, question: 'Which scale has a raised 7th degree when ascending?', options: ['Natural minor', 'Harmonic minor', 'Melodic minor', 'Dorian mode'], correct: 2, category: 'advanced' },
 ];
 
 export default function Onboarding() {
@@ -91,8 +28,10 @@ export default function Onboarding() {
   const [currentQ, setCurrentQ] = useState(0);
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
-  const [finished, setFinished] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [step, setStep] = useState<'quiz' | 'result' | 'levels'>('quiz');
+  const [theoryLevel, setLocalTheoryLevel] = useState(0);
+  const [playingLevel, setLocalPlayingLevel] = useState(0);
 
   const handleAnswer = (idx: number) => {
     if (selected !== null) return;
@@ -100,7 +39,6 @@ export default function Onboarding() {
     const isCorrect = idx === QUESTIONS[currentQ].correct;
     if (isCorrect) setScore(s => s + 1);
     
-    // Show brief feedback without revealing right/wrong
     setShowFeedback(true);
     setTimeout(() => {
       setShowFeedback(false);
@@ -108,23 +46,24 @@ export default function Onboarding() {
         setCurrentQ(q => q + 1);
         setSelected(null);
       } else {
-        setFinished(true);
+        const rec = getRecommendedLevel();
+        setLocalTheoryLevel(rec.theory);
+        setLocalPlayingLevel(Math.min(rec.theory, rec.instrument));
+        setStep('result');
       }
     }, 800);
   };
 
   const getRecommendedLevel = () => {
-    // More nuanced placement based on score
-    if (score >= 8) return { theory: 3, instrument: 2, label: 'Advanced', desc: 'Strong theory foundation. Starting at Level 3.' };
-    if (score >= 6) return { theory: 2, instrument: 1, label: 'Intermediate', desc: 'Good understanding. Starting at Level 2.' };
-    if (score >= 3) return { theory: 1, instrument: 0, label: 'Beginner', desc: 'Some knowledge detected. Starting with fundamentals.' };
-    return { theory: 0, instrument: 0, label: 'Complete Beginner', desc: "No prior experience needed. We'll start from the very beginning." };
+    if (score >= 8) return { theory: 3, instrument: 2, label: 'Advanced', desc: 'Strong theory foundation.' };
+    if (score >= 6) return { theory: 2, instrument: 1, label: 'Intermediate', desc: 'Good understanding.' };
+    if (score >= 3) return { theory: 1, instrument: 0, label: 'Beginner', desc: 'Some knowledge detected.' };
+    return { theory: 0, instrument: 0, label: 'Complete Beginner', desc: "Starting from the beginning." };
   };
 
   const handleComplete = () => {
-    const rec = getRecommendedLevel();
-    setTheoryLevel(rec.theory);
-    setInstrumentLevel(rec.instrument);
+    setTheoryLevel(theoryLevel);
+    setInstrumentLevel(playingLevel);
     setOnboarded(true);
   };
 
@@ -137,9 +76,8 @@ export default function Onboarding() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        {!finished ? (
+        {step === 'quiz' && (
           <div className="bg-white dark:bg-[#1a2332] rounded-xl border border-[#c8c8c8] dark:border-[#2a3545] p-6 shadow-sm">
-            {/* Progress */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide">
@@ -158,7 +96,6 @@ export default function Onboarding() {
               </div>
             </div>
 
-            {/* Question */}
             <motion.div
               key={currentQ}
               initial={{ opacity: 0, x: 10 }}
@@ -215,7 +152,6 @@ export default function Onboarding() {
                 })}
               </div>
 
-              {/* Subtle feedback animation */}
               {showFeedback && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -227,7 +163,9 @@ export default function Onboarding() {
               )}
             </motion.div>
           </div>
-        ) : (
+        )}
+
+        {step === 'result' && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -244,11 +182,86 @@ export default function Onboarding() {
               Assessment Complete
             </h2>
             <p className="text-sm font-medium text-[#1a2332] dark:text-white mb-1">
-              {getRecommendedLevel().label}
+              Recommended: {getRecommendedLevel().label}
             </p>
             <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6">
               {getRecommendedLevel().desc}
             </p>
+
+            <button
+              onClick={() => setStep('levels')}
+              className="btn-accent w-full py-3.5"
+            >
+              Choose Levels
+            </button>
+          </motion.div>
+        )}
+
+        {step === 'levels' && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-[#1a2332] rounded-xl border border-[#c8c8c8] dark:border-[#2a3545] p-6 shadow-sm"
+          >
+            <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-2 text-center">
+              Choose Your Levels
+            </h2>
+            <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6 text-center">
+              Playing level cannot exceed theory level.
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-2">
+                  Theory Level
+                </p>
+                <div className="flex gap-2">
+                  {[0, 1, 2, 3, 4].map(level => (
+                    <button
+                      key={level}
+                      onClick={() => {
+                        setLocalTheoryLevel(level);
+                        if (playingLevel > level) setLocalPlayingLevel(level);
+                      }}
+                      className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                        theoryLevel === level
+                          ? 'bg-[#c9a84c] text-[#1a2332]'
+                          : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-2">
+                  Playing Level
+                </p>
+                <div className="flex gap-2">
+                  {[0, 1, 2, 3, 4].map(level => {
+                    const isDisabled = level > theoryLevel;
+                    return (
+                      <button
+                        key={level}
+                        onClick={() => !isDisabled && setLocalPlayingLevel(level)}
+                        disabled={isDisabled}
+                        className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                          playingLevel === level
+                            ? 'bg-[#c9a84c] text-[#1a2332]'
+                            : isDisabled
+                              ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] opacity-40 cursor-not-allowed'
+                              : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
 
             <button
               onClick={handleComplete}

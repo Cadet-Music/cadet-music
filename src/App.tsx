@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from './store';
 import Login from './components/Login';
 import Onboarding from './components/Onboarding';
@@ -8,17 +7,18 @@ import LessonView from './components/LessonView';
 import Settings from './components/Settings';
 import Leaderboard from './components/Leaderboard';
 import AdminPanel from './components/AdminPanel';
+import Songs from './components/Songs';
+import Banner from './components/Banner';
 import KonamiListener from './components/KonamiListener';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
-// Pattern: bottom-right → top-right → top-left → bottom-left
-const CORNER_THRESHOLD = 120; // pixels from edge
+const CORNER_THRESHOLD = 120;
 
 function SecretCornerListener() {
   const { unlockAdmin, adminUnlocked } = useStore();
   const [sequence, setSequence] = useState<number[]>([]);
   
-  const CORNER_SEQUENCE = [0, 1, 2, 3]; // BR, TR, TL, BL
+  const CORNER_SEQUENCE = [0, 1, 2, 3];
 
   const getCorner = useCallback((x: number, y: number): number | null => {
     const w = window.innerWidth;
@@ -29,10 +29,10 @@ function SecretCornerListener() {
     const isTop = y < CORNER_THRESHOLD;
     const isBottom = y > h - CORNER_THRESHOLD;
     
-    if (isRight && isBottom) return 0; // bottom-right
-    if (isRight && isTop) return 1;    // top-right
-    if (isLeft && isTop) return 2;     // top-left
-    if (isLeft && isBottom) return 3;  // bottom-left
+    if (isRight && isBottom) return 0;
+    if (isRight && isTop) return 1;
+    if (isLeft && isTop) return 2;
+    if (isLeft && isBottom) return 3;
     
     return null;
   }, []);
@@ -65,11 +65,11 @@ function SecretCornerListener() {
     return () => window.removeEventListener('click', handleClick);
   }, [sequence, getCorner, unlockAdmin, adminUnlocked]);
 
-  return null; // No visual feedback at all
+  return null;
 }
 
 function App() {
-  const { user, currentView, darkMode, setDarkMode, adminUnlocked } = useStore();
+  const { user, currentView, darkMode, adminUnlocked } = useStore();
 
   useEffect(() => {
     if (darkMode) {
@@ -79,7 +79,6 @@ function App() {
     }
   }, [darkMode]);
 
-  // Admin panel takes priority
   if (adminUnlocked && currentView === 'admin') {
     return <><AdminPanel /><SecretCornerListener /></>;
   }
@@ -87,13 +86,20 @@ function App() {
   if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
   if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
   
+  // Force song selection after onboarding
+  if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
+  
   switch (currentView) {
     case 'lesson':
       return <><LessonView /><KonamiListener /><SecretCornerListener /></>;
     case 'settings':
       return <><Settings /><KonamiListener /><SecretCornerListener /></>;
+    case 'songs':
+      return <><Songs /><KonamiListener /><SecretCornerListener /></>;
     case 'leaderboard':
       return <><Leaderboard /><KonamiListener /><SecretCornerListener /></>;
+    case 'banner':
+      return <><Banner /><KonamiListener /><SecretCornerListener /></>;
     default:
       return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
   }

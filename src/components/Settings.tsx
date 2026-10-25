@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useStore, Instrument } from '../store';
 import { BASIC_SONGS, LEVEL_A_SONGS, LEVEL_B_SONGS } from '../data';
 
@@ -42,8 +42,9 @@ const ListIcon = () => (
 );
 
 export default function Settings() {
-  const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode } = useStore();
-  const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'songs'>('profile');
+  const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode, setTheoryLevel, setInstrumentLevel } = useStore();
+  const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'songs' | 'levels'>('profile');
+  const [showLevelWarning, setShowLevelWarning] = useState(false);
 
   if (!user) return null;
 
@@ -70,9 +71,18 @@ export default function Settings() {
     }
   };
 
+  const handleInstrumentLevelChange = (newLevel: number) => {
+    if (newLevel > user.theoryLevel) {
+      setShowLevelWarning(true);
+      return;
+    }
+    setInstrumentLevel(newLevel);
+  };
+
   const tabs = [
     { id: 'profile' as const, label: 'Profile', icon: <UserIcon /> },
     { id: 'instrument' as const, label: 'Instrument', icon: <MusicIcon /> },
+    { id: 'levels' as const, label: 'Levels', icon: <ListIcon /> },
     { id: 'songs' as const, label: 'Songs', icon: <ListIcon /> },
   ];
 
@@ -201,6 +211,77 @@ export default function Settings() {
           </motion.div>
         )}
 
+        {/* Levels Tab */}
+        {activeTab === 'levels' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="card bg-[#c9a84c]/5 border-[#c9a84c]/30 dark:bg-[#c9a84c]/10">
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                <span className="font-semibold text-[#1a2332] dark:text-white">Note: </span>
+                Your theory level must be equal to or higher than your playing level.
+              </p>
+            </div>
+
+            {/* Theory Level */}
+            <div className="card">
+              <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
+                Theory Level
+              </p>
+              <div className="flex gap-2">
+                {[0, 1, 2, 3, 4].map(level => (
+                  <button
+                    key={level}
+                    onClick={() => setTheoryLevel(level)}
+                    className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                      user.theoryLevel === level
+                        ? 'bg-[#c9a84c] text-[#1a2332]'
+                        : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] hover:bg-[#d0d0d0] dark:hover:bg-[#3a4a5a]'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2">
+                Current: Level {user.theoryLevel}
+              </p>
+            </div>
+
+            {/* Playing Level */}
+            <div className="card">
+              <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
+                Playing Level
+              </p>
+              <div className="flex gap-2">
+                {[0, 1, 2, 3, 4].map(level => {
+                  const isDisabled = level > user.theoryLevel;
+                  return (
+                    <button
+                      key={level}
+                      onClick={() => !isDisabled && handleInstrumentLevelChange(level)}
+                      disabled={isDisabled}
+                      className={`flex-1 py-3 rounded-lg font-semibold text-sm transition-all ${
+                        user.instrumentLevel === level
+                          ? 'bg-[#c9a84c] text-[#1a2332]'
+                          : isDisabled
+                            ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] opacity-40 cursor-not-allowed'
+                            : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] hover:bg-[#d0d0d0] dark:hover:bg-[#3a4a5a]'
+                      }`}
+                    >
+                      {level}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2">
+                Current: Level {user.instrumentLevel}
+                {user.instrumentLevel > user.theoryLevel && (
+                  <span className="text-[#c44536] ml-2">(Warning: Must be ≤ theory level)</span>
+                )}
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* Songs Tab */}
         {activeTab === 'songs' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -263,6 +344,48 @@ export default function Settings() {
 
         <div className="h-8" />
       </div>
+
+      {/* Level Warning Modal */}
+      <AnimatePresence>
+        {showLevelWarning && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowLevelWarning(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white dark:bg-[#1a2332] rounded-xl p-6 max-w-sm w-full border border-[#c8c8c8] dark:border-[#2a3545]"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-[#c44536]">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                </span>
+                <h3 className="font-semibold text-[#1a2332] dark:text-white">Level Requirement</h3>
+              </div>
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-5">
+                Your playing level must be equal to or lower than your theory level. 
+                Complete more theory lessons first to unlock higher playing levels.
+              </p>
+              <button
+                onClick={() => setShowLevelWarning(false)}
+                className="btn-primary w-full"
+              >
+                Got it
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

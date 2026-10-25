@@ -422,12 +422,12 @@ export default function Dashboard() {
             <span className="text-[10px] font-semibold">Home</span>
           </motion.button>
           <motion.button
-            onClick={() => setCurrentView('leaderboard')}
+            onClick={() => setCurrentView('songs')}
             className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
             whileTap={{ scale: 0.9 }}
           >
-            <TrophyIcon />
-            <span className="text-[10px] font-semibold">Stats</span>
+            <MusicIcon />
+            <span className="text-[10px] font-semibold">Songs</span>
           </motion.button>
           {nextLesson ? (
             <motion.button
@@ -450,20 +450,20 @@ export default function Dashboard() {
             <div className="w-12 h-12" />
           )}
           <motion.button
+            onClick={() => setCurrentView('leaderboard')}
+            className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+            whileTap={{ scale: 0.9 }}
+          >
+            <TrophyIcon />
+            <span className="text-[10px] font-semibold">Ranks</span>
+          </motion.button>
+          <motion.button
             onClick={() => setCurrentView('settings')}
             className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
             whileTap={{ scale: 0.9 }}
           >
-            <MusicIcon />
-            <span className="text-[10px] font-semibold">Songs</span>
-          </motion.button>
-          <motion.button
-            onClick={() => { setDarkMode(!darkMode); }}
-            className="flex flex-col items-center gap-0.5 p-2 text-[#9aa3b0] dark:text-[#5a6577] hover:text-[#1a2332] dark:hover:text-white transition-colors"
-            whileTap={{ scale: 0.9 }}
-          >
-            {darkMode ? <SunIcon /> : <MoonIcon />}
-            <span className="text-[10px] font-semibold">Theme</span>
+            <SettingsIcon />
+            <span className="text-[10px] font-semibold">Settings</span>
           </motion.button>
         </div>
       </nav>

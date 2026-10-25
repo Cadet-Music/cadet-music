@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useStore } from '../store';
+import { useStore, STICKER_DEFS } from '../store';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -18,24 +18,47 @@ const TrophyIcon = () => (
   </svg>
 );
 
+const FireIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/>
+  </svg>
+);
+
+// Mock leaderboard entries (would come from backend)
+const MOCK_LEADERBOARD = [
+  { rank: 1, name: 'Cpl Thompson', xp: 2450, streak: 21, lessons: 48, bannerBg: 'linear-gradient(135deg, #c9a84c 0%, #a68a3a 100%)', stickers: ['⭐', '🏅', '💫'] },
+  { rank: 2, name: 'L/Cpl Martinez', xp: 1890, streak: 14, lessons: 35, bannerBg: 'linear-gradient(135deg, #3a8a5c 0%, #2d6d48 100%)', stickers: ['⭐', '🔥'] },
+  { rank: 3, name: 'Cdt Williams', xp: 1650, streak: 10, lessons: 30, bannerBg: 'linear-gradient(135deg, #4a7c8a 0%, #2d5a66 100%)', stickers: ['⭐', '💎'] },
+  { rank: 4, name: 'Cdt Brown', xp: 1200, streak: 7, lessons: 22, bannerBg: 'linear-gradient(135deg, #6b4c8a 0%, #4a3566 100%)', stickers: ['⭐'] },
+  { rank: 5, name: 'Cdt Davis', xp: 980, streak: 5, lessons: 18, bannerBg: 'linear-gradient(135deg, #c44536 0%, #a33628 100%)', stickers: ['⭐', '🏅'] },
+  { rank: 6, name: 'Cdt Johnson', xp: 750, streak: 3, lessons: 14, bannerBg: 'linear-gradient(135deg, #1a2332 0%, #2d3a4a 100%)', stickers: ['⭐'] },
+];
+
 export default function Leaderboard() {
   const { user, setCurrentView } = useStore();
 
   if (!user) return null;
 
-  const stats = [
-    { label: 'Total XP', value: user.progress.xp, icon: '⭐' },
-    { label: 'Day Streak', value: user.progress.streak, icon: '🔥' },
-    { label: 'Lessons Completed', value: user.progress.completedLessons.length, icon: '✓' },
-    { label: 'Current Level', value: user.progress.level, icon: 'Lv' },
-    { label: 'Active Songs', value: user.activeSongs.length, icon: '♪' },
-    { label: 'Theory Level', value: user.theoryLevel, icon: 'Thy' },
-    { label: 'Instrument Level', value: user.instrumentLevel, icon: 'Inst' },
-    { label: 'Achievements', value: user.progress.stickers.length, icon: '★' },
-  ];
+  // Insert current user into leaderboard
+  const allEntries = [...MOCK_LEADERBOARD];
+  const userEntry = {
+    rank: 0,
+    name: user.username,
+    xp: user.progress.xp,
+    streak: user.progress.streak,
+    lessons: user.progress.completedLessons.length,
+    bannerBg: user.bannerBg,
+    stickers: user.progress.stickers.map(s => STICKER_DEFS[s]?.icon || '⭐'),
+  };
+
+  let userRank = allEntries.filter(e => e.xp > user.progress.xp).length + 1;
+  allEntries.splice(userRank - 1, 0, userEntry);
+  allEntries.forEach((e, i) => e.rank = i + 1);
+
+  const isUser = (name: string) => name === user.username;
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720] pb-24">
       {/* Header */}
       <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4 sticky top-0 z-50">
         <div className="max-w-xl mx-auto flex items-center gap-4">
@@ -48,102 +71,159 @@ export default function Leaderboard() {
           </button>
           <div className="flex items-center gap-2">
             <span className="text-[#c9a84c]"><TrophyIcon /></span>
-            <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Your Progress</h1>
+            <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Leaderboard</h1>
           </div>
         </div>
       </div>
 
       <div className="max-w-xl mx-auto px-4 py-6">
-        {/* Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="card mb-6 text-center"
-        >
-          <motion.div 
-            className="w-20 h-20 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-3xl font-bold mx-auto mb-3"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {user.username.charAt(0).toUpperCase()}
-          </motion.div>
-          <motion.h2 
-            className="text-xl font-semibold text-[#1a2332] dark:text-white mb-1"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-          >
-            {user.username}
-          </motion.h2>
-          <motion.p 
-            className="text-sm text-[#5a6577] dark:text-[#9aa3b0]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            {user.instrument} saxophone
-          </motion.p>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: i * 0.08, type: 'spring', stiffness: 200 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="card cursor-pointer"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide">
-                  {stat.label}
-                </span>
-                <motion.span 
-                  className="text-lg"
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
-                >
-                  {stat.icon}
-                </motion.span>
-              </div>
-              <motion.p 
-                className="text-2xl font-bold text-[#1a2332] dark:text-white"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: i * 0.08 + 0.2, type: 'spring', stiffness: 200 }}
+        {/* Top 3 Podium with Banners */}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          {[1, 0, 2].map((idx) => {
+            const entry = allEntries[idx];
+            if (!entry) return null;
+            const isFirst = idx === 0;
+            
+            return (
+              <motion.div
+                key={entry.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                className={`text-center ${isFirst ? 'order-2' : idx === 1 ? 'order-1' : 'order-3'}`}
               >
-                {stat.value}
-              </motion.p>
+                {/* Banner */}
+                <div 
+                  className="rounded-lg overflow-hidden mb-2 relative"
+                  style={{ 
+                    background: entry.bannerBg,
+                    height: isFirst ? '80px' : '60px',
+                  }}
+                >
+                  {/* Rank Badge */}
+                  <div className={`absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    entry.rank === 1 ? 'bg-[#c9a84c] text-[#1a2332]' :
+                    entry.rank === 2 ? 'bg-[#c0c0c0] text-[#1a2332]' :
+                    'bg-[#cd7f32] text-[#1a2332]'
+                  }`}>
+                    {entry.rank}
+                  </div>
+                  {/* Stickers on banner */}
+                  <div className="absolute inset-0 flex items-center justify-center gap-1 flex-wrap p-2">
+                    {entry.stickers.slice(0, 4).map((sticker, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1, type: 'spring' }}
+                        className="text-lg"
+                      >
+                        {sticker}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Avatar */}
+                <div className={`w-10 h-10 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-sm font-bold mx-auto mb-1 -mt-5 border-2 border-white dark:border-[#0f1720] ${
+                  isUser(entry.name) ? 'ring-2 ring-[#c9a84c]' : ''
+                }`}>
+                  {entry.name.split(' ').pop()?.charAt(0)}
+                </div>
+                <p className={`text-xs font-semibold truncate ${isUser(entry.name) ? 'text-[#c9a84c]' : 'text-[#1a2332] dark:text-white'}`}>
+                  {entry.name.split(' ').slice(1).join(' ')}
+                </p>
+                <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{entry.xp} XP</p>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Full List with Banners */}
+        <div className="space-y-3">
+          {allEntries.slice(3).map((entry, i) => (
+            <motion.div
+              key={entry.name}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + i * 0.05 }}
+              className={`card p-0 overflow-hidden ${isUser(entry.name) ? 'ring-2 ring-[#c9a84c]' : ''}`}
+            >
+              <div className="flex items-center gap-3">
+                {/* Mini Banner */}
+                <div 
+                  className="w-16 h-16 flex items-center justify-center gap-0.5 flex-shrink-0 relative"
+                  style={{ background: entry.bannerBg }}
+                >
+                  <span className="absolute top-0.5 left-0.5 text-[8px] font-bold text-white/80">
+                    #{entry.rank}
+                  </span>
+                  {entry.stickers.slice(0, 3).map((sticker, i) => (
+                    <span key={i} className="text-sm">{sticker}</span>
+                  ))}
+                </div>
+                
+                <div className="flex-1 min-w-0 py-2">
+                  <p className={`text-sm font-semibold truncate ${isUser(entry.name) ? 'text-[#c9a84c]' : 'text-[#1a2332] dark:text-white'}`}>
+                    {entry.name}{isUser(entry.name) ? ' (You)' : ''}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{entry.lessons} lessons</span>
+                    {entry.streak > 0 && (
+                      <span className="flex items-center gap-0.5 text-xs text-[#5a6577] dark:text-[#9aa3b0]">
+                        <FireIcon /> {entry.streak}d
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="text-right pr-3">
+                  <p className="text-sm font-bold text-[#1a2332] dark:text-white">{entry.xp}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">XP</p>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Achievements */}
-        {user.progress.stickers.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="card mt-6"
+        {/* Your Banner Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="card mt-6"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white">Your Banner</h3>
+            <button
+              onClick={() => setCurrentView('banner')}
+              className="text-xs font-semibold text-[#c9a84c] hover:text-[#a68a3a]"
+            >
+              Customize
+            </button>
+          </div>
+          <div 
+            className="rounded-lg h-20 relative overflow-hidden"
+            style={{ background: user.bannerBg }}
           >
-            <h3 className="text-sm font-semibold text-[#1a2332] dark:text-white mb-3 uppercase tracking-wide">
-              Achievements
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {user.progress.stickers.map((sticker) => (
-                <div
-                  key={sticker}
-                  className="px-3 py-1.5 bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-md text-sm font-medium text-[#1a2332] dark:text-white"
-                >
-                  {sticker}
-                </div>
-              ))}
+            <div className="absolute inset-0 flex items-center justify-center gap-2 flex-wrap p-3">
+              {user.bannerStickers.length > 0 ? (
+                user.bannerStickers.map((s) => (
+                  <span key={s.id} className="text-2xl" style={{ transform: `rotate(${s.rotation}deg)` }}>
+                    {STICKER_DEFS[user.progress.stickers[parseInt(s.id)] || '']?.icon || '⭐'}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-white/60">Add stickers to your banner</span>
+              )}
             </div>
-          </motion.div>
-        )}
+          </div>
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">
+              {user.progress.stickers.length} sticker{user.progress.stickers.length !== 1 ? 's' : ''} earned
+            </span>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
