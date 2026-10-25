@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
+
+interface SavedSession {
+  username: string;
+  lastLogin: string;
+}
 
 export default function Login() {
   const { login, darkMode, setDarkMode } = useStore();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<'name' | 'email'>('name');
   const [rank, setRank] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -12,35 +18,68 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [savedSession, setSavedSession] = useState<SavedSession | null>(null);
+
+  // Check for saved session
+  useEffect(() => {
+    const saved = localStorage.getItem('cadet_music_session');
+    if (saved) {
+      try {
+        setSavedSession(JSON.parse(saved));
+      } catch (e) {
+        localStorage.removeItem('cadet_music_session');
+      }
+    }
+  }, []);
+
+  const handleQuickLogin = () => {
+    if (savedSession) {
+      login(savedSession.username);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (rank.trim().length < 1) {
-      setError('Please enter your rank');
-      return;
-    }
-    if (lastName.trim().length < 1) {
-      setError('Please enter your last name');
-      return;
-    }
-    if (!email.trim().toLowerCase().endsWith('.cadets.gc.ca')) {
-      setError('Please use your .cadets.gc.ca email address');
-      return;
-    }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-    if (isSignUp && password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
+    let displayName = '';
+
+    if (loginMethod === 'name') {
+      if (rank.trim().length < 1) {
+        setError('Please enter your rank');
+        return;
+      }
+      if (lastName.trim().length < 1) {
+        setError('Please enter your last name');
+        return;
+      }
+      displayName = `${rank.trim()} ${lastName.trim()}`;
+    } else {
+      if (!email.trim().toLowerCase().endsWith('.cadets.gc.ca')) {
+        setError('Please use your .cadets.gc.ca email address');
+        return;
+      }
+      if (password.length < 6) {
+        setError('Password must be at least 6 characters');
+        return;
+      }
+      if (isSignUp && password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+      // Extract name from email
+      const emailParts = email.split('@')[0].split('.');
+      const lastNameFromEmail = emailParts[1] || 'Cadet';
+      displayName = `Cdt ${lastNameFromEmail}`;
     }
 
     setLoading(true);
     setTimeout(() => {
-      const displayName = `${rank.trim()} ${lastName.trim()}`;
+      // Save session
+      localStorage.setItem('cadet_music_session', JSON.stringify({
+        username: displayName,
+        lastLogin: new Date().toISOString()
+      }));
       login(displayName);
       setLoading(false);
     }, 600);
@@ -75,131 +114,187 @@ export default function Login() {
           <span className="font-semibold text-[#1a2332] dark:text-white text-lg tracking-tight">Cadet Music</span>
         </motion.div>
 
-        <motion.h1 
-          className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          {isSignUp ? 'Create account' : 'Sign in'}
-        </motion.h1>
-        <motion.p 
-          className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          {isSignUp ? 'Join Cadet Music today' : 'Enter your credentials to continue'}
-        </motion.p>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                Rank
-              </label>
-              <input
-                type="text"
-                value={rank}
-                onChange={(e) => { setRank(e.target.value); setError(''); }}
-                placeholder="Cpl"
-                className="input-field"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                Last name
-              </label>
-              <input
-                type="text"
-                value={lastName}
-                onChange={(e) => { setLastName(e.target.value); setError(''); }}
-                placeholder="Smith"
-                className="input-field"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-              Cadet365 email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              placeholder="name@cdt.cadets.gc.ca"
-              className="input-field"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setError(''); }}
-              placeholder={isSignUp ? 'Min. 6 characters' : 'Enter your password'}
-              className="input-field"
-            />
-          </div>
-
-          {isSignUp && (
-            <div>
-              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
-                Confirm password
-              </label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
-                placeholder="Re-enter your password"
-                className="input-field"
-              />
-            </div>
-          )}
-
-          {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-[#c44536] text-sm font-medium"
+        {/* Quick Login Card */}
+        {savedSession && !isSignUp && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-[#1a2332] border-2 border-[#c9a84c] rounded-xl p-4 mb-6"
+          >
+            <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-2">Welcome back</p>
+            <p className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">{savedSession.username}</p>
+            <button
+              onClick={handleQuickLogin}
+              className="btn-primary w-full py-3"
             >
-              {error}
+              Continue as {savedSession.username.split(' ')[0]}
+            </button>
+            <button
+              onClick={() => setSavedSession(null)}
+              className="w-full text-center text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2 hover:text-[#1a2332] dark:hover:text-white"
+            >
+              Sign in with different account
+            </button>
+          </motion.div>
+        )}
+
+        {!savedSession && (
+          <>
+            <motion.h1 
+              className="text-2xl font-semibold text-[#1a2332] dark:text-white mb-1 text-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              {isSignUp ? 'Create account' : 'Sign in'}
+            </motion.h1>
+            <motion.p 
+              className="text-[#5a6577] dark:text-[#9aa3b0] text-sm mb-8 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              {isSignUp ? 'Join Cadet Music today' : 'Enter your credentials to continue'}
             </motion.p>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full py-3.5 mt-2 disabled:opacity-60"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
-                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-                {isSignUp ? 'Creating account...' : 'Signing in...'}
-              </span>
-            ) : (
-              isSignUp ? 'Create account' : 'Sign in'
-            )}
-          </button>
-        </form>
+            {/* Login Method Toggle */}
+            <div className="flex gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setLoginMethod('name')}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                  loginMethod === 'name'
+                    ? 'bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332]'
+                    : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                }`}
+              >
+                Rank + Name
+              </button>
+              <button
+                type="button"
+                onClick={() => setLoginMethod('email')}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
+                  loginMethod === 'email'
+                    ? 'bg-[#1a2332] dark:bg-[#c9a84c] text-white dark:text-[#1a2332]'
+                    : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
+                }`}
+              >
+                Email + Password
+              </button>
+            </div>
 
-        {/* Switch mode */}
-        <p className="text-center text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-8">
-          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button
-            onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-            className="text-[#c9a84c] hover:text-[#a68a3a] font-semibold transition-colors"
-          >
-            {isSignUp ? 'Sign in' : 'Sign up'}
-          </button>
-        </p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {loginMethod === 'name' ? (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                      Rank
+                    </label>
+                    <input
+                      type="text"
+                      value={rank}
+                      onChange={(e) => { setRank(e.target.value); setError(''); }}
+                      placeholder="Cpl"
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                      Last name
+                    </label>
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => { setLastName(e.target.value); setError(''); }}
+                      placeholder="Smith"
+                      className="input-field"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                      Cadet365 email
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                      placeholder="name@cdt.cadets.gc.ca"
+                      className="input-field"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                      placeholder={isSignUp ? 'Min. 6 characters' : 'Enter your password'}
+                      className="input-field"
+                    />
+                  </div>
+                  {isSignUp && (
+                    <div>
+                      <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">
+                        Confirm password
+                      </label>
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => { setConfirmPassword(e.target.value); setError(''); }}
+                        placeholder="Re-enter your password"
+                        className="input-field"
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-[#c44536] text-sm font-medium"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary w-full py-3.5 mt-2 disabled:opacity-60"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
+                      <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                    {isSignUp ? 'Creating account...' : 'Signing in...'}
+                  </span>
+                ) : (
+                  isSignUp ? 'Create account' : 'Sign in'
+                )}
+              </button>
+            </form>
+
+            {/* Switch mode */}
+            <p className="text-center text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-8">
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+              <button
+                onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
+                className="text-[#c9a84c] hover:text-[#a68a3a] font-semibold transition-colors"
+              >
+                {isSignUp ? 'Sign in' : 'Sign up'}
+              </button>
+            </p>
+          </>
+        )}
 
         {/* Theme toggle */}
         <div className="flex items-center justify-center mt-6">

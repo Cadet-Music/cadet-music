@@ -10,14 +10,13 @@ import Leaderboard from './components/Leaderboard';
 import AdminPanel from './components/AdminPanel';
 import KonamiListener from './components/KonamiListener';
 
-// Secret corner click detector
+// Secret corner click detector - NO VISUAL FEEDBACK
 // Pattern: bottom-right → top-right → top-left → bottom-left
 const CORNER_THRESHOLD = 120; // pixels from edge
 
 function SecretCornerListener() {
   const { unlockAdmin, adminUnlocked } = useStore();
   const [sequence, setSequence] = useState<number[]>([]);
-  const [showHint, setShowHint] = useState(false);
   
   const CORNER_SEQUENCE = [0, 1, 2, 3]; // BR, TR, TL, BL
 
@@ -44,7 +43,6 @@ function SecretCornerListener() {
     const handleClick = (e: MouseEvent) => {
       const corner = getCorner(e.clientX, e.clientY);
       if (corner === null) {
-        // Reset if click is not in a corner
         if (sequence.length > 0) setSequence([]);
         return;
       }
@@ -55,12 +53,10 @@ function SecretCornerListener() {
         setSequence(newSequence);
         
         if (newSequence.length === CORNER_SEQUENCE.length) {
-          // Secret unlocked!
           unlockAdmin();
           setSequence([]);
         }
       } else {
-        // Wrong corner, reset
         setSequence(corner === CORNER_SEQUENCE[0] ? [corner] : []);
       }
     };
@@ -69,50 +65,7 @@ function SecretCornerListener() {
     return () => window.removeEventListener('click', handleClick);
   }, [sequence, getCorner, unlockAdmin, adminUnlocked]);
 
-  // Show subtle hint after 3 correct corners
-  useEffect(() => {
-    if (sequence.length === 3) {
-      setShowHint(true);
-      const timer = setTimeout(() => setShowHint(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [sequence.length]);
-
-  if (adminUnlocked) return null;
-
-  return (
-    <>
-      {/* Progress indicators for corners */}
-      {sequence.length > 0 && (
-        <div className="fixed top-4 right-4 z-[9999] flex gap-1">
-          {CORNER_SEQUENCE.map((_, i) => (
-            <div
-              key={i}
-              className={`w-2 h-2 rounded-full transition-all ${
-                i < sequence.length 
-                  ? 'bg-[#c9a84c] scale-125' 
-                  : 'bg-[#5a6577]/30'
-              }`}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Hint flash */}
-      <AnimatePresence>
-        {showHint && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[9999] bg-[#1a2332] text-[#c9a84c] text-xs font-medium px-4 py-2 rounded-lg shadow-lg"
-          >
-            One more corner...
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
+  return null; // No visual feedback at all
 }
 
 function App() {

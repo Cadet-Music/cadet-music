@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { getLessonById } from '../data';
 import confetti from 'canvas-confetti';
+import SaxophoneAssembly from './SaxophoneAssembly';
 
 type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
 type ExerciseType = 'multiple-choice' | 'note-match' | 'rhythm-tap' | 'true-false' | 'fill-order';
@@ -625,7 +626,19 @@ export default function LessonView() {
                 {learnContent.title}
               </h2>
               
-              {learnContent.image && (
+              {/* Interactive Assembly for pb-2 */}
+              {currentLessonId === 'pb-2' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mb-5"
+                >
+                  <SaxophoneAssembly />
+                </motion.div>
+              )}
+
+              {learnContent.image && currentLessonId !== 'pb-2' && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
