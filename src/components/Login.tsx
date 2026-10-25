@@ -33,6 +33,18 @@ export default function Login() {
 
   const handleQuickLogin = () => {
     if (savedSession) {
+      // Check if user still exists in stored users
+      const users = JSON.parse(localStorage.getItem('cadet_music_users') || '{}');
+      const userExists = Object.values(users).some((u: any) => u.username === savedSession.username);
+      
+      if (!userExists) {
+        // User was deleted (reset or manually removed), clear session
+        localStorage.removeItem('cadet_music_session');
+        setSavedSession(null);
+        setError('Account no longer exists. Please sign up again.');
+        return;
+      }
+      
       login({ username: savedSession.username });
     }
   };
@@ -43,9 +55,9 @@ export default function Login() {
     return users[identifier]?.password || null;
   };
 
-  const storePassword = (identifier: string, password: string) => {
+  const storePassword = (identifier: string, password: string, username: string) => {
     const users = JSON.parse(localStorage.getItem('cadet_music_users') || '{}');
-    users[identifier] = { password, createdAt: new Date().toISOString() };
+    users[identifier] = { password, username, createdAt: new Date().toISOString() };
     localStorage.setItem('cadet_music_users', JSON.stringify(users));
   };
 
@@ -81,17 +93,18 @@ export default function Login() {
           return;
         }
         // Store password for new user
-        storePassword(identifier, password);
+        const displayName = `${rank.trim()} ${lastName.trim()}`;
+        storePassword(identifier, password, displayName);
       } else {
         // Validate password for existing user
         const storedPassword = getStoredPassword(identifier);
-        if (storedPassword && storedPassword !== password) {
-          setError('Incorrect password. Please try again.');
+        if (!storedPassword) {
+          setError('Account not found. Please sign up first.');
           return;
         }
-        // If no stored password (legacy user), store it now
-        if (!storedPassword) {
-          storePassword(identifier, password);
+        if (storedPassword !== password) {
+          setError('Incorrect password. Please try again.');
+          return;
         }
       }
 
@@ -129,17 +142,20 @@ export default function Login() {
           return;
         }
         // Store password for new user
-        storePassword(identifier, password);
+        const emailParts = email.split('@')[0].split('.');
+        const lastNameFromEmail = emailParts[1] || 'Cadet';
+        const displayName = `Cdt ${lastNameFromEmail.charAt(0).toUpperCase() + lastNameFromEmail.slice(1)}`;
+        storePassword(identifier, password, displayName);
       } else {
         // Validate password for existing user
         const storedPassword = getStoredPassword(identifier);
-        if (storedPassword && storedPassword !== password) {
-          setError('Incorrect password. Please try again.');
+        if (!storedPassword) {
+          setError('Account not found. Please sign up first.');
           return;
         }
-        // If no stored password (legacy user), store it now
-        if (!storedPassword) {
-          storePassword(identifier, password);
+        if (storedPassword !== password) {
+          setError('Incorrect password. Please try again.');
+          return;
         }
       }
 
