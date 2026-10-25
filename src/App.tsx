@@ -21,8 +21,10 @@ function SecretCornerListener() {
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [resetPassword, setResetPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [lastUnlockTime, setLastUnlockTime] = useState<number>(0);
 
   const CORNER_SEQUENCE = [0, 1, 2, 3];
+  const UNLOCK_COOLDOWN = 1000; // 1 second cooldown after unlocking admin
 
   const getCorner = useCallback((x: number, y: number): number | null => {
     const w = window.innerWidth;
@@ -58,14 +60,23 @@ function SecretCornerListener() {
         setSequence(newSequence);
         
         if (newSequence.length === CORNER_SEQUENCE.length) {
+          const now = Date.now();
+          
           if (adminUnlocked) {
-            // Already in admin mode, show password-protected reset
+            // Check if we're still in cooldown period after unlocking
+            if (now - lastUnlockTime < UNLOCK_COOLDOWN) {
+              // Still in cooldown, ignore this sequence
+              setSequence([]);
+              return;
+            }
+            // Already in admin mode and cooldown passed, show password-protected reset
             setShowResetDialog(true);
             setResetPassword('');
             setPasswordError('');
           } else {
-            // First time, unlock admin
+            // First time, unlock admin and set cooldown timestamp
             unlockAdmin();
+            setLastUnlockTime(now);
           }
           setSequence([]);
         }
@@ -76,7 +87,7 @@ function SecretCornerListener() {
 
     window.addEventListener('click', handleClick);
     return () => window.removeEventListener('click', handleClick);
-  }, [sequence, getCorner, unlockAdmin, adminUnlocked, showResetDialog]);
+  }, [sequence, getCorner, unlockAdmin, adminUnlocked, showResetDialog, lastUnlockTime]);
 
   const handleReset = () => {
     if (resetPassword !== ADMIN_RESET_PASSWORD) {
