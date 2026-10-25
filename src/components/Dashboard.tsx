@@ -10,11 +10,6 @@ import {
   getRecommendedTraining,
   CONCEPT_NAMES,
 } from '../competency';
-import {
-  getReadinessStatus,
-  getReadinessColor,
-  getReadinessEmoji,
-} from '../readiness';
 
 // SVG Icons
 const HomeIcon = ({ active }: { active: boolean }) => (
@@ -408,83 +403,6 @@ export default function Dashboard() {
               }
               return null;
             })()}
-          </motion.div>
-        )}
-
-        {/* Assessment Readiness */}
-        {user.progress.readinessReports.theory && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="card mb-8 cursor-pointer hover:scale-[1.02] transition-transform"
-            onClick={() => setCurrentView('readiness')}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-sm text-[#1a2332] dark:text-white">
-                Level {user.theoryLevel} Theory Readiness
-              </h2>
-              <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">View Details →</span>
-            </div>
-
-            {/* Readiness Score */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex-1">
-                <div 
-                  className="text-3xl font-bold"
-                  style={{ color: getReadinessColor(getReadinessStatus(user.progress.readinessReports.theory.readiness)) }}
-                >
-                  {user.progress.readinessReports.theory.readiness}%
-                </div>
-                <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Readiness Score</div>
-              </div>
-              <div className="flex-1 text-center">
-                <div 
-                  className="text-lg font-semibold px-3 py-1 rounded-full inline-block"
-                  style={{ 
-                    backgroundColor: `${getReadinessColor(getReadinessStatus(user.progress.readinessReports.theory.readiness))}20`,
-                    color: getReadinessColor(getReadinessStatus(user.progress.readinessReports.theory.readiness))
-                  }}
-                >
-                  {getReadinessEmoji(getReadinessStatus(user.progress.readinessReports.theory.readiness))} {getReadinessStatus(user.progress.readinessReports.theory.readiness)}
-                </div>
-              </div>
-            </div>
-
-            {/* Strongest and Weakest */}
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {user.progress.readinessReports.theory.strongestTopics.length > 0 && (
-                <div className="bg-[#3a8a5c]/5 dark:bg-[#3a8a5c]/10 rounded-lg p-3">
-                  <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-1">✅ Strongest</div>
-                  <div className="text-sm font-semibold text-[#1a2332] dark:text-white truncate">
-                    {CONCEPT_NAMES[user.progress.readinessReports.theory.strongestTopics[0]]}
-                  </div>
-                </div>
-              )}
-              {user.progress.readinessReports.theory.weakestTopics.length > 0 && (
-                <div className="bg-[#c44536]/5 dark:bg-[#c44536]/10 rounded-lg p-3">
-                  <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-1">⚠️ Needs Work</div>
-                  <div className="text-sm font-semibold text-[#1a2332] dark:text-white truncate">
-                    {CONCEPT_NAMES[user.progress.readinessReports.theory.weakestTopics[0]]}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Recommendation */}
-            {user.progress.readinessReports.theory.recommendations.length > 0 && (
-              <div className="bg-gradient-to-r from-[#c9a84c]/10 to-[#a68a3a]/10 dark:from-[#c9a84c]/20 dark:to-[#a68a3a]/20 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">💡</span>
-                  <div className="flex-1">
-                    <div className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">Recommended Next Action</div>
-                    <div className="text-sm font-semibold text-[#1a2332] dark:text-white">
-                      {user.progress.readinessReports.theory.recommendations[0]}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </motion.div>
         )}
 

@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CadetLevel, LEVEL_INFO } from './data';
 import { ConceptStats, Concept, recordCorrectAnswer, recordIncorrectAnswer, initializeConceptMastery } from './competency';
-import { ReadinessReport, generateReadinessReport, initializeReadinessReports } from './readiness';
 
 export type Instrument = 'alto' | 'tenor' | 'baritone' | 'soprano';
 export type LessonStatus = 'locked' | 'available' | 'completed';
@@ -30,10 +29,6 @@ export interface UserProgress {
   stickers: string[];
   goalsCompleted: number;
   conceptMastery: Record<string, ConceptStats>;
-  readinessReports: {
-    theory: ReadinessReport | null;
-    instrument: ReadinessReport | null;
-  };
 }
 
 export interface BannerSticker {
@@ -61,7 +56,7 @@ export interface User {
   bannerStickers: BannerSticker[];
 }
 
-export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'readiness';
+export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics';
 
 interface AppState {
   user: User | null;
@@ -98,9 +93,6 @@ interface AppState {
   // Competency tracking
   recordCorrectAnswer: (concept: Concept) => void;
   recordIncorrectAnswer: (concept: Concept) => void;
-  
-  // Readiness tracking
-  generateReadinessReport: (track: 'theory' | 'instrument') => void;
 }
 
 const BANNER_BGS = [
@@ -141,7 +133,6 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
     stickers: [],
     goalsCompleted: 0,
     conceptMastery: {},
-    readinessReports: initializeReadinessReports(),
   },
   activeSongs: [],
   theoryLevel: 'BASIC',
@@ -352,33 +343,6 @@ export const useStore = create<AppState>()(
         });
       },
       
-      // Readiness tracking action
-      generateReadinessReport: (track) => {
-        const user = get().user;
-        if (!user) return;
-        
-        const level = track === 'theory' ? user.theoryLevel : user.instrumentLevel;
-        const report = generateReadinessReport(
-          user.progress.conceptMastery,
-          user.progress.completedLessons,
-          level,
-          track
-        );
-        
-        set({
-          user: {
-            ...user,
-            progress: {
-              ...user.progress,
-              readinessReports: {
-                ...user.progress.readinessReports,
-                [track]: report,
-              },
-            },
-          },
-        });
-      },
-      
       resetAll: () => {
         localStorage.clear();
         set({ user: null, currentView: 'login', darkMode: false });
@@ -387,17 +351,13 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'cadet-music-storage',
-      version: 2,
+      version: 1,
       migrate: (persistedState: any, version: number) => {
         // Migration from version 0 to 1: Add conceptMastery
         if (version < 1 && persistedState.user?.progress) {
           persistedState.user.progress.conceptMastery = initializeConceptMastery(
             persistedState.user.progress.conceptMastery
           );
-        }
-        // Migration from version 1 to 2: Add readinessReports
-        if (version < 2 && persistedState.user?.progress) {
-          persistedState.user.progress.readinessReports = initializeReadinessReports();
         }
         return persistedState;
       },

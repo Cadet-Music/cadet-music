@@ -11,7 +11,7 @@
 8. [Song Selection](#song-selection)
 9. [Gamification](#gamification)
 10. [Competency Tracking & Adaptive Learning](#competency-tracking--adaptive-learning)
-11. [Assessment Readiness System](#assessment-readiness-system)
+11. [Adaptive Content Weighting](#adaptive-content-weighting)
 12. [Admin Panel](#admin-panel)
 13. [Security Features](#security-features)
 14. [UI/UX Features](#uiux-features)
@@ -30,9 +30,8 @@
 - Interactive lessons with theory and playing components
 - Song selection from official prepared music lists
 - **Competency tracking with 21 music concepts**
-- **Personalized learning recommendations**
-- **Music Readiness Report with analytics**
-- **Assessment Readiness System with level predictions**
+- **Adaptive content weighting (invisible personalization)**
+- **Admin-only performance analytics**
 - Gamification with XP, streaks, and achievements
 - Customizable banners with sticker placement
 - Secret admin panel with password protection
@@ -51,13 +50,12 @@ src/
 ├── data.ts                    # Curriculum data and standards
 ├── theory.ts                  # Theory curriculum (A-CR-CCP-166/PT-004)
 ├── competency.ts              # Competency tracking & adaptive learning
-├── readiness.ts               # Assessment readiness system
+├── adaptive.ts                # Adaptive content weighting system
 ├── index.css                  # Global styles
 ├── components/
 │   ├── Login.tsx              # Authentication (sign in/sign up)
 │   ├── Onboarding.tsx         # Placement assessment
 │   ├── Analytics.tsx          # Music Readiness Report & analytics
-│   ├── ReadinessReport.tsx    # Assessment readiness detailed page
 │   ├── Dashboard.tsx          # Main learning path view
 │   ├── LessonView.tsx         # Lesson content and exercises
 │   ├── Songs.tsx              # Song selection interface
@@ -843,10 +841,16 @@ migrate: (persistedState, version) => {
 
 ---
 
-## Assessment Readiness System
+## Adaptive Content Weighting
 
 ### Overview
-The Assessment Readiness System evaluates cadet preparedness for level assessments, providing clear feedback on what needs improvement before attempting the next level. This system focuses on concepts required for the NEXT level assessment, making it feel like a cadet instructor reviewing progress before a qualification.
+The Adaptive Content Weighting System invisibly personalizes the learning experience by adjusting the frequency of concepts based on individual mastery. Cadets receive more practice on weaker areas without any explicit feedback or reporting. The system behaves like an experienced band officer who naturally provides extra exposure to challenging areas.
+
+### Design Philosophy
+- **Invisible Adaptation**: Cadets are never told they are weak at something
+- **Natural Learning Path**: Curriculum progression remains fixed
+- **Subtle Support**: The app feels intuitive without being obvious
+- **No Negative Feedback**: No messages about weaknesses or readiness scores
 
 ### Data Model
 

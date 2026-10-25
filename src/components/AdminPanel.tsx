@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons } from '../data';
+import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
+import { generateAdminAnalytics } from '../adaptive';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -235,6 +237,100 @@ export default function AdminPanel() {
             </motion.div>
           ))}
         </div>
+
+        {/* Admin Analytics - Instructor Only */}
+        {(() => {
+          const allConcepts = Object.values(CONCEPTS) as Concept[];
+          const analytics = generateAdminAnalytics(user.progress.conceptMastery, allConcepts);
+          
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="card mb-6"
+            >
+              <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide mb-4">
+                Concept Performance Analytics
+              </h3>
+              
+              {/* Concept Accuracy */}
+              <div className="mb-6">
+                <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
+                  Concept Accuracy
+                </p>
+                <div className="space-y-2">
+                  {allConcepts
+                    .filter(c => analytics.conceptAccuracy[c] > 0)
+                    .sort((a, b) => analytics.conceptAccuracy[b] - analytics.conceptAccuracy[a])
+                    .map((concept) => {
+                      const accuracy = analytics.conceptAccuracy[concept];
+                      const color = accuracy >= 80 ? '#3a8a5c' : accuracy >= 60 ? '#c9a84c' : '#c44536';
+                      
+                      return (
+                        <div key={concept} className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm text-[#1a2332] dark:text-white">
+                                {CONCEPT_NAMES[concept]}
+                              </span>
+                              <span className="text-sm font-bold" style={{ color }}>
+                                {accuracy}%
+                              </span>
+                            </div>
+                            <div className="h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-500"
+                                style={{ width: `${accuracy}%`, backgroundColor: color }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+
+              {/* Suggested Focus Areas */}
+              {analytics.suggestedFocus.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
+                    Suggested Focus Areas
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {analytics.suggestedFocus.map((concept) => (
+                      <span
+                        key={concept}
+                        className="text-xs font-medium px-2 py-1 rounded bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20"
+                      >
+                        {CONCEPT_NAMES[concept]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Predicted Trouble Areas */}
+              {analytics.troubleAreas.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
+                    Predicted Trouble Areas
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {analytics.troubleAreas.map((concept) => (
+                      <span
+                        key={concept}
+                        className="text-xs font-medium px-2 py-1 rounded bg-[#c44536]/10 text-[#c44536] border border-[#c44536]/20"
+                      >
+                        {CONCEPT_NAMES[concept]} ({analytics.conceptAccuracy[concept]}%)
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          );
+        })()}
 
         {/* Lesson Tree View */}
         <motion.div
