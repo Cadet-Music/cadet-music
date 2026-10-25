@@ -41,13 +41,16 @@ export interface User {
 interface AppState {
   user: User | null;
   darkMode: boolean;
-  currentView: 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'leaderboard';
+  currentView: 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'leaderboard' | 'admin';
   currentLessonId: string | null;
   lessonComplete: boolean;
+  adminUnlocked: boolean;
   
   // Actions
   setUser: (user: User | null) => void;
   login: (username: string) => void;
+  unlockAdmin: () => void;
+  lockAdmin: () => void;
   logout: () => void;
   setDarkMode: (dark: boolean) => void;
   setCurrentView: (view: AppState['currentView']) => void;
@@ -93,6 +96,7 @@ export const useStore = create<AppState>()(
       currentView: 'login',
       currentLessonId: null,
       lessonComplete: false,
+      adminUnlocked: false,
 
       setUser: (user) => set({ user }),
       
@@ -100,6 +104,9 @@ export const useStore = create<AppState>()(
         const user = defaultUser(username);
         set({ user, currentView: 'onboarding' });
       },
+
+      unlockAdmin: () => set({ adminUnlocked: true, currentView: 'admin' }),
+      lockAdmin: () => set({ adminUnlocked: false, currentView: 'dashboard' }),
       
       logout: () => set({ user: null, currentView: 'login' }),
       
