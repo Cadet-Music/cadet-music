@@ -24,8 +24,34 @@ const CheckIcon = () => (
 const allLessons = getAllLessons();
 
 export default function AdminPanel() {
-  const { user, lockAdmin } = useStore();
+  const { user, lockAdmin, resetAll } = useStore();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [showResetModal, setShowResetModal] = useState(false);
+  const [resetPassword, setResetPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const ADMIN_PASSWORD = 'password';
+
+  const handleResetClick = () => {
+    setShowResetModal(true);
+    setResetPassword('');
+    setPasswordError('');
+  };
+
+  const handleResetConfirm = () => {
+    if (resetPassword === ADMIN_PASSWORD) {
+      resetAll();
+      setShowResetModal(false);
+    } else {
+      setPasswordError('Incorrect password');
+    }
+  };
+
+  const handleResetCancel = () => {
+    setShowResetModal(false);
+    setResetPassword('');
+    setPasswordError('');
+  };
 
   if (!user) return null;
 
@@ -66,11 +92,89 @@ export default function AdminPanel() {
               <h1 className="text-lg font-semibold text-white">Admin Panel</h1>
             </div>
           </div>
-          <span className="text-xs text-[#9aa3b0] font-medium uppercase tracking-wide bg-[#2a3545] px-2 py-1 rounded">
-            Demo Mode
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleResetClick}
+              className="text-xs font-medium uppercase tracking-wide bg-[#c44536] hover:bg-[#a33628] text-white px-3 py-1.5 rounded transition-colors"
+            >
+              Reset All Data
+            </button>
+            <span className="text-xs text-[#9aa3b0] font-medium uppercase tracking-wide bg-[#2a3545] px-2 py-1 rounded">
+              Demo Mode
+            </span>
+          </div>
         </div>
       </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black/60 z-[9999] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-[#1a2332] rounded-xl p-6 max-w-md w-full border-2 border-[#c44536]"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-[#c44536]/10 flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c44536" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-[#1a2332] dark:text-white">Admin Reset</h3>
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">Enter password to confirm</p>
+              </div>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-2">
+                Admin Password
+              </label>
+              <input
+                type="password"
+                value={resetPassword}
+                onChange={(e) => { setResetPassword(e.target.value); setPasswordError(''); }}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleResetConfirm(); }}
+                placeholder="Enter admin password"
+                className="input-field"
+                autoFocus
+              />
+              {passwordError && (
+                <p className="text-sm text-[#c44536] mt-2 font-medium">{passwordError}</p>
+              )}
+            </div>
+
+            <div className="bg-[#c44536]/5 border border-[#c44536]/20 rounded-lg p-3 mb-4">
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                <span className="font-semibold text-[#c44536]">Warning:</span> This will delete:
+              </p>
+              <ul className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mt-2 space-y-1">
+                <li>• All user accounts</li>
+                <li>• All progress and XP</li>
+                <li>• All stickers and achievements</li>
+                <li>• All song selections</li>
+                <li>• All banner customizations</li>
+              </ul>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleResetCancel}
+                className="flex-1 btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleResetConfirm}
+                className="flex-1 btn-danger"
+              >
+                Reset Everything
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 py-6">
         {/* Info Banner */}
