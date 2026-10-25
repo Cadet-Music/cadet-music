@@ -57,7 +57,9 @@ export default function Settings() {
 
   const handleInstrumentLevelChange = (newLevel: CadetLevel) => {
     if (LEVEL_INFO[newLevel].number > LEVEL_INFO[user.theoryLevel].number) {
+      // Show warning but allow the change
       setShowLevelWarning(true);
+      setInstrumentLevel(newLevel);
       return;
     }
     setInstrumentLevel(newLevel);
@@ -197,7 +199,7 @@ export default function Settings() {
             <div className="card bg-[#c9a84c]/5 border-[#c9a84c]/30 dark:bg-[#c9a84c]/10">
               <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
                 <span className="font-semibold text-[#1a2332] dark:text-white">Note: </span>
-                Your theory level must be equal to or higher than your playing level.
+                Your playing level can exceed your theory level, but it's not recommended as you won't earn a badge.
               </p>
             </div>
 
@@ -233,17 +235,18 @@ export default function Settings() {
               </p>
               <div className="flex gap-2">
                 {LEVELS.map(level => {
-                  const isDisabled = LEVEL_INFO[level].number > LEVEL_INFO[user.theoryLevel].number;
+                  const exceedsTheory = LEVEL_INFO[level].number > LEVEL_INFO[user.theoryLevel].number;
                   return (
                     <button
                       key={level}
-                      onClick={() => !isDisabled && handleInstrumentLevelChange(level)}
-                      disabled={isDisabled}
+                      onClick={() => handleInstrumentLevelChange(level)}
                       className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                         user.instrumentLevel === level
-                          ? 'bg-[#c9a84c] text-[#1a2332]'
-                          : isDisabled
-                            ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] opacity-40 cursor-not-allowed'
+                          ? exceedsTheory
+                            ? 'bg-[#c44536] text-white'
+                            : 'bg-[#c9a84c] text-[#1a2332]'
+                          : exceedsTheory
+                            ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] hover:bg-[#d0d0d0] dark:hover:bg-[#3a4a5a] border-2 border-[#c44536]/30'
                             : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] hover:bg-[#d0d0d0] dark:hover:bg-[#3a4a5a]'
                       }`}
                     >
@@ -255,6 +258,11 @@ export default function Settings() {
               <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-2">
                 Current: {user.instrumentLevel} · {LEVEL_INFO[user.instrumentLevel].description}
               </p>
+              {LEVEL_INFO[user.instrumentLevel].number > LEVEL_INFO[user.theoryLevel].number && (
+                <p className="text-xs text-[#c44536] mt-2 font-medium">
+                  ⚠️ Playing level exceeds theory level - you won't earn a badge
+                </p>
+              )}
             </div>
           </motion.div>
         )}
@@ -287,11 +295,13 @@ export default function Settings() {
                     <line x1="12" y1="17" x2="12.01" y2="17" />
                   </svg>
                 </span>
-                <h3 className="font-semibold text-[#1a2332] dark:text-white">Level Requirement</h3>
+                <h3 className="font-semibold text-[#1a2332] dark:text-white">Not Recommended</h3>
               </div>
               <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-5">
-                Your playing level must be equal to or lower than your theory level. 
-                Complete more theory lessons first to unlock higher playing levels.
+                Your playing level is higher than your theory level. This is allowed, but <span className="font-semibold text-[#c44536]">you won't earn a badge</span> for completing this level.
+              </p>
+              <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-5">
+                We recommend completing theory lessons first to fully understand the material.
               </p>
               <button
                 onClick={() => setShowLevelWarning(false)}

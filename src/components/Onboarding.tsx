@@ -240,7 +240,7 @@ export default function Onboarding() {
               Choose Your Levels
             </h2>
             <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-6 text-center">
-              Playing level cannot exceed theory level.
+              Select your starting levels for theory and playing
             </p>
 
             <div className="space-y-4 mb-6">
@@ -252,12 +252,7 @@ export default function Onboarding() {
                   {LEVELS.map(level => (
                     <button
                       key={level}
-                      onClick={() => {
-                        setLocalTheoryLevel(level);
-                        if (LEVEL_INFO[level].number < LEVEL_INFO[playingLevel].number) {
-                          setLocalPlayingLevel(level);
-                        }
-                      }}
+                      onClick={() => setLocalTheoryLevel(level)}
                       className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                         theoryLevel === level
                           ? 'bg-[#c9a84c] text-[#1a2332]'
@@ -276,17 +271,18 @@ export default function Onboarding() {
                 </p>
                 <div className="flex gap-2">
                   {LEVELS.map(level => {
-                    const isDisabled = LEVEL_INFO[level].number > LEVEL_INFO[theoryLevel].number;
+                    const exceedsTheory = LEVEL_INFO[level].number > LEVEL_INFO[theoryLevel].number;
                     return (
                       <button
                         key={level}
-                        onClick={() => !isDisabled && setLocalPlayingLevel(level)}
-                        disabled={isDisabled}
+                        onClick={() => setLocalPlayingLevel(level)}
                         className={`flex-1 py-3 rounded-lg font-semibold text-xs transition-all ${
                           playingLevel === level
-                            ? 'bg-[#c9a84c] text-[#1a2332]'
-                            : isDisabled
-                              ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] opacity-40 cursor-not-allowed'
+                            ? exceedsTheory
+                              ? 'bg-[#c44536] text-white'
+                              : 'bg-[#c9a84c] text-[#1a2332]'
+                            : exceedsTheory
+                              ? 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0] border-2 border-[#c44536]/30'
                               : 'bg-[#e8e8e8] dark:bg-[#2a3545] text-[#5a6577] dark:text-[#9aa3b0]'
                         }`}
                       >
@@ -295,6 +291,11 @@ export default function Onboarding() {
                     );
                   })}
                 </div>
+                {LEVEL_INFO[playingLevel].number > LEVEL_INFO[theoryLevel].number && (
+                  <p className="text-xs text-[#c44536] mt-2 font-medium">
+                    ⚠️ Playing level exceeds theory level - you won't earn a badge
+                  </p>
+                )}
               </div>
             </div>
 
