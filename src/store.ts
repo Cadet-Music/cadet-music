@@ -46,6 +46,7 @@ export interface User {
   email: string;
   avatar: string;
   instrument: Instrument;
+  instrumentId: string; // Full instrument ID (e.g., "alto-sax", "tenor-sax")
   progress: UserProgress;
   activeSongs: string[];
   theoryLevel: CadetLevel;
@@ -123,6 +124,7 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
   email: data.email || '',
   avatar: '🎵',
   instrument: 'alto',
+  instrumentId: 'alto-sax',
   progress: {
     completedLessons: [],
     xp: 0,
@@ -220,7 +222,18 @@ export const useStore = create<AppState>()(
       setInstrument: (instrument) => {
         const user = get().user;
         if (!user) return;
-        set({ user: { ...user, instrument } });
+        
+        // Map instrument type to full instrument ID
+        const instrumentIdMap: Record<string, string> = {
+          'alto': 'alto-sax',
+          'tenor': 'tenor-sax',
+          'baritone': 'baritone-sax',
+          'soprano': 'soprano-sax',
+        };
+        
+        const instrumentId = instrumentIdMap[instrument] || 'alto-sax';
+        
+        set({ user: { ...user, instrument, instrumentId } });
       },
       
       setActiveSongs: (songs) => {

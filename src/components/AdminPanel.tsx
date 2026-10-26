@@ -4,6 +4,7 @@ import { useStore } from '../store';
 import { CURRICULUM, getAllLessons } from '../data';
 import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
 import { generateEnhancedAdminAnalytics, EnhancedConceptAnalytics } from '../adaptive';
+import { getInstrument, getTranspositionDescription, concertToWritten, writtenToConcert } from '../instruments';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -382,6 +383,57 @@ export default function AdminPanel() {
             </motion.div>
           );
         })()}
+
+        {/* Transposition Debug View */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="card mb-6"
+        >
+          <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide mb-4">
+            Transposition Debug
+          </h3>
+          
+          <div className="bg-[#1a2332] dark:bg-[#0f1720] rounded-lg p-4 text-xs font-mono">
+            <div className="space-y-3">
+              <div>
+                <span className="text-[#9aa3b0]">Selected Instrument: </span>
+                <span className="text-[#c9a84c] font-semibold">{user.instrumentId}</span>
+              </div>
+              <div>
+                <span className="text-[#9aa3b0]">Instrument Name: </span>
+                <span className="text-white">{getInstrument(user.instrumentId)?.name || 'Unknown'}</span>
+              </div>
+              <div>
+                <span className="text-[#9aa3b0]">Transposition: </span>
+                <span className="text-white">{getTranspositionDescription(user.instrumentId)}</span>
+              </div>
+              <div>
+                <span className="text-[#9aa3b0]">Semitones: </span>
+                <span className="text-white">{getInstrument(user.instrumentId)?.transpositionSemitones || 0}</span>
+              </div>
+              
+              <div className="border-t border-[#2a3545] pt-3 mt-3">
+                <p className="text-[#9aa3b0] mb-2">Example Conversions:</p>
+                <div className="space-y-1">
+                  <div>
+                    <span className="text-[#9aa3b0]">Concert Bb4 → Written: </span>
+                    <span className="text-[#3a8a5c]">{concertToWritten('Bb4', user.instrumentId) || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#9aa3b0]">Concert C5 → Written: </span>
+                    <span className="text-[#3a8a5c]">{concertToWritten('C5', user.instrumentId) || 'N/A'}</span>
+                  </div>
+                  <div>
+                    <span className="text-[#9aa3b0]">Written C5 → Concert: </span>
+                    <span className="text-[#c9a84c]">{writtenToConcert('C5', user.instrumentId) || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Lesson Tree View */}
         <motion.div

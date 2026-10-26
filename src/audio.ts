@@ -225,8 +225,9 @@ export class AudioAnalyzer {
 
   /**
    * Get current pitch detection
+   * @param instrumentId - Optional instrument ID for transposition
    */
-  getCurrentPitch(): PitchResult | null {
+  getCurrentPitch(instrumentId?: string): PitchResult | null {
     if (!this.isListening || !this.analyser || !this.buffer || !this.audioContext) {
       return null;
     }

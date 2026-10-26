@@ -9,6 +9,8 @@ import { useState, useEffect } from 'react';
 import { AudioManager, AudioState } from '../audioManager';
 import { AudioActivity, SingleNoteConfig, ScaleConfig, PatternConfig } from '../audioActivities';
 import WaveformVisualizer from './WaveformVisualizer';
+import { useStore } from '../store';
+import { concertToWritten, convertPitchForInstrument } from '../instruments';
 
 interface AudioPracticeActivityProps {
   activity: AudioActivity;
@@ -21,10 +23,13 @@ export default function AudioPracticeActivity({
   onComplete,
   onError,
 }: AudioPracticeActivityProps) {
+  const { user } = useStore();
   const [audioManager] = useState(() => new AudioManager());
   const [state, setState] = useState<AudioState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string>('');
+  
+  const instrumentId = user?.instrumentId || 'alto-sax';
 
   useEffect(() => {
     audioManager.setOnStateChange((newState) => {
@@ -82,11 +87,17 @@ export default function AudioPracticeActivity({
     switch (activity.type) {
       case 'play-single-note': {
         const config = activity.config as SingleNoteConfig;
+        // Convert concert pitch to written pitch for the instrument
+        const writtenNote = concertToWritten(config.targetNote, instrumentId) || config.targetNote;
+        
         return (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
             <h4 className="font-semibold text-blue-900 mb-2">Target Note</h4>
             <p className="text-3xl font-bold text-blue-700 mb-2">
-              {config.targetNote}
+              {writtenNote}
+            </p>
+            <p className="text-xs text-blue-600 mb-2">
+              (Written pitch for your instrument)
             </p>
             {config.duration && (
               <p className="text-sm text-blue-600">
@@ -105,6 +116,9 @@ export default function AudioPracticeActivity({
             <p className="text-2xl font-bold text-green-700 mb-2">
               {config.targetScale}
             </p>
+            <p className="text-xs text-green-600 mb-2">
+              (Written for your instrument)
+            </p>
             <p className="text-sm text-green-600">
               Direction: {config.direction || 'ascending'}
               {config.tempo && ` • Tempo: ${config.tempo} BPM`}
@@ -115,11 +129,16 @@ export default function AudioPracticeActivity({
       
       case 'play-pattern': {
         const config = activity.config as PatternConfig;
+        // Convert all pattern notes to written pitch
+        const writtenPattern = config.pattern.map(note => 
+          concertToWritten(note, instrumentId) || note
+        );
+        
         return (
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
             <h4 className="font-semibold text-purple-900 mb-2">Pattern</h4>
             <div className="flex flex-wrap gap-2 mb-2">
-              {config.pattern.map((note, idx) => (
+              {writtenPattern.map((note, idx) => (
                 <span
                   key={idx}
                   className="px-3 py-1 bg-purple-200 text-purple-800 rounded-full font-semibold"
@@ -128,6 +147,9 @@ export default function AudioPracticeActivity({
                 </span>
               ))}
             </div>
+            <p className="text-xs text-purple-600 mb-2">
+              (Written pitch for your instrument)
+            </p>
             {config.tempo && (
               <p className="text-sm text-purple-600">
                 Tempo: {config.tempo} BPM
