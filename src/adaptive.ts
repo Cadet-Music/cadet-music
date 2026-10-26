@@ -11,6 +11,7 @@
  */
 
 import { ConceptStats, Concept, getMasteryLevel, MasteryLevel } from './competency';
+import { calculateSongAwareWeights } from './songs';
 
 // ============================================================
 // SAFEGUARD CONFIGURATION
@@ -149,15 +150,29 @@ export function calculateAdaptiveWeight(stats: ConceptStats | undefined): number
 
 /**
  * Calculate adaptive weights for all concepts
+ * Optionally includes song-aware weighting if selectedSongs provided
  */
 export function calculateAllAdaptiveWeights(
   conceptMastery: Record<string, ConceptStats>,
-  concepts: Concept[]
+  concepts: Concept[],
+  selectedSongs?: string[]
 ): Record<Concept, number> {
   const weights: Partial<Record<Concept, number>> = {};
   
   for (const concept of concepts) {
     weights[concept] = calculateAdaptiveWeight(conceptMastery[concept]);
+  }
+  
+  // Apply song-aware weighting if songs are selected
+  if (selectedSongs && selectedSongs.length > 0) {
+    const songWeights = calculateSongAwareWeights(selectedSongs, conceptMastery);
+    
+    // Multiply existing weights by song-aware weights
+    for (const concept of concepts) {
+      if (songWeights[concept]) {
+        weights[concept] = (weights[concept] || 1.0) * songWeights[concept];
+      }
+    }
   }
   
   return weights as Record<Concept, number>;
@@ -344,12 +359,13 @@ export function getExplorationCandidates(
  * @param concepts - All concepts
  * @param tracker - Session tracker
  * @param sessionSize - Total planned session size
+ * @param selectedSongs - Optional array of selected song IDs for song-aware weighting
  * @returns Selected concept or null
  * 
  * Algorithm:
  * 1. Check if exploration quota should be used (20% of time)
  * 2. If yes, select from exploration candidates
- * 3. If no, calculate adaptive weights
+ * 3. If no, calculate adaptive weights (with song-aware weighting if songs selected)
  * 4. Apply concept floor
  * 5. Filter out concepts that hit session cap
  * 6. Filter out concepts that violate diversity
@@ -359,7 +375,8 @@ export function selectWeightedConceptWithSafeguards(
   conceptMastery: Record<string, ConceptStats>,
   concepts: Concept[],
   tracker: SessionTracker,
-  sessionSize: number
+  sessionSize: number,
+  selectedSongs?: string[]
 ): Concept | null {
   if (concepts.length === 0) return null;
   
@@ -382,8 +399,8 @@ export function selectWeightedConceptWithSafeguards(
     // Fall through to normal selection if no eligible exploration candidates
   }
   
-  // Step 3: Calculate adaptive weights
-  let weights = calculateAllAdaptiveWeights(conceptMastery, concepts);
+  // Step 3: Calculate adaptive weights (with song-aware weighting if applicable)
+  let weights = calculateAllAdaptiveWeights(conceptMastery, concepts, selectedSongs);
   
   // Step 4: Apply concept floor
   weights = applyConceptFloor(weights, conceptMastery, concepts);
@@ -457,7 +474,8 @@ function selectFromWeightedPool(
 export function generateAdaptiveSessionWithSafeguards(
   conceptMastery: Record<string, ConceptStats>,
   concepts: Concept[],
-  sessionLength: number = 10
+  sessionLength: number = 10,
+  selectedSongs?: string[]
 ): Concept[] {
   const session: Concept[] = [];
   let tracker = createSessionTracker();
@@ -467,7 +485,8 @@ export function generateAdaptiveSessionWithSafeguards(
       conceptMastery,
       concepts,
       tracker,
-      sessionLength
+      sessionLength,
+      selectedSongs
     );
     
     if (selected) {
@@ -542,10 +561,11 @@ export function generateEnhancedAdminAnalytics(
  */
 export function selectWeightedConcept(
   conceptMastery: Record<string, ConceptStats>,
-  concepts: Concept[]
+  concepts: Concept[],
+  selectedSongs?: string[]
 ): Concept | null {
   const tracker = createSessionTracker();
-  return selectWeightedConceptWithSafeguards(conceptMastery, concepts, tracker, 10);
+  return selectWeightedConceptWithSafeguards(conceptMastery, concepts, tracker, 10, selectedSongs);
 }
 
 /**
@@ -554,9 +574,10 @@ export function selectWeightedConcept(
 export function selectWeightedConcepts(
   conceptMastery: Record<string, ConceptStats>,
   concepts: Concept[],
-  count: number
+  count: number,
+  selectedSongs?: string[]
 ): Concept[] {
-  return generateAdaptiveSessionWithSafeguards(conceptMastery, concepts, count);
+  return generateAdaptiveSessionWithSafeguards(conceptMastery, concepts, count, selectedSongs);
 }
 
 /**
@@ -571,7 +592,8 @@ export function calculateConceptWeight(stats: ConceptStats | undefined): number 
  */
 export function calculateAllWeights(
   conceptMastery: Record<string, ConceptStats>,
-  concepts: Concept[]
+  concepts: Concept[],
+  selectedSongs?: string[]
 ): Record<Concept, number> {
-  return calculateAllAdaptiveWeights(conceptMastery, concepts);
+  return calculateAllAdaptiveWeights(conceptMastery, concepts, selectedSongs);
 }
