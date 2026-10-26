@@ -7,7 +7,10 @@ import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 
 type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
-type ExerciseType = 'multiple-choice' | 'note-match' | 'rhythm-tap' | 'true-false' | 'fill-order';
+import { AudioActivity } from '../audioActivities';
+import AudioPracticeActivity from './AudioPracticeActivity';
+
+type ExerciseType = 'multiple-choice' | 'note-match' | 'rhythm-tap' | 'true-false' | 'fill-order' | 'audio';
 
 interface QuizOption {
   text: string;
@@ -23,6 +26,7 @@ interface Exercise {
   correctAnswer?: string;
   notePairs?: { note: string; position: string }[];
   concept?: Concept; // Which concept this exercise tests
+  audioActivity?: AudioActivity; // For audio exercises
 }
 
 function getExercisesForLesson(lessonId: string): Exercise[] {
@@ -63,6 +67,64 @@ function getExercisesForLesson(lessonId: string): Exercise[] {
     't-3': [
       { type: 'multiple-choice', question: 'What does "piano" (p) mean?', options: [{ text: 'Soft', correct: true }, { text: 'Loud', correct: false }, { text: 'Fast', correct: false }, { text: 'Slow', correct: false }], concept: CONCEPTS.DYNAMICS },
       { type: 'fill-order', question: 'Order dynamics from softest to loudest:', items: ['pp', 'p', 'mp', 'mf', 'f', 'ff'], correctOrder: ['pp', 'p', 'mp', 'mf', 'f', 'ff'], concept: CONCEPTS.DYNAMICS },
+    ],
+    // Audio practice lessons
+    'audio-basic-note': [
+      { 
+        type: 'audio', 
+        question: 'Practice playing the note G',
+        concept: CONCEPTS.NOTE_NAMES,
+        audioActivity: {
+          id: 'audio-g4',
+          type: 'play-single-note',
+          concept: CONCEPTS.NOTE_NAMES,
+          difficulty: 'easy',
+          instructions: 'Play the note G4 clearly and hold it for 2 seconds.',
+          config: {
+            targetNote: 'G4',
+            allowedDeviation: 25,
+            duration: 2000,
+          },
+        },
+      },
+    ],
+    'audio-basic-scale': [
+      { 
+        type: 'audio', 
+        question: 'Practice the Bb Major scale',
+        concept: CONCEPTS.SCALES,
+        audioActivity: {
+          id: 'audio-bb-major',
+          type: 'play-scale',
+          concept: CONCEPTS.SCALES,
+          difficulty: 'easy',
+          instructions: 'Play the Bb Major scale ascending and descending.',
+          config: {
+            targetScale: 'Bb Major',
+            direction: 'both',
+            tempo: 80,
+          },
+        },
+      },
+    ],
+    'audio-pattern': [
+      { 
+        type: 'audio', 
+        question: 'Practice this arpeggio pattern',
+        concept: CONCEPTS.SCALES,
+        audioActivity: {
+          id: 'audio-arpeggio-1',
+          type: 'play-pattern',
+          concept: CONCEPTS.SCALES,
+          difficulty: 'medium',
+          instructions: 'Play the following pattern: C4 - E4 - G4 - C5',
+          config: {
+            pattern: ['C4', 'E4', 'G4', 'C5'],
+            tempo: 80,
+            allowedDeviation: 25,
+          },
+        },
+      },
     ],
   };
 
@@ -723,6 +785,16 @@ export default function LessonView() {
                 )}
                 {currentExercise.type === 'note-match' && (
                   <NoteMatchExercise exercise={currentExercise} onComplete={handleExerciseComplete} />
+                )}
+                {currentExercise.type === 'audio' && currentExercise.audioActivity && (
+                  <AudioPracticeActivity
+                    activity={currentExercise.audioActivity}
+                    onComplete={() => handleExerciseComplete(true)}
+                    onError={(error) => {
+                      console.error('Audio practice error:', error);
+                      handleExerciseComplete(false);
+                    }}
+                  />
                 )}
               </div>
             </motion.div>

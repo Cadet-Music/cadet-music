@@ -325,7 +325,7 @@ export const LEVEL_B_SONGS = PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.l
 export interface Lesson {
   id: string;
   title: string;
-  type: 'theory' | 'playing' | 'rhythm' | 'exam';
+  type: 'theory' | 'playing' | 'rhythm' | 'exam' | 'audio';
   emoji: string;
   topic: string;
   xp: number;
@@ -333,6 +333,7 @@ export interface Lesson {
   interactive: boolean;
   level: CadetLevel;
   po?: number;
+  requiresMicrophone?: boolean; // Flag for audio practice lessons
 }
 
 export const CURRICULUM: { id: string; title: string; level: number; lessons: Lesson[] }[] = [
@@ -349,6 +350,8 @@ export const CURRICULUM: { id: string; title: string; level: number; lessons: Le
       { id: 'basic-staff', title: 'The Music Staff', type: 'theory', emoji: '📜', topic: 'PO 458', xp: 10, description: 'Lines, spaces, and clefs', interactive: false, level: 'BASIC' as CadetLevel, po: 458 },
       { id: 'basic-notes', title: 'Note Names', type: 'theory', emoji: '🎼', topic: 'PO 458', xp: 15, description: 'Reading notes on the staff', interactive: true, level: 'BASIC' as CadetLevel, po: 458 },
       { id: 'basic-drill', title: 'Band Drill Basics', type: 'playing', emoji: '🎖️', topic: 'PO 459', xp: 10, description: 'Position and movement', interactive: false, level: 'BASIC' as CadetLevel, po: 459 },
+      { id: 'audio-basic-note', title: 'Audio Practice: Note G', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 20, description: 'Practice playing the note G with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },
+      { id: 'audio-basic-scale', title: 'Audio Practice: Bb Major Scale', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 30, description: 'Practice the Bb Major scale with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },
       { id: 'basic-exam', title: 'Basic Assessment', type: 'exam', emoji: '📝', topic: 'Exam', xp: 50, description: 'Complete the BASIC level', interactive: false, level: 'BASIC' as CadetLevel },
     ],
   },
@@ -366,6 +369,7 @@ export const CURRICULUM: { id: string; title: string; level: number; lessons: Le
       { id: 'one-key-sigs', title: 'Key Signatures', type: 'theory', emoji: '🔑', topic: 'PO 458', xp: 20, description: 'Reading key signatures', interactive: true, level: 'ONE' as CadetLevel, po: 458 },
       { id: 'one-sight', title: 'Sight Reading Intro', type: 'theory', emoji: '👁️', topic: 'PO 456', xp: 15, description: '16 bars with assistance', interactive: true, level: 'ONE' as CadetLevel, po: 456 },
       { id: 'one-drill', title: 'Drill Movements', type: 'playing', emoji: '🎖️', topic: 'PO 459', xp: 10, description: 'Marching basics', interactive: false, level: 'ONE' as CadetLevel, po: 459 },
+      { id: 'audio-pattern', title: 'Audio Practice: Arpeggio Pattern', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 35, description: 'Practice playing arpeggio patterns with your instrument', interactive: true, level: 'ONE' as CadetLevel, po: 451, requiresMicrophone: true },
       { id: 'one-exam', title: 'Level One Assessment', type: 'exam', emoji: '📝', topic: 'Exam', xp: 75, description: 'Complete Level ONE', interactive: false, level: 'ONE' as CadetLevel },
     ],
   },
