@@ -852,42 +852,334 @@ The Adaptive Content Weighting System invisibly personalizes the learning experi
 - **Subtle Support**: The app feels intuitive without being obvious
 - **No Negative Feedback**: No messages about weaknesses or readiness scores
 
-### Data Model
+### Adaptive Safeguards
 
-#### ReadinessReport Interface
+The system includes comprehensive safeguards to prevent common adaptive learning failures:
+
+#### 1. Anti-Spiral Protection
+**Problem**: A weak concept could eventually dominate all generated questions, making the app repetitive.
+
+**Solution**: Maximum concept selection cap of 35% per session.
+
+**Implementation**:
 ```typescript
-interface ReadinessReport {
-  level: CadetLevel;
-  readiness: number; // 0-100
-  strongestTopics: Concept[];
-  weakestTopics: Concept[];
-  recommendations: string[];
-  lastUpdated: string;
+const ADAPTIVE_CONFIG = {
+  MAX_CONCEPT_PERCENTAGE: 0.35, // 35%
+};
+
+function hasHitSessionCap(concept, tracker, sessionSize) {
+  const count = tracker.conceptCounts[concept] || 0;
+  const maxAllowed = Math.ceil(sessionSize * ADAPTIVE_CONFIG.MAX_CONCEPT_PERCENTAGE);
+  return count >= maxAllowed;
 }
 ```
 
-#### UserProgress Extension
-Added `readinessReports` to UserProgress:
+**Example**: In a 10-question session, no concept can appear more than 4 times (35% of 10 = 3.5, rounded up to 4).
+
+#### 2. Concept Floor
+**Problem**: Mastered concepts disappear forever, and users eventually forget them.
+
+**Solution**: Every concept maintains a minimum appearance chance.
+
+**Implementation**:
 ```typescript
-readinessReports: {
-  theory: ReadinessReport | null;
-  instrument: ReadinessReport | null;
+const ADAPTIVE_CONFIG = {
+  MIN_APPEARANCE_RATE: {
+    'Mastered': 0.10,    // 10% minimum
+    'Proficient': 0.15,  // 15% minimum
+    'Developing': 0.0,   // Base weighting (no floor)
+    'Learning': 0.0,     // Boost weighting (no floor)
+    'Unknown': 0.0,      // Exploration quota handles this
+  },
+};
+
+function applyConceptFloor(weights, conceptMastery, concepts) {
+  const totalWeight = concepts.reduce((sum, c) => sum + weights[c], 0);
+  const adjustedWeights = { ...weights };
+  
+  for (const concept of concepts) {
+    const state = getAdaptiveState(conceptMastery[concept]);
+    const floor = ADAPTIVE_CONFIG.MIN_APPEARANCE_RATE[state];
+    
+    if (floor > 0) {
+      const currentRate = weights[concept] / totalWeight;
+      if (currentRate < floor) {
+        // Increase weight to meet floor
+        adjustedWeights[concept] = floor * totalWeight;
+      }
+    }
+  }
+  
+  return adjustedWeights;
 }
 ```
 
-### Readiness Calculation
+**Result**: Mastered concepts appear at least 10% of the time, proficient concepts at least 15% of the time.
 
-#### Formula
-Readiness is calculated using weighted components:
-- **60% Concept Mastery**: Average mastery of required concepts for the level
-- **20% Assessment Results**: Past assessment performance (future enhancement)
-- **20% Lesson Completion**: Percentage of level lessons completed
+#### 3. Minimum Data Requirement
+**Problem**: The system reacts too aggressively to a few questions (e.g., 3 wrong answers = "weak concept").
 
-#### Readiness Status Categories
-- **0-49**: Not Ready 🚩 (Red)
-- **50-69**: Developing 📚 (Orange)
-- **70-84**: Nearly Ready ⚠️ (Yellow)
-- **85-100**: Ready ✅ (Green)
+**Solution**: No concept is classified as weak or strong until it has at least 10 attempts.
+
+**Implementation**:
+```typescript
+const ADAPTIVE_CONFIG = {
+  MIN_ATTEMPTS_FOR_CLASSIFICATION: 10,
+};
+
+function getAdaptiveState(stats) {
+  // No data or insufficient data
+  if (!stats || stats.attempts < ADAPTIVE_CONFIG.MIN_ATTEMPTS_FOR_CLASSIFICATION) {
+    return 'Unknown';
+  }
+  
+  // Sufficient data: use mastery level
+  return getMasteryLevel(stats.masteryScore);
+}
+```
+
+**States**:
+- **Unknown** (< 10 attempts): Treated as new/unexplored, gets moderate weight (2.5x)
+- **Learning/Developing/Proficient/Mastered** (≥ 10 attempts): Classified normally
+
+#### 4. New Concept Discovery (Exploration Quota)
+**Problem**: Adaptive systems focus too much on known weak areas, and users stop seeing new material.
+
+**Solution**: Reserve 20% of question selection for exploration.
+
+**Implementation**:
+```typescript
+const ADAPTIVE_CONFIG = {
+  EXPLORATION_QUOTA: 0.20, // 20%
+};
+
+function selectWeightedConceptWithSafeguards(conceptMastery, concepts, tracker, sessionSize) {
+  // Check if exploration quota should be used
+  const explorationRate = tracker.totalSelected / sessionSize;
+  const shouldExplore = explorationRate < ADAPTIVE_CONFIG.EXPLORATION_QUOTA;
+  
+  if (shouldExplore) {
+    // Select from exploration candidates (Unknown or low-attempt concepts)
+    const candidates = getExplorationCandidates(conceptMastery, concepts);
+    const eligibleCandidates = candidates.filter(c => 
+      !hasHitSessionCap(c, tracker, sessionSize) &&
+      !violatesDiversityRule(c, tracker)
+    );
+    
+    if (eligibleCandidates.length > 0) {
+      return eligibleCandidates[Math.floor(Math.random() * eligibleCandidates.length)];
+    }
+  }
+  
+  // Normal weighted selection...
+}
+```
+
+**Exploration Candidates**:
+- Unknown concepts (0 attempts)
+- Low-attempt concepts (< 10 attempts)
+
+#### 5. Updated Weighting Model
+**Enhanced weight multipliers with Unknown state**:
+
+```typescript
+const ADAPTIVE_WEIGHTS = {
+  'Unknown': 2.5,     // New/unattempted concepts
+  'Learning': 3.0,    // 0-39% mastery
+  'Developing': 2.0,  // 40-69% mastery
+  'Proficient': 1.5,  // 70-89% mastery
+  'Mastered': 1.0,    // 90-100% mastery
+};
+```
+
+**Rationale**:
+- **Unknown (2.5x)**: Encourages exploration of new material
+- **Learning (3.0x)**: Strong focus on struggling areas
+- **Developing (2.0x)**: Moderate focus on improving areas
+- **Proficient (1.5x)**: Light reinforcement
+- **Mastered (1.0x)**: Maintenance mode
+
+#### 6. Recency Decay System
+**Problem**: A concept answered correctly two years ago should not stay mastered forever.
+
+**Solution**: Use recency decay to reduce weight of recently practiced concepts and increase weight of ignored concepts.
+
+**Implementation**:
+```typescript
+const ADAPTIVE_CONFIG = {
+  RECENCY_DECAY_DAYS: 7,
+  RECENCY_DECAY_RATE: 0.95, // 5% reduction per week
+};
+
+function calculateRecencyMultiplier(lastReviewed) {
+  if (!lastReviewed) return 1.0; // Never reviewed = no decay
+  
+  const lastDate = new Date(lastReviewed);
+  const now = new Date();
+  const daysSinceReview = Math.floor((now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // No decay if reviewed within threshold
+  if (daysSinceReview <= ADAPTIVE_CONFIG.RECENCY_DECAY_DAYS) {
+    return 1.0;
+  }
+  
+  // Calculate decay: each week reduces by RECENCY_DECAY_RATE
+  const weeksSinceReview = Math.floor((daysSinceReview - ADAPTIVE_CONFIG.RECENCY_DECAY_DAYS) / 7);
+  return Math.pow(ADAPTIVE_CONFIG.RECENCY_DECAY_RATE, weeksSinceReview);
+}
+
+function calculateAdaptiveWeight(stats) {
+  const state = getAdaptiveState(stats);
+  const baseWeight = ADAPTIVE_WEIGHTS[state];
+  const recencyMultiplier = calculateRecencyMultiplier(stats?.lastReviewed);
+  
+  return baseWeight * recencyMultiplier;
+}
+```
+
+**Example**:
+- Reviewed 1 week ago: weight × 1.0 (no decay)
+- Reviewed 2 weeks ago: weight × 0.95
+- Reviewed 4 weeks ago: weight × 0.9025
+- Reviewed 8 weeks ago: weight × 0.8145
+
+**Effect**: Recently practiced concepts receive lower priority, ignored concepts slowly gain priority.
+
+#### 7. Question Diversity
+**Problem**: Avoid repetitive sequences like "intervals, intervals, intervals, intervals, intervals".
+
+**Solution**: Never show the same concept more than twice consecutively.
+
+**Implementation**:
+```typescript
+const ADAPTIVE_CONFIG = {
+  MAX_CONSECUTIVE_SAME_CONCEPT: 2,
+};
+
+function violatesDiversityRule(concept, tracker) {
+  const recent = tracker.recentSelections;
+  if (recent.length < ADAPTIVE_CONFIG.MAX_CONSECUTIVE_SAME_CONCEPT) {
+    return false;
+  }
+  
+  // Count consecutive same-concept at the end
+  let consecutiveCount = 0;
+  for (let i = recent.length - 1; i >= 0; i--) {
+    if (recent[i] === concept) {
+      consecutiveCount++;
+    } else {
+      break;
+    }
+  }
+  
+  return consecutiveCount >= ADAPTIVE_CONFIG.MAX_CONSECUTIVE_SAME_CONCEPT;
+}
+```
+
+**Session Tracking**:
+```typescript
+interface SessionTracker {
+  conceptCounts: Partial<Record<Concept, number>>;
+  totalSelected: number;
+  recentSelections: Concept[]; // Last 10 selections for diversity
+}
+```
+
+### Enhanced Weight Calculation Algorithm
+
+**Complete formula**:
+```
+finalWeight = baseWeight × recencyMultiplier
+
+Where:
+- baseWeight = ADAPTIVE_WEIGHTS[state]
+- state = getAdaptiveState(stats)
+- recencyMultiplier = calculateRecencyMultiplier(stats.lastReviewed)
+```
+
+**Selection process**:
+1. Check if exploration quota should be used (20% of session)
+2. If yes, select from exploration candidates (Unknown/low-attempt concepts)
+3. If no, calculate adaptive weights for all concepts
+4. Apply concept floor to ensure minimum appearance rates
+5. Filter out concepts that hit session cap (35% max)
+6. Filter out concepts that violate diversity rule (2 consecutive max)
+7. Perform weighted random selection from eligible concepts
+8. Update session tracker
+
+### Admin Analytics (Enhanced)
+
+**Instructor-only analytics display**:
+
+```typescript
+interface EnhancedConceptAnalytics {
+  concept: Concept;
+  attempts: number;
+  accuracy: number;
+  mastery: number;
+  state: AdaptiveMasteryState;
+  lastReviewed: string | null;
+  recencyMultiplier: number;
+  adaptiveWeight: number;
+  sessionCount: number;
+}
+```
+
+**Display includes**:
+- Concept name
+- Attempts count
+- Accuracy percentage
+- Mastery score
+- Adaptive state (Unknown/Learning/Developing/Proficient/Mastered)
+- Last reviewed date
+- Recency multiplier (percentage)
+- Adaptive weight (multiplier)
+- Session count (current session)
+
+**Example display**:
+```
+Intervals
+Accuracy: 62%
+Attempts: 43
+Mastery: 62%
+State: Developing
+Weight: 2.4x
+Recency: 95%
+Last reviewed: 2024-01-15
+```
+
+### Configuration Constants
+
+All safeguards are configurable via `ADAPTIVE_CONFIG`:
+
+```typescript
+export const ADAPTIVE_CONFIG = {
+  // Anti-spiral protection
+  MAX_CONCEPT_PERCENTAGE: 0.35, // 35%
+  
+  // Concept floor
+  MIN_APPEARANCE_RATE: {
+    'Mastered': 0.10,    // 10% minimum
+    'Proficient': 0.15,  // 15% minimum
+    'Developing': 0.0,   // Base weighting
+    'Learning': 0.0,     // Boost weighting
+    'Unknown': 0.0,      // Exploration quota
+  },
+  
+  // Minimum data requirement
+  MIN_ATTEMPTS_FOR_CLASSIFICATION: 10,
+  
+  // Exploration quota
+  EXPLORATION_QUOTA: 0.20, // 20%
+  
+  // Recency decay
+  RECENCY_DECAY_DAYS: 7,
+  RECENCY_DECAY_RATE: 0.95, // 5% per week
+  
+  // Diversity
+  MAX_CONSECUTIVE_SAME_CONCEPT: 2,
+};
+```
 
 ### Level Requirements
 

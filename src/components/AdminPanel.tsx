@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons } from '../data';
 import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
-import { generateAdminAnalytics } from '../adaptive';
+import { generateEnhancedAdminAnalytics, EnhancedConceptAnalytics } from '../adaptive';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -241,7 +241,22 @@ export default function AdminPanel() {
         {/* Admin Analytics - Instructor Only */}
         {(() => {
           const allConcepts = Object.values(CONCEPTS) as Concept[];
-          const analytics = generateAdminAnalytics(user.progress.conceptMastery, allConcepts);
+          const analytics = generateEnhancedAdminAnalytics(user.progress.conceptMastery, allConcepts);
+          
+          // Filter to only show concepts with data
+          const conceptsWithData = analytics.filter(a => a.attempts > 0);
+          
+          // Identify suggested focus areas (low accuracy with sufficient attempts)
+          const suggestedFocus = analytics
+            .filter(a => a.attempts >= 10 && a.accuracy < 70)
+            .sort((a, b) => a.accuracy - b.accuracy)
+            .slice(0, 3);
+          
+          // Identify trouble areas (very low accuracy)
+          const troubleAreas = analytics
+            .filter(a => a.attempts >= 10 && a.accuracy < 60)
+            .sort((a, b) => a.accuracy - b.accuracy)
+            .slice(0, 3);
           
           return (
             <motion.div
@@ -254,37 +269,73 @@ export default function AdminPanel() {
                 Concept Performance Analytics
               </h3>
               
-              {/* Concept Accuracy */}
+              {/* Concept Accuracy with Enhanced Details */}
               <div className="mb-6">
                 <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
-                  Concept Accuracy
+                  Concept Performance
                 </p>
-                <div className="space-y-2">
-                  {allConcepts
-                    .filter(c => analytics.conceptAccuracy[c] > 0)
-                    .sort((a, b) => analytics.conceptAccuracy[b] - analytics.conceptAccuracy[a])
-                    .map((concept) => {
-                      const accuracy = analytics.conceptAccuracy[concept];
-                      const color = accuracy >= 80 ? '#3a8a5c' : accuracy >= 60 ? '#c9a84c' : '#c44536';
+                <div className="space-y-3">
+                  {conceptsWithData
+                    .sort((a, b) => b.accuracy - a.accuracy)
+                    .map((item: EnhancedConceptAnalytics) => {
+                      const color = item.accuracy >= 80 ? '#3a8a5c' : item.accuracy >= 60 ? '#c9a84c' : '#c44536';
+                      const stateColor = item.state === 'Mastered' ? '#3a8a5c' : 
+                                        item.state === 'Proficient' ? '#c9a84c' : 
+                                        item.state === 'Developing' ? '#d4903a' : 
+                                        item.state === 'Learning' ? '#c44536' : '#9aa3b0';
                       
                       return (
-                        <div key={concept} className="flex items-center gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm text-[#1a2332] dark:text-white">
-                                {CONCEPT_NAMES[concept]}
+                        <div key={item.concept} className="border border-[#e2e4e8] dark:border-[#2a3545] rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-semibold text-[#1a2332] dark:text-white">
+                              {CONCEPT_NAMES[item.concept]}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span 
+                                className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                                style={{ backgroundColor: `${stateColor}20`, color: stateColor }}
+                              >
+                                {item.state}
                               </span>
                               <span className="text-sm font-bold" style={{ color }}>
-                                {accuracy}%
+                                {item.accuracy}%
                               </span>
                             </div>
-                            <div className="h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden">
-                              <div
-                                className="h-full rounded-full transition-all duration-500"
-                                style={{ width: `${accuracy}%`, backgroundColor: color }}
-                              />
+                          </div>
+                          
+                          {/* Progress bar */}
+                          <div className="h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden mb-2">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${item.accuracy}%`, backgroundColor: color }}
+                            />
+                          </div>
+                          
+                          {/* Detailed stats */}
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                              <span className="text-[#5a6577] dark:text-[#9aa3b0]">Attempts: </span>
+                              <span className="font-semibold text-[#1a2332] dark:text-white">{item.attempts}</span>
+                            </div>
+                            <div>
+                              <span className="text-[#5a6577] dark:text-[#9aa3b0]">Mastery: </span>
+                              <span className="font-semibold text-[#1a2332] dark:text-white">{item.mastery}%</span>
+                            </div>
+                            <div>
+                              <span className="text-[#5a6577] dark:text-[#9aa3b0]">Weight: </span>
+                              <span className="font-semibold text-[#1a2332] dark:text-white">{item.adaptiveWeight.toFixed(2)}x</span>
+                            </div>
+                            <div>
+                              <span className="text-[#5a6577] dark:text-[#9aa3b0]">Recency: </span>
+                              <span className="font-semibold text-[#1a2332] dark:text-white">{(item.recencyMultiplier * 100).toFixed(0)}%</span>
                             </div>
                           </div>
+                          
+                          {item.lastReviewed && (
+                            <div className="mt-2 text-xs text-[#5a6577] dark:text-[#9aa3b0]">
+                              Last reviewed: {new Date(item.lastReviewed).toLocaleDateString()}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -292,18 +343,18 @@ export default function AdminPanel() {
               </div>
 
               {/* Suggested Focus Areas */}
-              {analytics.suggestedFocus.length > 0 && (
+              {suggestedFocus.length > 0 && (
                 <div className="mb-6">
                   <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
                     Suggested Focus Areas
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {analytics.suggestedFocus.map((concept) => (
+                    {suggestedFocus.map((item: EnhancedConceptAnalytics) => (
                       <span
-                        key={concept}
+                        key={item.concept}
                         className="text-xs font-medium px-2 py-1 rounded bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20"
                       >
-                        {CONCEPT_NAMES[concept]}
+                        {CONCEPT_NAMES[item.concept]} ({item.accuracy}%)
                       </span>
                     ))}
                   </div>
@@ -311,18 +362,18 @@ export default function AdminPanel() {
               )}
 
               {/* Predicted Trouble Areas */}
-              {analytics.troubleAreas.length > 0 && (
+              {troubleAreas.length > 0 && (
                 <div>
                   <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">
                     Predicted Trouble Areas
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {analytics.troubleAreas.map((concept) => (
+                    {troubleAreas.map((item: EnhancedConceptAnalytics) => (
                       <span
-                        key={concept}
+                        key={item.concept}
                         className="text-xs font-medium px-2 py-1 rounded bg-[#c44536]/10 text-[#c44536] border border-[#c44536]/20"
                       >
-                        {CONCEPT_NAMES[concept]} ({analytics.conceptAccuracy[concept]}%)
+                        {CONCEPT_NAMES[item.concept]} ({item.accuracy}%)
                       </span>
                     ))}
                   </div>
