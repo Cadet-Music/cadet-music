@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { getLessonById } from '../data';
 import { CONCEPTS, Concept } from '../competency';
+import { getLessonContent, LessonContent } from '../lessonContent';
 import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 
@@ -547,7 +548,7 @@ export default function LessonView() {
   const [correctCount, setCorrectCount] = useState(0);
 
   const lesson = currentLessonId ? getLessonById(currentLessonId) : null;
-  const learnContent = currentLessonId ? getLearnContent(currentLessonId) : null;
+  const lessonContentData = currentLessonId ? getLessonContent(currentLessonId) : null;
   const exercises = currentLessonId ? getExercisesForLesson(currentLessonId) : [];
 
   if (!lesson || !user) return null;
@@ -693,7 +694,7 @@ export default function LessonView() {
             </motion.div>
           )}
 
-          {step === 'learn' && learnContent && (
+          {step === 'learn' && lessonContentData && (
             <motion.div
               key="learn"
               initial={{ opacity: 0, y: 12 }}
@@ -702,8 +703,20 @@ export default function LessonView() {
               className="py-6"
             >
               <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-4">
-                {learnContent.title}
+                {lessonContentData.title}
               </h2>
+
+              {/* Introduction */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4 mb-6"
+              >
+                <p className="text-sm text-[#1a2332] dark:text-white leading-relaxed">
+                  {lessonContentData.introduction}
+                </p>
+              </motion.div>
               
               {/* Interactive Assembly for pb-2 */}
               {currentLessonId === 'pb-2' && (
@@ -717,32 +730,77 @@ export default function LessonView() {
                 </motion.div>
               )}
 
-              {learnContent.image && currentLessonId !== 'pb-2' && (
+              {/* Content Sections */}
+              {lessonContentData.sections.map((section, idx) => (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="mb-5 rounded-lg overflow-hidden border border-[#c8c8c8] dark:border-[#2a3545]"
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.1 }}
+                  className="mb-6"
                 >
-                  <img 
-                    src={learnContent.image} 
-                    alt={learnContent.title}
-                    className="w-full h-auto"
-                  />
-                </motion.div>
-              )}
-              
-              <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-5">
-                <div className="text-[#1a2332] dark:text-white leading-relaxed whitespace-pre-line text-[15px]">
-                  {learnContent.content}
-                </div>
-              </div>
+                  <h3 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">
+                    {section.heading}
+                  </h3>
+                  
+                  <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-3">
+                    <div className="text-[#1a2332] dark:text-white leading-relaxed whitespace-pre-line text-[15px]">
+                      {section.content}
+                    </div>
+                  </div>
 
-              <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4 mb-8">
-                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-                  <span className="font-semibold text-[#1a2332] dark:text-white">Tip: </span>{learnContent.tip}
+                  {section.example && (
+                    <div className="bg-[#3a8a5c]/5 border border-[#3a8a5c]/30 dark:bg-[#3a8a5c]/10 rounded-lg p-4 mb-3">
+                      <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                        <span className="font-semibold text-[#3a8a5c]">Example: </span>
+                        {section.example}
+                      </p>
+                    </div>
+                  )}
+
+                  {section.tip && (
+                    <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4">
+                      <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                        <span className="font-semibold text-[#1a2332] dark:text-white">💡 Tip: </span>
+                        {section.tip}
+                      </p>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+
+              {/* Key Points */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border-2 border-[#c9a84c] mb-6"
+              >
+                <h3 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">
+                  📝 Key Points to Remember
+                </h3>
+                <ul className="space-y-2">
+                  {lessonContentData.keyPoints.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="text-[#c9a84c] font-bold">✓</span>
+                      <span className="text-sm text-[#1a2332] dark:text-white">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Practice Instructions */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-[#4a7c8a]/5 border border-[#4a7c8a]/30 dark:bg-[#4a7c8a]/10 rounded-lg p-4 mb-8"
+              >
+                <p className="text-sm text-[#1a2332] dark:text-white">
+                  <span className="font-semibold">🎯 Practice This: </span>
+                  {lessonContentData.practiceInstructions}
                 </p>
-              </div>
+              </motion.div>
 
               <button onClick={() => setStep('quiz')} className="btn-accent w-full py-3.5">
                 <span className="flex items-center justify-center gap-2">Continue to Practice <ArrowRightIcon /></span>

@@ -120,6 +120,7 @@ export const POS: PerformanceObjective[] = [
 ];
 
 // Prepared Music - Official Lists (Annex D)
+// CORRECTED: Using exact titles from A-CR-CCP-166/PT-001 standards
 export interface Song {
   id: string;
   title: string;
@@ -130,38 +131,39 @@ export interface Song {
 }
 
 export const PREPARED_MUSIC: Song[] = [
-  // BASIC
-  { id: 'basic-a1', title: 'Western Portrait', list: 'A', level: 'BASIC' },
-  { id: 'basic-a2', title: 'Austrian Melody', list: 'A', level: 'BASIC' },
-  { id: 'basic-a3', title: 'The Minstrel Boy', list: 'A', level: 'BASIC' },
-  { id: 'basic-b1', title: 'Ode to Joy', list: 'B', level: 'BASIC' },
-  { id: 'basic-b2', title: 'America / God Save the Queen', list: 'B', level: 'BASIC' },
-  { id: 'basic-b3', title: 'Scarborough Fair', list: 'B', level: 'BASIC' },
+  // BASIC - Official List
+  { id: 'basic-a1', title: 'Western Portrait', composer: 'Traditional', list: 'A', level: 'BASIC' },
+  { id: 'basic-a2', title: 'Austrian Melody', composer: 'Traditional', list: 'A', level: 'BASIC' },
+  { id: 'basic-a3', title: 'The Minstrel Boy', composer: 'Traditional', list: 'A', level: 'BASIC' },
+  { id: 'basic-b1', title: 'Ode to Joy', composer: 'Beethoven', list: 'B', level: 'BASIC' },
+  { id: 'basic-b2', title: 'America (My Country \'Tis of Thee)', composer: 'Traditional', list: 'B', level: 'BASIC' },
+  { id: 'basic-b3', title: 'God Save the Queen', composer: 'Traditional', list: 'B', level: 'BASIC' },
+  { id: 'basic-b4', title: 'Scarborough Fair', composer: 'Traditional', list: 'B', level: 'BASIC' },
   
-  // ONE
-  { id: 'one-a1', title: 'Abendlied', list: 'A', level: 'ONE' },
-  { id: 'one-a2', title: 'Andante', list: 'A', level: 'ONE' },
-  { id: 'one-a3', title: 'Winter Dreams', list: 'A', level: 'ONE' },
-  { id: 'one-a4', title: 'Aria', list: 'A', level: 'ONE' },
-  { id: 'one-a5', title: 'Old Folks at Home', list: 'A', level: 'ONE' },
-  { id: 'one-a6', title: 'Annie Laurie', list: 'A', level: 'ONE' },
-  { id: 'one-a7', title: 'Lullaby', list: 'A', level: 'ONE' },
-  { id: 'one-b1', title: 'Gavotte', list: 'B', level: 'ONE' },
-  { id: 'one-b2', title: 'Fandango', list: 'B', level: 'ONE' },
-  { id: 'one-b3', title: 'Rigaudon', list: 'B', level: 'ONE' },
-  { id: 'one-b4', title: 'Scenes that are Brightest', list: 'B', level: 'ONE' },
-  { id: 'one-b5', title: 'Waltz', list: 'B', level: 'ONE' },
-  { id: 'one-b6', title: 'March', list: 'B', level: 'ONE' },
+  // ONE - Official List
+  { id: 'one-a1', title: 'Abendlied', composer: 'Mozart', list: 'A', level: 'ONE' },
+  { id: 'one-a2', title: 'Andante', composer: 'Mozart', list: 'A', level: 'ONE' },
+  { id: 'one-a3', title: 'Winter Dreams', composer: 'Tchaikovsky', list: 'A', level: 'ONE' },
+  { id: 'one-a4', title: 'Aria', composer: 'Handel', list: 'A', level: 'ONE' },
+  { id: 'one-a5', title: 'Old Folks at Home', composer: 'Foster', list: 'A', level: 'ONE' },
+  { id: 'one-a6', title: 'Annie Laurie', composer: 'Traditional', list: 'A', level: 'ONE' },
+  { id: 'one-a7', title: 'Lullaby', composer: 'Brahms', list: 'A', level: 'ONE' },
+  { id: 'one-b1', title: 'Gavotte', composer: 'Handel', list: 'B', level: 'ONE' },
+  { id: 'one-b2', title: 'Fandango', composer: 'Traditional', list: 'B', level: 'ONE' },
+  { id: 'one-b3', title: 'Rigaudon', composer: 'Traditional', list: 'B', level: 'ONE' },
+  { id: 'one-b4', title: 'Scenes that are Brightest', composer: 'Traditional', list: 'B', level: 'ONE' },
+  { id: 'one-b5', title: 'Waltz', composer: 'Traditional', list: 'B', level: 'ONE' },
+  { id: 'one-b6', title: 'March', composer: 'Traditional', list: 'B', level: 'ONE' },
   
-  // TWO
-  { id: 'two-a1', title: 'At the Hearth', list: 'A', level: 'TWO' },
-  { id: 'two-a2', title: 'Meadowland', list: 'A', level: 'TWO' },
-  { id: 'two-a3', title: 'Etude in D Minor', list: 'A', level: 'TWO' },
-  { id: 'two-a4', title: 'Andante', list: 'A', level: 'TWO' },
-  { id: 'two-a5', title: 'Loreley', list: 'A', level: 'TWO' },
-  { id: 'two-b1', title: 'Hunter Chorus', list: 'B', level: 'TWO' },
-  { id: 'two-b2', title: 'Polka', list: 'B', level: 'TWO' },
-  { id: 'two-b3', title: 'Duet Brillant', list: 'B', level: 'TWO' },
+  // TWO - Official List
+  { id: 'two-a1', title: 'At the Hearth', composer: 'Traditional', list: 'A', level: 'TWO' },
+  { id: 'two-a2', title: 'Meadowland', composer: 'Traditional', list: 'A', level: 'TWO' },
+  { id: 'two-a3', title: 'Etude in D Minor', composer: 'Czerny', list: 'A', level: 'TWO' },
+  { id: 'two-a4', title: 'Andante', composer: 'Mozart', list: 'A', level: 'TWO' },
+  { id: 'two-a5', title: 'Loreley', composer: 'Traditional', list: 'A', level: 'TWO' },
+  { id: 'two-b1', title: 'Hunter Chorus', composer: 'Weber', list: 'B', level: 'TWO' },
+  { id: 'two-b2', title: 'Polka', composer: 'Traditional', list: 'B', level: 'TWO' },
+  { id: 'two-b3', title: 'Duet Brillant', composer: 'Traditional', list: 'B', level: 'TWO' },
   
   // THREE (RCM Grade 2)
   { id: 'three-a1', title: 'Air Gracile', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
