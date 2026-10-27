@@ -22,7 +22,7 @@ export interface ContentSection {
 
 export const LESSON_CONTENT: Record<string, LessonContent> = {
   // BASIC LESSONS
-  'pb-1': {
+  'basic-intro': {
     title: 'Meet Your Saxophone',
     introduction: 'The saxophone is a woodwind instrument made of brass. It was invented by Adolphe Sax in 1840. Let\'s learn the parts of your instrument.',
     sections: [
@@ -47,8 +47,8 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Identify each part on your saxophone. Practice assembling and disassembling your instrument carefully. Remember: always handle by the bell and body!'
   },
 
-  'pb-2': {
-    title: 'Assembly and Care',
+  'basic-maintenance': {
+    title: 'Daily Care',
     introduction: 'Proper assembly and care of your saxophone is essential. Let\'s learn the correct way to put your instrument together and take care of it.',
     sections: [
       {
@@ -73,7 +73,44 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice assembling your saxophone 3 times. Time yourself - you should be able to do it in under 2 minutes. After practice, go through the complete care routine.'
   },
 
-  'pb-3': {
+  'basic-posture': {
+    title: 'Posture & Hold',
+    introduction: 'Proper posture and holding position are essential for good playing. Let\'s learn the correct way to hold your saxophone.',
+    sections: [
+      {
+        heading: 'Standing Position',
+        content: 'Stand with your feet shoulder-width apart:\n\n1. Keep your back straight but relaxed\n2. Shoulders down and back (not hunched)\n3. Head up, looking forward\n4. Weight evenly distributed on both feet\n\nGood posture helps with breathing and prevents tension.',
+        example: 'Imagine a string pulling you up from the top of your head. You should feel tall and relaxed at the same time.',
+        tip: 'Practice standing in good posture without your instrument first. Then add the saxophone.'
+      },
+      {
+        heading: 'Holding the Saxophone',
+        content: 'Hold your saxophone with the neck strap:\n\n1. Adjust the strap so the mouthpiece comes to your mouth naturally\n2. You shouldn\'t have to bend your neck down or reach up\n3. Left hand on top, right hand on bottom\n4. Thumbs support the weight: left thumb on the thumb rest, right thumb under the thumb hook\n5. Fingers curved, ready on the keys',
+        tip: 'The neck strap should bear most of the weight, not your hands. Your hands should be relaxed and ready to move.'
+      },
+      {
+        heading: 'Hand Position',
+        content: 'Proper hand position:\n\n- Fingers curved like holding a baseball\n- Use the pads of your fingers (not tips)\n- Keep fingers close to the keys (1-2 cm away)\n- Wrists straight, not bent\n- Thumbs supporting, not gripping',
+        example: 'Hold your hands out in front of you. Curve your fingers naturally - this is how they should look on the saxophone.',
+        tip: 'If your fingers are flying far away from the keys, you\'ll be slower and less accurate. Keep them close!'
+      },
+      {
+        heading: 'Common Mistakes',
+        content: 'Avoid these posture problems:\n\n- Hunching shoulders (causes tension)\n- Bending neck down to reach mouthpiece (adjust strap!)\n- Gripping too tightly with thumbs\n- Fingers flying away from keys\n- Slouching or leaning to one side',
+        tip: 'Check yourself in a mirror while playing. Are your shoulders relaxed? Is your back straight? Fix what you see.'
+      }
+    ],
+    keyPoints: [
+      'Stand tall with relaxed shoulders',
+      'Adjust neck strap properly',
+      'Thumbs support the weight',
+      'Fingers curved and close to keys',
+      'Check posture in a mirror'
+    ],
+    practiceInstructions: 'Practice your standing position for 2 minutes without the instrument. Then hold the saxophone and check: Is the mouthpiece at the right height? Are your thumbs supporting? Are your fingers curved and close to the keys? Hold for 5 minutes, checking your posture in a mirror.'
+  },
+
+  'basic-first-notes': {
     title: 'Making Your First Sound',
     introduction: 'Now let\'s learn how to produce sound on the saxophone. This is called forming your embouchure.',
     sections: [
@@ -105,7 +142,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice forming your embouchure without the instrument for 2 minutes. Then, with just the mouthpiece and neck, try to produce a steady tone for 10 seconds at a time. Do this 5 times.'
   },
 
-  'n-1': {
+  'basic-notes': {
     title: 'Your First Notes: B, A, G',
     introduction: 'Now let\'s learn your first three notes on the saxophone: B, A, and G. These are played with your left hand.',
     sections: [
@@ -141,7 +178,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice each note separately: play B for 4 beats, A for 4 beats, G for 4 beats. Then play the pattern B-A-G-A-B five times slowly. Focus on smooth finger movement and steady tone.'
   },
 
-  'n-2': {
+  'basic-staff': {
     title: 'Reading Music: The Staff',
     introduction: 'Music is written on a staff - five lines and four spaces. Let\'s learn how to read notes on the staff.',
     sections: [
@@ -179,7 +216,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice identifying notes on the staff. Write out the treble clef 10 times. Quiz yourself: what note is on the 3rd line? (B) What note is in the 2nd space? (A) What note is on the 2nd line? (G)'
   },
 
-  'r-1': {
+  'basic-rhythm': {
     title: 'Rhythm: Quarter Notes',
     introduction: 'Rhythm is the timing of music. Let\'s learn about quarter notes, which get 1 beat.',
     sections: [
@@ -217,7 +254,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice counting quarter notes: Count "1, 2, 3, 4" out loud while tapping your foot. Do this for 1 minute. Then, play B on your saxophone for 4 beats, A for 4 beats, G for 4 beats. Count out loud as you play.'
   },
 
-  'r-4': {
+  'one-eighth': {
     title: 'Rhythm: Eighth Notes',
     introduction: 'Eighth notes are faster than quarter notes. Each eighth note gets half a beat. Let\'s learn how to count and play them.',
     sections: [
@@ -254,7 +291,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice counting eighth notes: Say "1 and 2 and 3 and 4 and" while tapping your foot on the numbers. Then, play B-B-A-A-G-G on your saxophone, with each note lasting half a beat (eighth notes). Count out loud as you play.'
   },
 
-  't-1': {
+  'basic-time-sigs': {
     title: 'Time Signatures',
     introduction: 'Time signatures tell us how many beats are in each measure and what note value gets one beat.',
     sections: [
@@ -333,7 +370,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice identifying key signatures: Look at a piece of music and identify the key signature. Count the sharps or flats. Use the rules to determine the key. Practice with simple pieces in G Major (1 sharp) and F Major (1 flat).'
   },
 
-  't-3': {
+  'basic-dynamics': {
     title: 'Dynamics: Volume in Music',
     introduction: 'Dynamics tell us how loud or soft to play. They add expression and emotion to music.',
     sections: [
@@ -561,41 +598,672 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice the chromatic scale: Start on Bb, play up to Bb (one octave) using all half steps. Use a metronome at ♩=60. Play ascending and descending. Do this 5 times slowly, then gradually increase speed.'
   },
 
-  'n-6': {
-    title: 'Major Scales',
-    introduction: 'Major scales are the foundation of Western music. Let\'s learn the pattern and practice your first major scales.',
+  'basic-notes': {
+    title: 'Note Names on the Staff',
+    introduction: 'Now that you understand the staff, let\'s learn to read note names. This is essential for playing music.',
     sections: [
       {
-        heading: 'What is a Major Scale?',
-        content: 'A major scale follows a specific pattern of whole steps (W) and half steps (H):\n\nW - W - H - W - W - W - H\n\nThis pattern creates the bright, happy sound we associate with major keys.\n\nExample: C Major scale\nC - D - E - F - G - A - B - C',
-        example: 'Sing "Do-Re-Mi-Fa-Sol-La-Ti-Do" from The Sound of Music - that\'s a major scale!',
-        tip: 'Remember the pattern: Whole-Whole-Half-Whole-Whole-Whole-Half. This pattern works for every major scale.'
+        heading: 'Note Names on the Lines',
+        content: 'In treble clef, the notes on the lines from bottom to top are:\n\nLine 1 (bottom): E\nLine 2: G\nLine 3: B\nLine 4: D\nLine 5 (top): F\n\nRemember: "Every Good Boy Does Fine" (E-G-B-D-F)',
+        example: 'Look at a piece of music. Find the notes on the lines. Can you name them using the mnemonic?',
+        tip: 'Practice by pointing to notes on the staff and naming them quickly. Speed comes with practice!'
       },
       {
-        heading: 'Bb Major Scale (Alto Sax)',
-        content: 'For alto saxophone, Bb Major is one of the first scales to learn:\n\nWritten notes: Bb - C - D - Eb - F - G - A - Bb\n\nFingerings:\n- Bb: Left hand + right index\n- C: All six fingers\n- D: Right hand only (F-E-D)\n- Eb: Right hand + side key\n- F: Right index\n- G: Left hand only (B-A-G)\n- A: Left hand (B-A)\n- Bb: Left hand (B)',
-        tip: 'Practice each note separately first, then connect them into the scale.'
+        heading: 'Note Names in the Spaces',
+        content: 'The notes in the spaces from bottom to top spell a word:\n\nSpace 1 (bottom): F\nSpace 2: A\nSpace 3: C\nSpace 4 (top): E\n\nThe spaces spell "FACE" - easy to remember!',
+        example: 'Look at the spaces in your music. They spell F-A-C-E from bottom to top.',
+        tip: 'If you can remember "FACE", you\'ll always know the space notes!'
       },
       {
-        heading: 'Practicing Scales',
-        content: 'Scale practice method:\n\n1. Start slow (♩=60)\n2. Play ascending: root to root\n3. Play descending: root to root\n4. Use a metronome\n5. Focus on even tone and rhythm\n6. Gradually increase speed\n7. Practice in different rhythms',
-        example: 'Practice patterns: 1) Long tones on each note, 2) Slurs between notes, 3) Different rhythms (quarters, eighths, triplets)',
-        tip: 'Scales are like vegetables - not always fun, but essential for growth. Practice them daily!'
+        heading: 'Notes Above and Below the Staff',
+        content: 'Sometimes notes go higher or lower than the staff. We use ledger lines:\n\n- Middle C is on a ledger line below the staff\n- High G is on a ledger line above the staff\n- Count lines and spaces the same way as the staff',
+        tip: 'Ledger lines can be confusing at first. Practice identifying them slowly and carefully.'
       },
       {
-        heading: 'Scale Patterns',
-        content: 'Once you know the basic scale, try these patterns:\n\n1. Thirds: Bb-D-C-E-D-F-E-G-F-A-G-B-A-C-B-D-C\n2. Arpeggios: Bb-D-F-Bb (1-3-5-8)\n3. Intervals: Skip notes (Bb-D, C-E, etc.)\n4. Rhythms: Swing, triplets, syncopation',
-        tip: 'Patterns make scale practice more interesting and develop different technical skills.'
+        heading: 'Reading Notes Quickly',
+        content: 'To read music fluently, you need to recognize notes instantly:\n\n1. Don\'t count lines every time - memorize the patterns\n2. Learn to recognize notes by their shape and position\n3. Practice sight-reading simple melodies\n4. Start slow, then increase speed',
+        example: 'Just like learning to read words, at first you sound out each letter, but eventually you recognize whole words instantly.',
+        tip: 'Spend 5 minutes every day practicing note recognition. Use flashcards or apps.'
       }
     ],
     keyPoints: [
-      'Major scale pattern: W-W-H-W-W-W-H',
-      'Practice slowly with metronome',
-      'Ascending and descending',
-      'Even tone and rhythm',
-      'Foundation for all music'
+      'Lines: E-G-B-D-F (Every Good Boy Does Fine)',
+      'Spaces: F-A-C-E (spells FACE)',
+      'Ledger lines extend the staff',
+      'Practice note recognition daily',
+      'Speed comes with consistent practice'
     ],
-    practiceInstructions: 'Practice Bb Major scale: Play ascending and descending one octave. Use metronome at ♩=60. Do 5 repetitions slowly, then increase to ♩=66. Try playing in thirds pattern.'
+    practiceInstructions: 'Practice note identification: Look at random notes on the staff and name them as fast as you can. Do this for 5 minutes daily. Use the mnemonics "Every Good Boy Does Fine" for lines and "FACE" for spaces. Try to recognize notes instantly without counting.'
+  },
+
+  'basic-repeat-signs': {
+    title: 'Repeat Signs and Navigation',
+    introduction: 'Music often has sections that repeat. Let\'s learn the symbols that tell us how to navigate through a piece.',
+    sections: [
+      {
+        heading: 'Basic Repeat Signs',
+        content: 'Repeat signs tell you to play a section again:\n\n- A double bar with two dots (:) means "repeat this section"\n- The dots face the section you should repeat back to\n- If there\'s only one repeat sign, repeat from the beginning',
+        example: 'If you see |: music :|, play the music between the repeat signs twice.',
+        tip: 'Always look ahead in the music to see if there are repeat signs before you start playing.'
+      },
+      {
+        heading: 'First and Second Endings',
+        content: 'Sometimes you play different endings on repeats:\n\n- First ending (1.): Play this the first time through\n- Second ending (2.): Play this the second time through\n- Skip the first ending when you repeat',
+        example: 'Play measures 1-8, hit the repeat, play 1-7 again, then skip to the second ending (measure 8 alternative).',
+        tip: 'Use a pencil to mark where you go on the repeat if it\'s confusing.'
+      },
+      {
+        heading: 'D.C. and D.S.',
+        content: 'Italian navigation terms:\n\n- D.C. (Da Capo) = "From the head" - go back to the beginning\n- D.S. (Dal Segno) = "From the sign" - go back to the 𝄋 sign\n- al Fine = "to the end" - stop when you see "Fine"\n- al Coda = "to the tail" - jump to the coda section',
+        example: 'D.C. al Fine means: play to the end, go back to the beginning, play until you see "Fine", then stop.',
+        tip: 'Write out the playing order if the navigation is complex. Example: 1-2-3-1-2-4'
+      },
+      {
+        heading: 'Coda Sections',
+        content: 'A coda is a separate ending section:\n\n- Look for the 𝄌 coda symbol\n- When you see "To Coda", jump to the coda section\n- The coda is usually at the end of the piece',
+        tip: 'Use a pencil to draw arrows showing where you jump to. This prevents getting lost!'
+      }
+    ],
+    keyPoints: [
+      'Repeat signs: play section again',
+      'First/second endings: different on repeat',
+      'D.C. = go to beginning',
+      'D.S. = go to sign (𝄋)',
+      'al Fine = stop at "Fine"',
+      'Coda = separate ending section'
+    ],
+    practiceInstructions: 'Find a piece of music with repeat signs. Map out the playing order before you start. Write it down: "1-2-3-1-2-4" or similar. Then play it following your map. Practice with D.C. and D.S. until the navigation feels natural.'
+  },
+
+  'basic-drill': {
+    title: 'Band Drill Basics',
+    introduction: 'Band drill is the art of marching and moving as a unit. It requires precision, discipline, and teamwork.',
+    sections: [
+      {
+        heading: 'The Attention Position',
+        content: 'The foundation of all drill is the attention position:\n\n1. Heels together, toes apart at 45 degrees\n2. Legs straight, knees locked\n3. Stand tall with weight on balls of feet\n4. Arms at sides, fingers straight and together\n5. Head up, eyes forward\n6. Remain silent and still',
+        example: 'Think of a soldier standing at attention - perfect posture, complete stillness, total readiness.',
+        tip: 'Practice standing at attention for 2-3 minutes daily. It builds discipline and strength.'
+      },
+      {
+        heading: 'The Parade Rest Position',
+        content: 'Parade rest is a relaxed but formal position:\n\n1. Move left foot 12 inches to the left\n2. Keep legs straight\n3. Place right hand in left palm behind your back\n4. Left thumb over right thumb\n5. Keep head and eyes forward\n6. Remain silent',
+        tip: 'Parade rest is still a position of attention. Don\'t slouch or look around!'
+      },
+      {
+        heading: 'Marking Time',
+        content: 'Marking time means marching in place:\n\n1. Lift knees to 6 inches (parallel to ground)\n2. Keep toes pointed down\n3. Alternate feet: left-right-left-right\n4. Maintain steady rhythm\n5. Stay in place - don\'t travel',
+        example: 'Think of a marching band warming up before a performance - all moving together in perfect rhythm.',
+        tip: 'Practice marking time with a metronome. Start at 120 BPM and work up to 140 BPM.'
+      },
+      {
+        heading: 'Forward March',
+        content: 'The basic forward march:\n\n1. Step off with left foot\n2. Roll from heel to toe\n3. Step length: 30 inches (heel to heel)\n4. Keep knees straight on each step\n5. Maintain steady pace\n6. Keep formation with other marchers',
+        tip: 'Count your steps: "1-2-3-4" or use the cadence called by the drum major.'
+      }
+    ],
+    keyPoints: [
+      'Attention: heels together, stand tall, remain still',
+      'Parade rest: left foot out, hands behind back',
+      'Mark time: knees to 6 inches, stay in place',
+      'Forward march: 30-inch step, heel to toe',
+      'Always maintain formation and rhythm'
+    ],
+    practiceInstructions: 'Practice drill positions daily: 1) Stand at attention for 2 minutes, 2) Move to parade rest and back to attention 10 times, 3) Mark time for 2 minutes at 120 BPM, 4) Practice forward march in your room (count your steps). Focus on precision and discipline.'
+  },
+
+  'one-maintenance': {
+    title: 'Cork Care and Lubrication',
+    introduction: 'As you advance, proper maintenance becomes more important. Let\'s learn about cork care and lubrication.',
+    sections: [
+      {
+        heading: 'Understanding Cork',
+        content: 'Your saxophone has cork in several places:\n\n1. Neck cork - where mouthpiece attaches\n2. Key corks - small corks under the keys\n3. Bumper corks - prevent keys from hitting each other\n\nCork needs to stay supple and lubricated to work properly.',
+        tip: 'Check your neck cork regularly. If it\'s dry or cracked, it needs lubrication immediately.'
+      },
+      {
+        heading: 'Cork Grease Application',
+        content: 'How to apply cork grease:\n\n1. Use a small amount of cork grease\n2. Apply to neck cork only (not key corks)\n3. Rub it in with your finger\n4. Wipe off excess\n5. Apply every 1-2 weeks or when dry',
+        example: 'Think of cork grease like lotion for your skin - a little goes a long way!',
+        tip: 'Don\'t over-apply! Too much grease makes the mouthpiece slip. A thin, even layer is perfect.'
+      },
+      {
+        heading: 'Signs of Dry Cork',
+        content: 'Watch for these warning signs:\n\n- Cork looks dry or cracked\n- Mouthpiece is hard to attach/remove\n- You hear air leaks when playing\n- Cork feels rough to the touch\n\nIf you notice these, apply cork grease immediately.',
+        tip: 'Prevention is better than cure. Apply cork grease regularly before the cork gets dry.'
+      },
+      {
+        heading: 'When to See a Technician',
+        content: 'Some problems need professional help:\n\n- Cracked or missing cork\n- Key corks worn out (keys clicking)\n- Bumper corks fallen out\n- Neck cork damaged beyond simple greasing\n\nDon\'t try to fix these yourself - take your sax to a qualified technician.',
+        tip: 'Have your saxophone checked by a technician at least once a year for a full service.'
+      }
+    ],
+    keyPoints: [
+      'Cork needs regular lubrication',
+      'Apply cork grease every 1-2 weeks',
+      'Use small amounts - don\'t over-apply',
+      'Watch for dry or cracked cork',
+      'See a technician for serious cork problems'
+    ],
+    practiceInstructions: 'Check your neck cork today. Is it dry or cracked? If so, apply a small amount of cork grease. Set a reminder to check and grease your cork every 2 weeks. Make this part of your regular maintenance routine.'
+  },
+
+  'one-scales': {
+    title: 'Major Scales: Bb, Eb, F',
+    introduction: 'Major scales are the foundation of music. At Level ONE, you\'ll learn three essential major scales at ♩=66.',
+    sections: [
+      {
+        heading: 'Why These Three Scales?',
+        content: 'Bb, Eb, and F Major are the most common keys for concert band music:\n\n- Bb Major: The "home key" for saxophones (concert pitch Eb)\n- Eb Major: Second most common (concert pitch Bb)\n- F Major: Third most common (concert pitch Eb)\n\nMastering these three scales opens up most band literature.',
+        tip: 'These scales appear in almost every piece you\'ll play. Master them thoroughly!'
+      },
+      {
+        heading: 'Bb Major Scale',
+        content: 'Bb Major scale (written for alto sax):\n\nNotes: Bb - C - D - Eb - F - G - A - Bb\nFingering pattern: Start with all fingers down (Bb), lift fingers one by one going up.\n\nAscending: Bb(123) - C(12) - D(1) - Eb(123) - F(12) - G(1) - A(none) - Bb(123)\nDescending: Reverse the pattern',
+        example: 'Think of the scale as a staircase - each note is one step up or down.',
+        tip: 'Practice slowly with a metronome at ♩=60, then gradually increase to ♩=66.'
+      },
+      {
+        heading: 'Eb Major Scale',
+        content: 'Eb Major scale (written for alto sax):\n\nNotes: Eb - F - G - Ab - Bb - C - D - Eb\nThis scale has three flats: Eb, Ab, Bb\n\nKey points:\n- Use side keys for Eb and Ab\n- Keep fingers close to keys\n- Maintain even tone throughout',
+        tip: 'Eb Major can be tricky because of the side keys. Practice the transitions slowly until they\'re smooth.'
+      },
+      {
+        heading: 'F Major Scale',
+        content: 'F Major scale (written for alto sax):\n\nNotes: F - G - A - Bb - C - D - E - F\nThis scale has one flat: Bb\n\nThis is often the easiest of the three because it uses mostly natural fingerings with just one side key (Bb).',
+        tip: 'Use F Major as your "confidence scale" - it\'s usually the easiest to play cleanly.'
+      },
+      {
+        heading: 'Practice Strategy',
+        content: 'How to practice scales effectively:\n\n1. Start with long tones on each note (4 beats each)\n2. Play slowly with metronome (♩=60)\n3. Focus on even tone and smooth fingering\n4. Gradually increase tempo to ♩=66\n5. Practice ascending and descending\n6. Try different rhythms: quarters, eighths, triplets',
+        example: 'Day 1: Long tones + slow quarters\nDay 2: Add eighths at slow tempo\nDay 3: Increase tempo slightly\nDay 4: Add triplets\nDay 5: Performance tempo',
+        tip: 'Scales are like exercise for your fingers. Daily practice builds speed and accuracy.'
+      }
+    ],
+    keyPoints: [
+      'Bb, Eb, F are the three most important major scales',
+      'Practice with metronome starting at ♩=60',
+      'Target tempo is ♩=66 for Level ONE',
+      'Focus on even tone and smooth fingering',
+      'Practice ascending and descending',
+      'Use different rhythms for variety'
+    ],
+    practiceInstructions: 'Daily scale routine: 1) Long tones on each note of Bb Major (4 beats each), 2) Play Bb Major ascending/descending at ♩=60, 3) Repeat for Eb Major, 4) Repeat for F Major, 5) Gradually increase tempo to ♩=66 over the week. Practice this routine for 10 minutes daily.'
+  },
+
+  'one-chromatic': {
+    title: 'The Chromatic Scale',
+    introduction: 'The chromatic scale includes every note in an octave. It\'s essential for developing finger technique and understanding music theory.',
+    sections: [
+      {
+        heading: 'What is the Chromatic Scale?',
+        content: 'The chromatic scale includes all twelve notes in an octave:\n\nC - C# - D - D# - E - F - F# - G - G# - A - A# - B - C\n\nEach note is one half step (semitone) apart. On saxophone, this means using every key combination.',
+        example: 'Think of a piano - the chromatic scale is every key, both white and black, from one C to the next C.',
+        tip: 'The chromatic scale is the foundation of all other scales. Master it first!'
+      },
+      {
+        heading: 'Chromatic Fingerings',
+        content: 'To play the chromatic scale, you\'ll use:\n\n- Main fingers (B-A-G-F-E-D-C)\n- Side keys (left and right)\n- Bis keys (alternate fingerings)\n- Palm keys (high D, Eb, E, F)\n\nEach half step requires a different fingering combination.',
+        tip: 'Learn the chromatic scale slowly. Focus on smooth transitions between fingerings. Use a mirror to watch your fingers.'
+      },
+      {
+        heading: 'Practicing the Chromatic Scale',
+        content: 'Practice method:\n\n1. Start slow (♩=60)\n2. Play one octave: Bb up to Bb\n3. Use a metronome\n4. Focus on even tone and rhythm\n5. Gradually increase speed\n6. Practice ascending and descending',
+        example: 'Start with just 4 notes: Bb-B-C-C#. Master that, then add more notes gradually.',
+        tip: 'Don\'t rush! Speed comes from accuracy. Play perfectly slow, then gradually faster.'
+      },
+      {
+        heading: 'Why Learn Chromatic Scale?',
+        content: 'The chromatic scale is important because:\n\n- Develops finger technique and coordination\n- Helps you learn all the keys on your instrument\n- Foundation for understanding music theory\n- Used in jazz and modern music\n- Improves overall saxophone technique',
+        tip: 'Practice chromatic scale for 5 minutes every day. It will improve your overall playing dramatically.'
+      }
+    ],
+    keyPoints: [
+      'Chromatic scale = all 12 notes (every half step)',
+      'Uses all keys: main, side, bis, palm keys',
+      'Practice slowly with metronome',
+      'Foundation for all other scales',
+      'Essential for finger technique'
+    ],
+    practiceInstructions: 'Practice the chromatic scale: Start on Bb, play up to Bb (one octave) using all half steps. Use a metronome at ♩=60. Play ascending and descending. Do this 5 times slowly, then gradually increase speed.'
+  },
+
+  'one-harmonic': {
+    title: 'Harmonic Minor Scales',
+    introduction: 'Harmonic minor scales have a distinctive sound used in many musical styles. Let\'s learn the pattern and practice your first harmonic minor scale.',
+    sections: [
+      {
+        heading: 'What is Harmonic Minor?',
+        content: 'The harmonic minor scale has a unique pattern:\n\nWhole - Half - Whole - Whole - Half - Augmented 2nd - Half\n\nThe "augmented 2nd" (3 half steps) gives harmonic minor its distinctive, exotic sound.\n\nExample: C harmonic minor\nC - D - Eb - F - G - Ab - B - C',
+        example: 'The augmented 2nd between Ab and B creates a "Middle Eastern" or "classical minor" sound.',
+        tip: 'Listen to recordings of harmonic minor scales to internalize the sound before playing.'
+      },
+      {
+        heading: 'C Harmonic Minor (Alto Sax)',
+        content: 'For alto saxophone, C harmonic minor is a good starting point:\n\nNotes: C - D - Eb - F - G - Ab - B - C\n\nKey points:\n- Three flats: Eb, Ab, and the B is natural (not Bb)\n- The jump from Ab to B is the augmented 2nd\n- This scale shares the key signature of Eb Major (3 flats) but raises the 7th degree',
+        tip: 'The tricky part is the B natural - make sure you don\'t accidentally play Bb!'
+      },
+      {
+        heading: 'Finding Harmonic Minor Scales',
+        content: 'To find any harmonic minor scale:\n\n1. Start with the natural minor scale (same key signature as relative major)\n2. Raise the 7th note by a half step\n3. That\'s your harmonic minor scale!\n\nExample: A minor (relative minor of C Major)\n- Natural minor: A - B - C - D - E - F - G - A\n- Raise 7th (G to G#): A - B - C - D - E - F - G# - A\n- Result: A harmonic minor',
+        tip: 'Every major key has a relative minor. The minor scale starts on the 6th degree of the major scale.'
+      },
+      {
+        heading: 'Practice Strategy',
+        content: 'How to practice harmonic minor:\n\n1. Learn the pattern: W-H-W-W-H-A2-H\n2. Start with C harmonic minor\n3. Practice slowly with metronome\n4. Focus on the augmented 2nd interval\n5. Gradually add more harmonic minor scales\n6. Listen for the distinctive sound',
+        example: 'The augmented 2nd should sound smooth, not jumpy. Practice the Ab to B transition slowly.',
+        tip: 'Harmonic minor is used in many famous pieces. Listen for it in classical and jazz music!'
+      }
+    ],
+    keyPoints: [
+      'Harmonic minor pattern: W-H-W-W-H-A2-H',
+      'Augmented 2nd gives distinctive sound',
+      'Raise 7th degree of natural minor',
+      'Start with C harmonic minor',
+      'Practice the augmented 2nd interval carefully'
+    ],
+    practiceInstructions: 'Practice C harmonic minor: Play ascending and descending one octave. Focus on the augmented 2nd interval (Ab to B). Use metronome at ♩=60. Do this 5 times slowly. Then try A harmonic minor. Listen for the distinctive "exotic" sound.'
+  },
+
+  'one-intonation': {
+    title: 'Tuning and Intonation Basics',
+    introduction: 'Good intonation means playing in tune. Let\'s learn how to recognize and correct pitch problems.',
+    sections: [
+      {
+        heading: 'What is Intonation?',
+        content: 'Intonation is how accurately you play the correct pitch:\n\n- Sharp: Pitch is too high\n- Flat: Pitch is too low\n- In tune: Pitch is correct\n\nGood intonation is essential for playing with others.',
+        example: 'Think of a singer hitting the right note vs. being slightly off. That\'s intonation.',
+        tip: 'Your ear is your best tool for intonation. Train it by listening carefully!'
+      },
+      {
+        heading: 'Using a Tuner',
+        content: 'A tuner helps you see if you\'re sharp or flat:\n\n1. Play a sustained note (start with Bb or F)\n2. Watch the tuner display\n3. Green/center = in tune\n4. Red/left = flat (too low)\n5. Red/right = sharp (too high)\n\nMost tuners show cents: -50 to +50 cents from perfect pitch.',
+        tip: 'Practice with a tuner daily. Start with long tones on easy notes like Bb and F.'
+      },
+      {
+        heading: 'Adjusting Your Pitch',
+        content: 'How to fix intonation problems:\n\nIf you\'re FLAT (too low):\n- Push mouthpiece IN slightly\n- Increase air support\n- Firm embouchure corners\n- Raise tongue position slightly\n\nIf you\'re SHARP (too high):\n- Pull mouthpiece OUT slightly\n- Relax embouchure\n- Drop jaw slightly\n- Use warmer, slower air',
+        example: 'Think of the mouthpiece like a tuning slide - small adjustments make big differences.',
+        tip: 'Always tune to a concert Bb or F. These are the most stable notes on saxophone.'
+      },
+      {
+        heading: 'Common Intonation Issues',
+        content: 'Notes that are often out of tune:\n\n- Low notes tend to be flat\n- High notes tend to be sharp\n- Middle D and E can be sharp\n- Palm keys (high D, Eb, E, F) are often sharp\n\nLearn the tendencies of your instrument and adjust accordingly.',
+        tip: 'Every saxophone is different. Learn your instrument\'s specific intonation tendencies.'
+      }
+    ],
+    keyPoints: [
+      'Sharp = too high, Flat = too low',
+      'Use a tuner to check your pitch',
+      'Adjust mouthpiece position for tuning',
+      'Air support affects intonation',
+      'Learn your instrument\'s tendencies'
+    ],
+    practiceInstructions: 'Daily intonation practice: 1) Tune to concert Bb with a tuner, 2) Play long tones on Bb, F, and G, checking tuner, 3) Adjust mouthpiece until you\'re in tune, 4) Practice playing in tune without looking at tuner. Do this for 5 minutes daily.'
+  },
+
+  'one-key-sigs': {
+    title: 'Key Signatures',
+    introduction: 'Key signatures tell us which notes are sharp or flat throughout a piece. Let\'s learn to read them quickly.',
+    sections: [
+      {
+        heading: 'What is a Key Signature?',
+        content: 'A key signature is a set of sharps (#) or flats (b) at the beginning of the staff.\n\nIt tells you which notes to play sharp or flat throughout the entire piece (unless cancelled by an accidental).\n\nKey signatures help us understand what key the music is in.',
+        example: 'If you see one sharp (F#) at the beginning, every F in the piece should be played as F# unless marked otherwise.',
+        tip: 'Key signatures apply to every octave. If F is sharp in the key signature, ALL F\'s are sharp - low F, middle F, high F.'
+      },
+      {
+        heading: 'Order of Sharps',
+        content: 'Sharps always appear in the same order on the staff:\n\nF# - C# - G# - D# - A# - E# - B#\n\nRemember: "Father Charles Goes Down And Ends Battle"\n\nEach new sharp is added in this order as you go through the keys.',
+        example: 'G Major has 1 sharp: F#\nD Major has 2 sharps: F# and C#\nA Major has 3 sharps: F#, C#, and G#',
+        tip: 'The last sharp in a key signature is the leading tone (7th note) of the major scale. Go up one half step to find the key name.'
+      },
+      {
+        heading: 'Order of Flats',
+        content: 'Flats appear in the opposite order:\n\nBb - Eb - Ab - Db - Gb - Cb - Fb\n\nRemember: "Battle Ends And Down Goes Charles Father"\n(Backwards from sharps!)\n\nEach new flat is added in this order.',
+        example: 'F Major has 1 flat: Bb\nBb Major has 2 flats: Bb and Eb\nEb Major has 3 flats: Bb, Eb, and Ab',
+        tip: 'For flats, the second-to-last flat tells you the key name. Exception: F Major has only 1 flat (Bb).'
+      },
+      {
+        heading: 'Common Keys for Saxophone',
+        content: 'As a saxophone player (transposing instrument), you\'ll commonly see:\n\nConcert Keys → Your Written Keys:\n- Concert Bb → Written C Major (no sharps/flats)\n- Concert Eb → Written A Major (3 sharps)\n- Concert F → Written G Major (1 sharp)\n\nThese are the most common keys in band music.',
+        tip: 'Don\'t worry about transposition yet - just learn to read the key signature as written in your music.'
+      }
+    ],
+    keyPoints: [
+      'Key signature = sharps or flats for the whole piece',
+      'Order of sharps: F C G D A E B',
+      'Order of flats: B E A D G C F (backwards)',
+      'Last sharp + half step = major key',
+      'Second-to-last flat = major key',
+      'Applies to all octaves'
+    ],
+    practiceInstructions: 'Practice identifying key signatures: Look at a piece of music and identify the key signature. Count the sharps or flats. Use the rules to determine the key. Practice with simple pieces in G Major (1 sharp) and F Major (1 flat).'
+  },
+
+  'one-sight': {
+    title: 'Sight Reading Introduction',
+    introduction: 'Sight reading is the ability to play music you\'ve never seen before. It\'s an essential skill for any musician.',
+    sections: [
+      {
+        heading: 'What is Sight Reading?',
+        content: 'Sight reading means playing music at first sight:\n\n- You\'ve never seen the piece before\n- You play it through without stopping\n- You maintain rhythm and pulse\n- You make musical decisions on the spot\n\nThis is different from practicing a piece over time.',
+        example: 'Think of sight reading like reading a book aloud for the first time - you keep going even if you make small mistakes.',
+        tip: 'Sight reading is a skill that improves with daily practice. Even 5 minutes a day makes a huge difference!'
+      },
+      {
+        heading: 'The Sight Reading Process',
+        content: 'Before you play, take 30 seconds to scan the music:\n\n1. Check the key signature - what key are you in?\n2. Check the time signature - what\'s the meter?\n3. Look for tricky rhythms or patterns\n4. Find the tempo marking\n5. Scan for repeats, codas, or other navigation\n6. Take a deep breath and start!',
+        tip: 'Never start playing immediately! Always scan the music first. This 30-second scan prevents most mistakes.'
+      },
+      {
+        heading: 'Keeping the Pulse',
+        content: 'The most important rule of sight reading:\n\nKEEP GOING! Don\'t stop for mistakes!\n\n- Maintain a steady pulse\n- If you miss a note, keep going\n- If you lose your place, jump to the next measure\n- Rhythm is more important than perfect notes\n\nThink of it like a river - it keeps flowing even if there are rocks.',
+        example: 'If you miss a note, don\'t go back and fix it. Just keep playing. The rhythm is more important than perfection.',
+        tip: 'Use a metronome when sight reading. It helps you maintain pulse and not slow down for difficult passages.'
+      },
+      {
+        heading: 'Level ONE Sight Reading Standards',
+        content: 'At Level ONE, you should be able to:\n\n- Sight read up to 16 bars\n- With assistance (teacher can help with tricky spots)\n- In simple keys (C, G, F Major)\n- In 4/4 or 3/4 time\n- Using quarter and eighth notes\n- At a moderate tempo (♩=80-100)',
+        tip: 'Start with very easy pieces. Success builds confidence! Gradually increase difficulty.'
+      }
+    ],
+    keyPoints: [
+      'Scan music before playing (30 seconds)',
+      'Check key signature, time signature, tempo',
+      'KEEP GOING - don\'t stop for mistakes',
+      'Rhythm is more important than perfect notes',
+      'Practice sight reading daily (5 minutes)',
+      'Use a metronome to maintain pulse'
+    ],
+    practiceInstructions: 'Daily sight reading practice: 1) Find a simple piece you\'ve never seen, 2) Scan for 30 seconds (key, time, tempo), 3) Set metronome to ♩=80, 4) Play through without stopping, 5) Don\'t worry about mistakes - keep the pulse going! Do this for 5 minutes daily with different pieces.'
+  },
+
+  'one-drill': {
+    title: 'Drill Movements and Marching',
+    introduction: 'At Level ONE, you\'ll learn basic drill movements and marching techniques for band performances.',
+    sections: [
+      {
+        heading: 'The Forward March',
+        content: 'The standard forward march:\n\n1. Step off with left foot on count 1\n2. Roll from heel to toe smoothly\n3. Step length: 30 inches (heel to heel)\n4. Keep knees straight on each step\n5. Maintain steady pace with the group\n6. Keep formation with other marchers',
+        example: 'Think of walking naturally but with more precision and discipline than everyday walking.',
+        tip: 'Count your steps: "1-2-3-4" or follow the drum major\'s cadence. Stay in step with the person next to you.'
+      },
+      {
+        heading: 'The Halt',
+        content: 'How to stop marching properly:\n\n1. Bring feet together on the designated count\n2. Return to attention position\n3. Remain completely still and silent\n4. Keep your instrument in playing position\n5. Wait for the next command',
+        tip: 'The halt should be crisp and unified. Everyone stops at exactly the same moment.'
+      },
+      {
+        heading: 'Flanking (Turning While Marching)',
+        content: 'Basic turns while marching:\n\nRight flank:\n1. Pivot on left foot\n2. Step off with right foot in new direction\n3. Complete turn in 2 counts\n\nLeft flank:\n1. Pivot on right foot\n2. Step off with left foot in new direction\n3. Complete turn in 2 counts',
+        tip: 'Keep your upper body stable during turns. Don\'t bob up and down!'
+      },
+      {
+        heading: 'Dress and Cover',
+        content: 'Maintaining formation while marching:\n\n- Dress: Align yourself with the person to your side\n- Cover: Maintain proper distance from person in front\n- Use peripheral vision to stay aligned\n- Make small adjustments, not big ones\n- Don\'t stare - glance quickly and adjust',
+        example: 'Think of formation like a grid - you need to stay in your specific spot in the grid.',
+        tip: 'Good dress and cover makes the whole band look professional. It takes practice but it\'s worth it!'
+      }
+    ],
+    keyPoints: [
+      'Forward march: 30-inch step, heel to toe',
+      'Halt: crisp stop, return to attention',
+      'Flanking: pivot and step in new direction',
+      'Dress: align with person to your side',
+      'Cover: maintain distance from person in front',
+      'Stay in step and in formation'
+    ],
+    practiceInstructions: 'Practice drill movements: 1) Forward march in place (mark time) for 2 minutes, 2) Practice halts from mark time, 3) Practice right and left flanks, 4) March around your room focusing on 30-inch steps. If possible, practice with other musicians to learn dress and cover.'
+  },
+
+  'two-maintenance': {
+    title: 'Pad Care and Cleaning',
+    introduction: 'At Level TWO, you\'ll learn advanced maintenance including cleaning grease from pads to keep your saxophone in top condition.',
+    sections: [
+      {
+        heading: 'Understanding Pads',
+        content: 'Pads are the leather discs that cover the tone holes:\n\n- Made of leather or synthetic material\n- Create an airtight seal when keys are closed\n- Essential for proper sound production\n- Can accumulate grease and debris over time',
+        tip: 'If a pad is dirty or damaged, the note won\'t play properly. You\'ll hear air leaks or the note won\'t sound at all.'
+      },
+      {
+        heading: 'Cleaning Grease from Pads',
+        content: 'How to clean pads safely:\n\n1. Use pad cleaning powder or paper\n2. Place cleaning paper under the pad\n3. Close the key gently\n4. Pull paper out slowly\n5. Repeat for each dirty pad\n6. Test the note to ensure it seals properly',
+        example: 'Think of it like cleaning a window - you want to remove the grime without scratching the surface.',
+        tip: 'Never use alcohol or harsh chemicals on pads! They can damage the leather. Use only products designed for instrument pads.'
+      },
+      {
+        heading: 'Signs of Dirty Pads',
+        content: 'Watch for these warning signs:\n\n- Notes don\'t speak clearly\n- You hear air leaks (fizzing sound)\n- Pad looks shiny or greasy\n- Pad sticks when you release the key\n- Note requires extra finger pressure to seal',
+        tip: 'Clean pads regularly - don\'t wait until they\'re badly contaminated. Prevention is easier than cure!'
+      },
+      {
+        heading: 'When to See a Technician',
+        content: 'Some pad problems need professional help:\n\n- Torn or missing pads\n- Pads that won\'t seal after cleaning\n- Multiple pads needing replacement\n- Pad adjustments (leveling)\n- Mechanical issues with key action\n\nDon\'t try complex pad work yourself - take your sax to a qualified technician.',
+        tip: 'Have your saxophone checked by a technician at least once a year. They can spot problems before they become serious.'
+      }
+    ],
+    keyPoints: [
+      'Pads create airtight seals on tone holes',
+      'Clean pads with pad cleaning powder/paper',
+      'Never use alcohol or harsh chemicals',
+      'Watch for air leaks and sticking pads',
+      'See a technician for serious pad problems'
+    ],
+    practiceInstructions: 'Check your saxophone pads today. Play each note and listen for air leaks. If you hear fizzing or the note doesn\'t speak clearly, that pad may need cleaning. Use pad cleaning paper on dirty pads. Make this part of your weekly maintenance routine.'
+  },
+
+  'two-scales': {
+    title: 'Scales at Increased Tempo',
+    introduction: 'At Level TWO, you\'ll increase your scale tempo to ♩=72 and add more keys to your repertoire.',
+    sections: [
+      {
+        heading: 'Increased Tempo Requirements',
+        content: 'Level TWO scale requirements:\n\n- Tempo: ♩=72 (faster than Level ONE\'s ♩=66)\n- Range: One octave (same as Level ONE)\n- Memorization: NOT required yet\n- Keys: Bb, Eb, F, Ab, Db Major\n- Scales: Major, Chromatic, Harmonic Minor',
+        tip: 'Increase tempo gradually. Don\'t jump from ♩=66 to ♩=72 overnight. Add 2 BPM each week.'
+      },
+      {
+        heading: 'New Keys: Ab and Db Major',
+        content: 'At Level TWO, you\'ll add two new major scales:\n\nAb Major (4 flats: Bb, Eb, Ab, Db)\n- Written for alto: Ab - Bb - C - Db - Eb - F - G - Ab\n- Uses many side keys and alternate fingerings\n\nDb Major (5 flats: Bb, Eb, Ab, Db, Gb)\n- Written for alto: Db - Eb - F - Gb - Ab - Bb - C - Db\n- The most flats you\'ll encounter at this level',
+        tip: 'These keys have many flats, so take extra care with intonation. Use a tuner to check your pitch.'
+      },
+      {
+        heading: 'Practice Strategy for Faster Tempo',
+        content: 'How to build speed safely:\n\n1. Start at comfortable tempo (♩=60)\n2. Play perfectly 3 times in a row\n3. Increase metronome by 2 BPM\n4. Repeat until you reach ♩=72\n5. If you make mistakes, slow down again\n6. Practice daily for consistent improvement',
+        example: 'Week 1: ♩=60-62\nWeek 2: ♩=62-64\nWeek 3: ♩=64-66\nWeek 4: ♩=66-68\nWeek 5: ♩=68-70\nWeek 6: ♩=70-72',
+        tip: 'Speed comes from accuracy, not rushing. Perfect practice makes perfect playing!'
+      },
+      {
+        heading: 'Scale Patterns at Faster Tempo',
+        content: 'Once you can play scales at ♩=72, try these patterns:\n\n1. Triplets: Three notes per beat\n2. Sixteenth notes: Four notes per beat\n3. Intervals: Thirds, fourths, sixths\n4. Arpeggios: 1-3-5-8 pattern\n5. Rhythmic variations: Dotted rhythms, syncopation',
+        tip: 'Patterns make scale practice more interesting and develop different technical skills. Don\'t just play up and down!'
+      }
+    ],
+    keyPoints: [
+      'Level TWO tempo: ♩=72',
+      'New keys: Ab Major (4 flats), Db Major (5 flats)',
+      'Build speed gradually (2 BPM per week)',
+      'Accuracy before speed',
+      'Practice scale patterns for variety'
+    ],
+    practiceInstructions: 'Scale routine: 1) Play all Level ONE scales (Bb, Eb, F) at ♩=72, 2) Learn Ab Major slowly at ♩=60, 3) Gradually increase Ab Major to ♩=72, 4) Learn Db Major slowly, 5) Practice scale patterns (triplets, arpeggios). Do this for 15 minutes daily.'
+  },
+
+  'two-more-keys': {
+    title: 'Additional Keys and Fingerings',
+    introduction: 'At Level TWO, you\'ll expand your key knowledge and learn more advanced fingerings.',
+    sections: [
+      {
+        heading: 'Expanding Your Key Vocabulary',
+        content: 'Level TWO adds these keys to your repertoire:\n\nMajor keys with more accidentals:\n- Ab Major (4 flats)\n- Db Major (5 flats)\n\nMinor keys:\n- F Harmonic Minor\n- C Harmonic Minor\n\nThese keys appear frequently in band literature.',
+        tip: 'The more keys you know, the more music you can play. Each new key opens up new repertoire!'
+      },
+      {
+        heading: 'Alternate Fingerings',
+        content: 'Some notes have multiple fingering options:\n\n- Bb: Standard (1+2+3) or Bis key (side key)\n- F: Standard (1+2+3) or Side key\n- High F#: Palm key or alternate fingering\n\nLearn when to use each fingering for best intonation and technique.',
+        example: 'In fast passages, use the fingering that\'s most comfortable and in tune. In slow, lyrical passages, use the fingering with best tone quality.',
+        tip: 'Experiment with different fingerings. Your teacher can help you choose the best ones for specific situations.'
+      },
+      {
+        heading: 'Trills and Fast Passages',
+        content: 'For fast passages and trills:\n\n- Use fingerings that minimize hand movement\n- Keep fingers close to keys\n- Practice slowly first, then build speed\n- Use metronome to maintain even rhythm\n- Focus on smooth transitions between notes',
+        tip: 'Fast playing comes from relaxed, efficient finger movement. Tension is your enemy!'
+      }
+    ],
+    keyPoints: [
+      'Learn Ab and Db Major scales',
+      'Learn F and C Harmonic Minor scales',
+      'Explore alternate fingerings',
+      'Choose fingerings for best intonation',
+      'Practice fast passages slowly first'
+    ],
+    practiceInstructions: 'Learn Ab Major and Db Major scales. Practice slowly at first, then build to ♩=72. Explore alternate fingerings for Bb and F. Practice trills between adjacent notes. Focus on smooth, relaxed finger movement.'
+  },
+
+  'two-intonation': {
+    title: 'Advanced Intonation Skills',
+    introduction: 'At Level TWO, intonation becomes a critical performance objective. You\'ll learn to identify and correct pitch problems independently.',
+    sections: [
+      {
+        heading: 'Intonation as a Critical Skill',
+        content: 'At Level TWO, intonation is CRITICAL:\n\n- You must identify sharp/flat against a tuning note\n- You must adjust your pitch accordingly\n- This is assessed in your performance evaluation\n- Poor intonation can prevent you from passing',
+        tip: 'Take intonation seriously! It\'s just as important as playing the right notes.'
+      },
+      {
+        heading: 'Tuning with Other Musicians',
+        content: 'How to tune in an ensemble:\n\n1. Listen to the tuning note (usually concert Bb)\n2. Play your matching note (written G for alto)\n3. Listen for "beats" (wavering sound)\n4. Adjust your pitch until beats disappear\n5. Lock in with the group\n\nYou\'re in tune when your note blends perfectly with others.',
+        example: 'When two notes are slightly out of tune, you hear a "wah-wah-wah" beating sound. When they\'re perfectly in tune, the beating disappears and the notes blend.',
+        tip: 'Practice tuning with a drone (sustained pitch). This trains your ear to recognize when you\'re in tune.'
+      },
+      {
+        heading: 'Adjusting Pitch While Playing',
+        content: 'Real-time intonation adjustments:\n\n- Listen constantly to yourself and others\n- Make micro-adjustments with embouchure\n- Use alternate fingerings for problem notes\n- Adjust air speed and direction\n- Be ready to adjust on the fly',
+        tip: 'Good intonation requires constant listening and adjustment. It\'s an active skill, not passive!'
+      },
+      {
+        heading: 'Common Intonation Problems',
+        content: 'Notes that often need adjustment:\n\n- Low notes: tend to be flat, push in slightly\n- High notes: tend to be sharp, pull out slightly\n- Middle D/E: often sharp, use alternate fingering\n- Palm keys: often sharp, relax embouchure\n\nLearn your instrument\'s tendencies and compensate.',
+        tip: 'Every saxophone is different. Spend time learning which notes on YOUR sax need adjustment.'
+      }
+    ],
+    keyPoints: [
+      'Intonation is CRITICAL at Level TWO',
+      'Must identify and correct pitch problems',
+      'Tune with other musicians using tuning note',
+      'Listen for beats and adjust until they disappear',
+      'Make real-time adjustments while playing',
+      'Learn your instrument\'s intonation tendencies'
+    ],
+    practiceInstructions: 'Daily intonation practice: 1) Tune to concert Bb with tuner, 2) Play long tones checking tuner, 3) Practice tuning with a drone tone, 4) Play with recordings and match pitch, 5) Identify and correct problem notes on your sax. Do this for 10 minutes daily.'
+  },
+
+  'two-theory': {
+    title: 'Theory Fundamentals: Intervals and Chords',
+    introduction: 'At Level TWO, music theory becomes critical. You\'ll learn about intervals, chords, and how they work together.',
+    sections: [
+      {
+        heading: 'Understanding Intervals',
+        content: 'An interval is the distance between two notes:\n\n- Measured by letter names (2nd, 3rd, 4th, etc.)\n- Quality: major, minor, perfect, augmented, diminished\n- Example: C to E is a major 3rd (3 letter names: C-D-E)\n\nIntervals are the building blocks of melody and harmony.',
+        example: 'Think of intervals like distances in miles. A 2nd is like 1 mile, a 3rd is like 2 miles, etc.',
+        tip: 'Learn to recognize intervals by sound. This is called "ear training" and it\'s essential for musicians.'
+      },
+      {
+        heading: 'Major and Minor Intervals',
+        content: 'Seconds and thirds can be major or minor:\n\nMajor 2nd: 1 whole step (C to D)\nMinor 2nd: 1 half step (C to Db)\n\nMajor 3rd: 2 whole steps (C to E)\nMinor 3rd: 1.5 steps (C to Eb)\n\nThe quality determines whether the interval is major or minor.',
+        tip: 'To figure out interval quality, think of the lower note as the tonic of a major scale. If the upper note is in that major scale, it\'s major. If it\'s a half step smaller, it\'s minor.'
+      },
+      {
+        heading: 'Introduction to Chords',
+        content: 'A chord is three or more notes played together:\n\n- Built by stacking intervals (usually thirds)\n- Triad: root + 3rd + 5th\n- Major triad: major 3rd + perfect 5th\n- Minor triad: minor 3rd + perfect 5th\n\nChords provide the harmonic foundation of music.',
+        example: 'C Major chord = C + E + G (root + major 3rd + perfect 5th)',
+        tip: 'Learn to recognize major and minor chords by sound. Major sounds happy, minor sounds sad.'
+      },
+      {
+        heading: 'Why Theory Matters',
+        content: 'Music theory helps you:\n\n- Understand how music works\n- Read and write music more effectively\n- Communicate with other musicians\n- Analyze and interpret compositions\n- Improvise and compose your own music\n\nTheory is the grammar of music!',
+        tip: 'Don\'t just memorize theory - understand it. Ask "why" and "how" things work.'
+      }
+    ],
+    keyPoints: [
+      'Intervals = distance between notes',
+      'Major/minor quality for 2nds and 3rds',
+      'Chords = 3+ notes played together',
+      'Triads built in thirds',
+      'Theory is essential for understanding music'
+    ],
+    practiceInstructions: 'Theory practice: 1) Identify intervals by ear (start with 2nds and 3rds), 2) Build major and minor triads on different roots, 3) Analyze simple pieces for intervals and chords, 4) Practice writing intervals and chords. Do this for 10 minutes daily.'
+  },
+
+  'two-aural': {
+    title: 'Aural Skills: Ear Training',
+    introduction: 'Aural skills involve training your ear to recognize musical elements. This is essential for all musicians.',
+    sections: [
+      {
+        heading: 'What are Aural Skills?',
+        content: 'Aural skills include:\n\n- Recognizing intervals by sound\n- Identifying rhythms by ear\n- Singing back melodies\n- Recognizing chord qualities\n- Clapping or tapping rhythmic patterns\n\nThese skills connect your ear to your instrument.',
+        tip: 'Aural skills take time to develop. Be patient and practice consistently!'
+      },
+      {
+        heading: 'Interval Recognition',
+        content: 'Learn to recognize intervals by sound:\n\nMajor 2nd: "Happy Birthday" (first two notes)\nMinor 2nd: "Jaws" theme\nMajor 3rd: "When the Saints Go Marching In"\nMinor 3rd: "Greensleeves"\nPerfect 4th: "Here Comes the Bride"\nPerfect 5th: "Star Wars" theme',
+        example: 'Use familiar songs to remember interval sounds. This is called "interval association."',
+        tip: 'Practice interval recognition daily. Start with just 2-3 intervals, then add more as you improve.'
+      },
+      {
+        heading: 'Rhythm Recognition',
+        content: 'At Level TWO, you should be able to:\n\n- Clap or tap a simple rhythmic pattern\n- Pattern is 2 bars in 4/4 time\n- Uses half, quarter, or eighth notes\n- Maintain steady pace and rhythmic accentuation\n\nThe instructor plays the pattern twice, then you repeat it.',
+        tip: 'Count out loud while clapping: "1-and-2-and-3-and-4-and". This helps you internalize the rhythm.'
+      },
+      {
+        heading: 'Melodic Dictation',
+        content: 'At Level TWO, you should be able to:\n\n- Sing back a 4-note melody\n- Based on first 3 notes of major scale\n- Instructor plays key, tonic triad, then melody twice\n- You sing back using note names or solfege\n\nThis connects your ear to pitch recognition.',
+        tip: 'Start with very simple melodies. Success builds confidence!'
+      }
+    ],
+    keyPoints: [
+      'Aural skills = training your ear',
+      'Recognize intervals by sound',
+      'Clap rhythmic patterns accurately',
+      'Sing back simple melodies',
+      'Practice consistently for improvement'
+    ],
+    practiceInstructions: 'Daily aural skills practice: 1) Interval recognition (5 minutes) - use apps or recordings, 2) Rhythm clapping (5 minutes) - clap patterns from method books, 3) Melodic dictation (5 minutes) - sing back simple melodies. Total: 15 minutes daily.'
+  },
+
+  'two-sight': {
+    title: 'Sight Reading at Level TWO',
+    introduction: 'At Level TWO, sight reading expectations increase. You\'ll read longer passages with more complex rhythms.',
+    sections: [
+      {
+        heading: 'Level TWO Sight Reading Standards',
+        content: 'At Level TWO, you should be able to:\n\n- Sight read up to 16 bars\n- With assistance (teacher can help with tricky spots)\n- In keys with up to 3 sharps or flats\n- In 4/4, 3/4, or 2/4 time\n- Using quarter, eighth, and half notes\n- At a moderate tempo (♩=90-110)',
+        tip: 'The key is maintaining the pulse. Don\'t stop for mistakes - keep going!'
+      },
+      {
+        heading: 'Advanced Scanning Technique',
+        content: 'Before playing, scan for:\n\n1. Key signature - what key are you in?\n2. Time signature - what\'s the meter?\n3. Tempo marking - how fast?\n4. Tricky rhythms - count them first\n5. Accidentals - watch for sharps/flats\n6. Repeats and navigation - plan your path\n7. Difficult fingerings - visualize them\n\nTake 30-60 seconds for this scan.',
+        tip: 'The more you sight read, the faster your scanning becomes. Eventually it becomes automatic!'
+      },
+      {
+        heading: 'Handling Difficult Passages',
+        content: 'When you encounter something hard:\n\n- Simplify if necessary (play main notes only)\n- Maintain the rhythm at all costs\n- Don\'t stop or go back\n- Jump to the next beat if you get lost\n- Keep your place in the music\n\nRemember: rhythm > perfect notes',
+        example: 'If there\'s a fast run you can\'t play, just play the first and last note. Keep the rhythm going!',
+        tip: 'Sight reading is about making musical decisions quickly. You don\'t have time to be perfect!'
+      },
+      {
+        heading: 'Building Sight Reading Skills',
+        content: 'How to improve sight reading:\n\n1. Practice daily (even 5 minutes helps)\n2. Use music slightly below your level\n3. Never practice a sight reading piece\n4. Play through without stopping\n5. Reflect on what was difficult\n6. Gradually increase difficulty',
+        tip: 'Sight reading is like a muscle - it gets stronger with regular exercise!'
+      }
+    ],
+    keyPoints: [
+      'Level TWO: 16 bars, up to 3 sharps/flats',
+      'Scan music for 30-60 seconds before playing',
+      'Maintain pulse - don\'t stop for mistakes',
+      'Rhythm is more important than perfect notes',
+      'Practice sight reading daily'
+    ],
+    practiceInstructions: 'Daily sight reading: 1) Find a piece you\'ve never seen (slightly below your level), 2) Scan for 30 seconds (key, time, tempo, tricky spots), 3) Set metronome to ♩=90, 4) Play through without stopping, 5) Don\'t worry about mistakes - keep the pulse! Do this for 5-10 minutes daily.'
   },
 };
 
