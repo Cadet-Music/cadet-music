@@ -31,6 +31,9 @@
 ### Key Features
 - Complete 6-level curriculum (Basic → Level 5)
 - Official Canadian Cadet Organization standards compliance
+- **Comprehensive foundational lessons teaching proper technique before playing**
+- **Research-based instruction on embouchure, breathing, posture, and tone production**
+- **Multi-instrument support: Saxophone and Clarinet with instrument-specific lessons**
 - Interactive lessons with theory and playing components
 - Song selection from official prepared music lists
 - **Competency tracking with 21 music concepts**
@@ -65,6 +68,9 @@ src/
 ├── instruments.ts             # Multi-instrument architecture & transposition
 ├── audioManager.ts            # Core audio infrastructure
 ├── audioActivities.ts         # Audio activity types & factory
+├── saxophoneFundamentals.ts   # Comprehensive saxophone fundamentals
+├── clarinetFundamentals.ts    # Comprehensive clarinet fundamentals
+├── lessonContent.ts           # Lesson content (saxophone & clarinet)
 ├── index.css                  # Global styles
 ├── components/
 │   ├── Login.tsx              # Authentication (sign in/sign up)
@@ -2483,6 +2489,191 @@ The Audio Practice Architecture provides a solid foundation for real instrument 
 The system is production-ready for basic audio practice and provides clear extension points for advanced features like pitch detection, rhythm analysis, and comprehensive exam assessment.
 
 ---
+
+## Comprehensive Foundational Lessons
+
+### Research-Based Saxophone Fundamentals
+
+The platform now includes comprehensive, research-based instruction on proper saxophone technique, ensuring students learn correct fundamentals from the beginning. All content is based on authoritative pedagogy sources to prevent bad habits that are difficult to correct later.
+
+#### Core Fundamental Concepts
+
+**1. Proper Embouchure Formation**
+- Detailed step-by-step embouchure instructions
+- Top teeth rest on mouthpiece, bottom lip cushions reed
+- Corners firm and pulled inward (like saying "M")
+- Chin flat and pointed down
+- Common mistakes and how to fix them
+- Practice routine for developing embouchure strength
+
+**2. Breathing and Air Support**
+- Diaphragmatic breathing (belly breathing) technique
+- Air support using abdominal muscles
+- Fast, focused air stream
+- Breathing exercises (hissing, counting, pulse exercises)
+- Common breathing problems and solutions
+
+**3. Posture and Hand Position**
+- Standing and sitting posture
+- Proper hand position (curved fingers like holding a baseball)
+- Neck strap adjustment
+- Thumb positioning for support
+- Common posture mistakes to avoid
+
+**4. Assembly and Care**
+- Step-by-step assembly instructions
+- Reed preparation (wetting, positioning)
+- Daily care routine (swabbing, cleaning)
+- Maintenance best practices
+- When to see a technician
+
+**5. First Sound Production**
+- Step-by-step guide to producing first sound
+- Embouchure and breathing coordination
+- Starting with mouthpiece and barrel only
+- Common problems and solutions
+
+**6. Long Tone Exercises**
+- The most important exercise for tone development
+- How to practice long tones effectively
+- Building embouchure strength and control
+- Daily long tone routine
+
+**7. Basic Tonguing Technique**
+- Proper tongue position and movement
+- Articulation basics
+- Tonguing exercises
+- Common tonguing problems
+
+#### Lesson Structure
+
+Each fundamental lesson includes:
+- **Detailed Instruction**: Step-by-step explanations
+- **Key Points**: Summary of important concepts
+- **Common Mistakes**: What to watch out for
+- **Practice Routine**: Specific exercises to do
+- **Examples and Analogies**: Real-world comparisons to aid understanding
+
+### Clarinet Support
+
+The platform now supports clarinet as a second instrument with comprehensive, instrument-specific instruction.
+
+#### Clarinet Fundamentals
+
+**1. Clarinet Embouchure**
+- "Milkshake face" technique (corners forward, chin flat)
+- Differences from saxophone embouchure
+- Bottom lip positioning
+- Top teeth placement
+- Common embouchure problems
+
+**2. Clarinet Breathing**
+- Faster, more focused air than saxophone
+- Diaphragmatic breathing technique
+- Air support exercises
+- Coffee stirrer exercise for focused air
+
+**3. Clarinet Assembly and Care**
+- Five-piece assembly (mouthpiece, barrel, upper joint, lower joint, bell)
+- Cork grease application
+- Proper handling techniques
+- Daily care routine
+
+**4. First Sound on Clarinet**
+- Starting with mouthpiece and barrel
+- Concert F# (written G) production
+- Embouchure and air coordination
+- Common first sound problems
+
+**5. Clarinet Registers**
+- Three registers: chalumeau, clarion, altissimo
+- Register key operation
+- Overblowing at the 12th (not octave)
+- Register transition exercises
+
+**6. Clarinet Fingerings**
+- Left hand and right hand positioning
+- Register key technique
+- Finger independence exercises
+- Common fingering problems
+
+**7. Reed Selection and Care**
+- Reed strength selection (2-5)
+- Reed preparation and storage
+- Reed rotation system
+- When to replace reeds
+
+#### Clarinet vs Saxophone Comparison
+
+The platform includes detailed comparisons for students switching between instruments:
+- Embouchure differences
+- Air support requirements
+- Mouthpiece positioning
+- Instrument angle
+- Reed characteristics
+- Register systems
+- Fingering complexity
+
+#### Clarinet Lesson Content
+
+Each clarinet lesson includes:
+- Instrument-specific instruction
+- Clarinet-focused examples and analogies
+- Common clarinet mistakes
+- Clarinet-specific practice routines
+- Comparison to saxophone where helpful
+
+### Lesson Content System
+
+#### Architecture
+
+The lesson content system is organized as follows:
+
+**Saxophone Lessons** (`src/lessonContent.ts`):
+- `LESSON_CONTENT`: Comprehensive saxophone lesson content
+- Covers all fundamental concepts
+- Organized by lesson ID
+
+**Clarinet Lessons** (`src/lessonContent.ts`):
+- `CLARINET_LESSON_CONTENT`: Comprehensive clarinet lesson content
+- Instrument-specific instruction
+- Organized by lesson ID
+
+**Fundamental Concepts** (`src/saxophoneFundamentals.ts`, `src/clarinetFundamentals.ts`):
+- Detailed reference material for each fundamental concept
+- Key points, common mistakes, practice routines
+- Used by lesson content for consistency
+
+#### Lesson Display
+
+The `LessonView` component automatically detects the instrument type based on lesson ID:
+- Lessons starting with `clarinet-` load clarinet content
+- Other lessons load saxophone content
+- Exercises are instrument-specific
+- Content is tailored to each instrument's unique characteristics
+
+### Benefits of Foundational Approach
+
+**For Students:**
+- Learn proper technique from the beginning
+- Avoid bad habits that are difficult to correct
+- Build strong foundation for future advancement
+- Understand the "why" behind techniques
+- Develop good practice habits
+
+**For Instructors:**
+- Consistent, research-based instruction
+- Comprehensive coverage of fundamentals
+- Clear practice routines for students
+- Common mistakes identified and addressed
+- Instrument-specific guidance
+
+**For the Platform:**
+- Professional-quality music education
+- Standards-compliant instruction
+- Multi-instrument support
+- Scalable architecture for future instruments
+- Comprehensive documentation
 
 ## Multi-Instrument Architecture
 

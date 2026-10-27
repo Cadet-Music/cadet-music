@@ -598,7 +598,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     practiceInstructions: 'Practice the chromatic scale: Start on Bb, play up to Bb (one octave) using all half steps. Use a metronome at ♩=60. Play ascending and descending. Do this 5 times slowly, then gradually increase speed.'
   },
 
-  'basic-notes': {
+  'basic-note-names': {
     title: 'Note Names on the Staff',
     introduction: 'Now that you understand the staff, let\'s learn to read note names. This is essential for playing music.',
     sections: [
@@ -1270,4 +1270,210 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 // Get lesson content by ID
 export const getLessonContent = (lessonId: string): LessonContent | null => {
   return LESSON_CONTENT[lessonId] || null;
+};
+
+// ============================================================
+// CLARINET LESSONS
+// ============================================================
+
+export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
+  'clarinet-intro': {
+    title: 'Meet Your Clarinet',
+    introduction: 'The clarinet is a woodwind instrument with a beautiful, rich tone. It was invented around 1700 and has been a vital part of orchestras, bands, and jazz ensembles ever since.',
+    sections: [
+      {
+        heading: 'Main Parts of the Clarinet',
+        content: 'Your clarinet has five main parts:\n\n1. Mouthpiece - The part you blow into. It has a single reed attached that vibrates to create sound.\n\n2. Barrel - The short piece that connects the mouthpiece to the upper joint. It helps with tuning.\n\n3. Upper Joint - The top section with keys operated by your left hand.\n\n4. Lower Joint - The bottom section with keys operated by your right hand.\n\n5. Bell - The flared end at the bottom where sound comes out.',
+        example: 'Think of the clarinet like a tube with keys. Air goes in the mouthpiece, travels through the joints, and comes out the bell.',
+        tip: 'Always handle your clarinet by the body, never by the keys. The keys are delicate and bend easily!'
+      },
+      {
+        heading: 'The Reed and Mouthpiece',
+        content: 'The reed is a thin piece of cane that vibrates when air passes over it. This vibration creates the sound.\n\nThe mouthpiece has:\n- A flat surface where the reed sits\n- An opening (window) where air flows through\n- A tip where you place your top teeth\n- A ligature that holds the reed in place',
+        tip: 'Clarinet reeds are smaller and more delicate than saxophone reeds. Handle them carefully!'
+      },
+      {
+        heading: 'Clarinet vs Saxophone',
+        content: 'If you\'ve played saxophone, clarinet has some differences:\n\n- Smaller mouthpiece and reed\n- Held at 45-degree angle (not vertical)\n- Three registers instead of two\n- Overblows at the 12th (not octave)\n- More complex fingerings\n- Requires firmer embouchure\n- Needs faster, more focused air',
+        tip: 'Don\'t try to play clarinet like saxophone! The techniques are different.'
+      }
+    ],
+    keyPoints: [
+      'Five main parts: mouthpiece, barrel, upper joint, lower joint, bell',
+      'The reed vibrates to create sound',
+      'Handle by the body, never the keys',
+      'Clarinet reeds are smaller and more delicate',
+      'Clarinet technique is different from saxophone'
+    ],
+    practiceInstructions: 'Identify each part on your clarinet. Practice assembling and disassembling your instrument carefully. Remember: always handle by the body, never the keys! Compare your clarinet to a saxophone if you\'ve played one - notice the differences.'
+  },
+
+  'clarinet-embouchure': {
+    title: 'Clarinet Embouchure',
+    introduction: 'The clarinet embouchure is different from saxophone. It requires a firmer, more focused approach with the corners of the mouth drawn forward.',
+    sections: [
+      {
+        heading: 'The Milkshake Face',
+        content: 'The best way to learn clarinet embouchure is the "milkshake face":\n\n1. Imagine drinking a thick milkshake through a coffee straw\n2. Your corners draw forward and firm up\n3. Your chin flattens and points down\n4. Your lips seal around the straw\n\nThis is exactly what your embouchure should look like!',
+        example: 'Practice making the milkshake face without the instrument. Look in a mirror. Are your corners forward? Is your chin flat? Hold the position for 30 seconds.',
+        tip: 'The milkshake analogy works because it naturally creates the right embouchure shape without you having to think about individual muscles.'
+      },
+      {
+        heading: 'Detailed Embouchure Formation',
+        content: 'Step-by-step embouchure formation:\n\n1. Draw corners of mouth forward and firm (like saying "M")\n2. Roll bottom lip slightly over bottom teeth (just enough to cushion the reed)\n3. Place top teeth on mouthpiece (about 1/3 from the tip)\n4. Close mouth around mouthpiece, maintaining the milkshake shape\n5. Chin should be flat and pointed down\n6. No air should escape from corners of mouth',
+        tip: 'Your embouchure should feel firm but not tense. If it hurts, you\'re doing it wrong!'
+      },
+      {
+        heading: 'Common Embouchure Problems',
+        content: 'Watch out for these mistakes:\n\n- Corners pulling back (causes thin, nasal tone)\n- Bottom lip too far over teeth (muffles sound)\n- Bottom lip not far enough (causes squeaking)\n- Biting too hard (restricts reed vibration)\n- Chin bunched up (causes stuffy tone)\n- Jaw clenched (restricts tone production)',
+        tip: 'Use a mirror when practicing! Check your embouchure constantly.'
+      }
+    ],
+    keyPoints: [
+      'Milkshake face: corners forward, chin flat',
+      'Bottom lip rolled slightly over teeth',
+      'Top teeth on mouthpiece (1/3 from tip)',
+      'No air escaping from corners',
+      'Firm but not tense',
+      'Use a mirror to check your embouchure'
+    ],
+    practiceInstructions: 'Practice the milkshake face for 2 minutes without the instrument. Then practice with just the mouthpiece and barrel, focusing on maintaining the embouchure while producing a steady tone. Do this for 5 minutes daily. Your embouchure muscles will get tired - that\'s normal! They\'ll get stronger with practice.'
+  },
+
+  'clarinet-breathing': {
+    title: 'Clarinet Breathing and Air Support',
+    introduction: 'Clarinet requires focused, fast air support. The smaller mouthpiece requires more air pressure than saxophone.',
+    sections: [
+      {
+        heading: 'Diaphragmatic Breathing',
+        content: 'Clarinet players use diaphragmatic breathing (belly breathing):\n\n1. Keep shoulders relaxed and down\n2. Breathe in through your mouth\n3. Your belly should expand outward\n4. Your chest should barely move\n5. Fill your lungs completely from bottom to top',
+        example: 'Lie down on your back and put a book on your belly. When you breathe in, the book should rise. When you breathe out, it should fall. That\'s diaphragmatic breathing!',
+        tip: 'Practice breathing exercises without your instrument first. Master the breathing technique before adding the clarinet.'
+      },
+      {
+        heading: 'Focused Air Stream',
+        content: 'Clarinet requires fast, focused air:\n\n- Think of blowing through a coffee stirrer (small straw)\n- Air should be fast and concentrated\n- Use abdominal muscles to control air stream\n- Maintain consistent air pressure throughout phrase\n- Keep throat open and relaxed',
+        example: 'Imagine blowing a piece of paper across the room. You need fast, focused air, not a gentle puff.',
+        tip: 'The clarinet needs more air pressure than saxophone because of the smaller mouthpiece and reed.'
+      },
+      {
+        heading: 'Air Support Exercises',
+        content: 'Practice these breathing exercises daily:\n\n1. Coffee stirrer exercise: Blow through a small straw for as long as possible\n2. Hissing exercise: Take a deep breath, hiss "ssss" for as long as possible (aim for 20+ seconds)\n3. Pulse exercise: Take a breath, pulse the air "ha-ha-ha-ha" while keeping support',
+        tip: 'Do breathing exercises for 5 minutes every day. This will dramatically improve your clarinet playing.'
+      }
+    ],
+    keyPoints: [
+      'Breathe from diaphragm, not chest',
+      'Belly expands, shoulders stay down',
+      'Use fast, focused air (like blowing through small straw)',
+      'Abdominal muscles control air stream',
+      'Practice breathing exercises daily'
+    ],
+    practiceInstructions: 'Practice breathing exercises: 1) Blow through coffee stirrer for 20 seconds, 2) Hiss "ssss" for 20 seconds, 3) Play long tones on clarinet, focusing on fast, supported air. Do this routine for 5 minutes every day.'
+  },
+
+  'clarinet-first-sound': {
+    title: 'Producing Your First Sound on Clarinet',
+    introduction: 'The clarinet requires a different approach than saxophone for producing the first sound. The smaller reed requires more focused air and precise embouchure.',
+    sections: [
+      {
+        heading: 'Starting with Mouthpiece and Barrel',
+        content: 'Before assembling the full clarinet, practice with just the mouthpiece and barrel:\n\n1. Form your milkshake embouchure\n2. Place mouthpiece in mouth - top teeth on mouthpiece, bottom lip cushioning reed\n3. About 1/3 of mouthpiece should be inside your mouth\n4. Take a deep breath from your diaphragm\n5. Blow fast, focused air through the mouthpiece\n6. Keep throat open and relaxed\n\nThe mouthpiece/barrel should produce a concert F# (written G).',
+        tip: 'If you can\'t produce a sound on the mouthpiece alone, you\'re not ready to assemble the full clarinet yet. Practice with just the mouthpiece until you can produce a steady tone.'
+      },
+      {
+        heading: 'Assembling and Playing First Notes',
+        content: 'Once you can produce a sound on the mouthpiece:\n\n1. Assemble the full clarinet carefully\n2. Form your embouchure\n3. Place mouthpiece in mouth (1/3 in)\n4. Blow fast, focused air\n5. Start with written G (concert F#) - it\'s the easiest note\n6. Hold for 4 beats with steady tone\n7. Rest, repeat 5 times',
+        tip: 'If the note squeaks, check: 1) Embouchure (corners forward?), 2) Air (fast enough?), 3) Mouthpiece position (1/3 in?), 4) Reed (wet and not damaged?)'
+      },
+      {
+        heading: 'Common First Sound Problems',
+        content: 'If you can\'t produce a sound:\n\n- No sound at all: Not enough air pressure or embouchure too loose\n- Airy sound: Embouchure not sealed, air escaping from corners\n- Squeaking: Embouchure too loose, not enough air, or reed problem\n- Stuff sound: Too much mouthpiece in mouth or embouchure too tight\n- Thin sound: Corners pulling back, not enough air support',
+        tip: 'Most problems are caused by insufficient air support or incorrect embouchure. Focus on fast air and milkshake face!'
+      }
+    ],
+    keyPoints: [
+      'Start with mouthpiece and barrel only',
+      'Milkshake embouchure: corners forward, chin flat',
+      '1/3 of mouthpiece in mouth',
+      'Fast, focused air (like blowing through small straw)',
+      'Start with written G (concert F#)',
+      'Most problems = insufficient air or incorrect embouchure'
+    ],
+    practiceInstructions: 'Practice with mouthpiece and barrel: Produce a steady tone for 10 seconds, rest, repeat 5 times. Then assemble full clarinet. Play written G for 4 beats, rest 4 beats, repeat 5 times. Focus on clear, steady tone. Do this for 5 minutes daily.'
+  },
+
+  'clarinet-notes': {
+    title: 'Your First Notes: E, D, C',
+    introduction: 'Let\'s learn your first three notes on the clarinet: E, D, and C. These are played with your right hand.',
+    sections: [
+      {
+        heading: 'Right Hand Position',
+        content: 'Your right hand plays the bottom keys on the clarinet:\n\n- Thumb: Supports the clarinet from underneath\n- Index finger: Plays E\n- Middle finger: Plays D\n- Ring finger: Plays C\n- Pinky: Operates side keys\n\nCurve your fingers like holding a baseball. Use the pads of your fingers, not the tips.',
+        example: 'Hold your right hand out in front of you. Curve your fingers naturally - this is the shape they should be on the clarinet.',
+        tip: 'Keep your fingers close to the keys even when not pressing them. This makes playing faster and more accurate.'
+      },
+      {
+        heading: 'Playing E',
+        content: 'To play written E:\n\n1. Form your embouchure\n2. Press down the first key with your right index finger\n3. Blow steady, focused air\n4. Keep all other fingers up\n\nE is one of the easiest notes on clarinet.',
+        tip: 'Make sure you\'re pressing the key down completely. If the sound is airy or squeaky, check that your finger is covering the key fully.'
+      },
+      {
+        heading: 'Playing D',
+        content: 'To play written D:\n\n1. Keep your index finger down on E\n2. Add your middle finger on the second key\n3. Blow steady air\n\nD is played with two fingers down: index and middle.',
+        tip: 'Move your fingers smoothly from E to D. Don\'t lift your fingers high - keep them close to the keys.'
+      },
+      {
+        heading: 'Playing C',
+        content: 'To play written C:\n\n1. Keep index and middle fingers down\n2. Add your ring finger on the third key\n3. Blow steady air\n\nC is played with all three right-hand fingers down.',
+        tip: 'Practice moving between E-D-C-D-E smoothly. Think of it as a wave: down, down, down, up, up.'
+      }
+    ],
+    keyPoints: [
+      'Right hand: index=E, middle=D, ring=C',
+      'Curve fingers like holding a baseball',
+      'Keep fingers close to keys',
+      'Press keys completely down',
+      'Use steady, focused air'
+    ],
+    practiceInstructions: 'Practice each note separately: play E for 4 beats, D for 4 beats, C for 4 beats. Then play the pattern E-D-C-D-E five times slowly. Focus on smooth finger movement and steady tone.'
+  },
+
+  'clarinet-register': {
+    title: 'The Register Key and Clarion Register',
+    introduction: 'The clarinet has a special key called the register key (or speaker key) that allows you to play in the higher register. This is unique to the clarinet.',
+    sections: [
+      {
+        heading: 'The Register Key',
+        content: 'The register key is operated by your left thumb:\n\n- It\'s the key on the back of the upper joint\n- Press it with the side of your thumb (not the pad)\n- It raises the pitch by a 12th (octave + 5th)\n- Unlike saxophone octave key, clarinet overblows at the 12th',
+        example: 'Written G (low) becomes written D (high) when you add the register key. That\'s a 12th interval!',
+        tip: 'The register key requires precise thumb movement. Practice pressing and releasing it smoothly.'
+      },
+      {
+        heading: 'Clarion Register Notes',
+        content: 'When you add the register key to your low notes, you get clarion register notes:\n\n- Low E + register key = High B\n- Low D + register key = High A\n- Low C + register key = High G\n\nThese notes are in the middle register of the clarinet.',
+        tip: 'The clarion register requires more focused air and firmer embouchure than the chalumeau (low) register.'
+      },
+      {
+        heading: 'Practicing Register Transitions',
+        content: 'Practice smooth transitions between registers:\n\n1. Play low E for 4 beats\n2. Add register key, play high B for 4 beats\n3. Remove register key, return to low E\n4. Repeat with D to A, C to G\n\nFocus on smooth, seamless transitions.',
+        tip: 'If the high note doesn\'t speak, check: 1) Register key fully pressed, 2) Air support increased, 3) Embouchure firmer.'
+      }
+    ],
+    keyPoints: [
+      'Register key operated by left thumb (side motion)',
+      'Raises pitch by a 12th (octave + 5th)',
+      'Low E becomes high B with register key',
+      'Requires more focused air and firmer embouchure',
+      'Practice smooth register transitions'
+    ],
+    practiceInstructions: 'Practice register transitions: 1) Low E to high B (4 beats each), 2) Low D to high A (4 beats each), 3) Low C to high G (4 beats each). Repeat each transition 5 times. Focus on smooth, seamless transitions with consistent tone quality.'
+  }
+};
+
+/**
+ * Get clarinet lesson content by ID
+ */
+export const getClarinetLessonContent = (lessonId: string): LessonContent | null => {
+  return CLARINET_LESSON_CONTENT[lessonId] || null;
 };

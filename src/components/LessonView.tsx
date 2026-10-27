@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { getLessonById } from '../data';
 import { CONCEPTS, Concept } from '../competency';
-import { getLessonContent, LessonContent } from '../lessonContent';
+import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
 import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 
@@ -126,6 +126,34 @@ function getExercisesForLesson(lessonId: string): Exercise[] {
           },
         },
       },
+    ],
+    // Clarinet lessons
+    'clarinet-intro': [
+      { type: 'multiple-choice', question: 'How many main parts does a clarinet have?', options: [{ text: '3', correct: false }, { text: '4', correct: false }, { text: '5', correct: true }, { text: '6', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'true-false', question: 'The clarinet reed is larger than a saxophone reed.', correctAnswer: 'false', concept: CONCEPTS.MAINTENANCE },
+      { type: 'note-match', question: 'Match the clarinet parts to their function:', notePairs: [{ note: 'Mouthpiece', position: 'Where you blow' }, { note: 'Barrel', position: 'Connects mouthpiece to upper joint' }, { note: 'Bell', position: 'Sound exits here' }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+    ],
+    'clarinet-embouchure': [
+      { type: 'multiple-choice', question: 'What is the best analogy for clarinet embouchure?', options: [{ text: 'Saying "M"', correct: false }, { text: 'Drinking through a milkshake straw', correct: true }, { text: 'Blowing out candles', correct: false }, { text: 'Whistling', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'true-false', question: 'The corners of your mouth should pull back when playing clarinet.', correctAnswer: 'false', concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'multiple-choice', question: 'How much mouthpiece should be in your mouth?', options: [{ text: '1/4', correct: false }, { text: '1/3', correct: true }, { text: '1/2', correct: false }, { text: '2/3', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+    ],
+    'clarinet-breathing': [
+      { type: 'multiple-choice', question: 'What type of breathing does clarinet require?', options: [{ text: 'Chest breathing', correct: false }, { text: 'Diaphragmatic breathing', correct: true }, { text: 'Shallow breathing', correct: false }, { text: 'Quick breathing', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+      { type: 'true-false', question: 'Clarinet requires faster, more focused air than saxophone.', correctAnswer: 'true', concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
+    ],
+    'clarinet-first-sound': [
+      { type: 'multiple-choice', question: 'What note should the mouthpiece and barrel produce?', options: [{ text: 'Concert Bb', correct: false }, { text: 'Concert F', correct: false }, { text: 'Concert F#', correct: true }, { text: 'Concert G', correct: false }], concept: CONCEPTS.NOTE_NAMES },
+      { type: 'true-false', question: 'You should assemble the full clarinet before trying to produce a sound.', correctAnswer: 'false', concept: CONCEPTS.MAINTENANCE },
+    ],
+    'clarinet-notes': [
+      { type: 'multiple-choice', question: 'Which fingers play written E on clarinet?', options: [{ text: 'Left hand index', correct: false }, { text: 'Right hand index', correct: true }, { text: 'Right hand middle', correct: false }, { text: 'Right hand ring', correct: false }], concept: CONCEPTS.NOTE_NAMES },
+      { type: 'fill-order', question: 'Put the clarinet notes in order from highest to lowest:', items: ['E', 'D', 'C'], correctOrder: ['E', 'D', 'C'], concept: CONCEPTS.NOTE_NAMES },
+    ],
+    'clarinet-register': [
+      { type: 'multiple-choice', question: 'What interval does the register key raise the pitch?', options: [{ text: 'Octave (8ve)', correct: false }, { text: '12th (octave + 5th)', correct: true }, { text: '5th', correct: false }, { text: '4th', correct: false }], concept: CONCEPTS.SCALES },
+      { type: 'true-false', question: 'The clarinet overblows at the octave like the saxophone.', correctAnswer: 'false', concept: CONCEPTS.SCALES },
+      { type: 'multiple-choice', question: 'Which finger operates the register key?', options: [{ text: 'Left thumb', correct: true }, { text: 'Right thumb', correct: false }, { text: 'Left index', correct: false }, { text: 'Right index', correct: false }], concept: CONCEPTS.SCALES },
     ],
   };
 
@@ -548,7 +576,11 @@ export default function LessonView() {
   const [correctCount, setCorrectCount] = useState(0);
 
   const lesson = currentLessonId ? getLessonById(currentLessonId) : null;
-  const lessonContentData = currentLessonId ? getLessonContent(currentLessonId) : null;
+  // Check if this is a clarinet lesson and load appropriate content
+  const isClarinetLesson = currentLessonId?.startsWith('clarinet-');
+  const lessonContentData = currentLessonId 
+    ? (isClarinetLesson ? getClarinetLessonContent(currentLessonId) : getLessonContent(currentLessonId))
+    : null;
   const exercises = currentLessonId ? getExercisesForLesson(currentLessonId) : [];
 
   if (!lesson || !user) return null;

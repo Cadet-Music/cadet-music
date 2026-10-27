@@ -342,6 +342,19 @@ export interface Lesson {
 
 export const CURRICULUM: { id: string; title: string; level: number; lessons: Lesson[] }[] = [
   {
+    id: 'clarinet-basic',
+    title: 'CLARINET BASIC',
+    level: 0,
+    lessons: [
+      { id: 'clarinet-intro', title: 'Meet Your Clarinet', type: 'playing', emoji: '🎵', topic: 'Instrument', xp: 10, description: 'Learn the parts of your clarinet', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'clarinet-embouchure', title: 'Clarinet Embouchure', type: 'playing', emoji: '👄', topic: 'PO 451', xp: 20, description: 'Milkshake face and proper formation', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'clarinet-breathing', title: 'Breathing and Air Support', type: 'playing', emoji: '💨', topic: 'PO 451', xp: 15, description: 'Diaphragmatic breathing for clarinet', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'clarinet-first-sound', title: 'First Sound on Clarinet', type: 'playing', emoji: '🎶', topic: 'PO 451', xp: 20, description: 'Producing your first tone', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'clarinet-notes', title: 'First Notes: E, D, C', type: 'playing', emoji: '🎵', topic: 'PO 451', xp: 20, description: 'Your first three notes', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'clarinet-register', title: 'Register Key and Clarion Register', type: 'playing', emoji: '🔑', topic: 'PO 451', xp: 25, description: 'Understanding the register key', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+    ],
+  },
+  {
     id: 'basic',
     title: 'BASIC',
     level: 0,
