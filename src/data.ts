@@ -120,84 +120,86 @@ export const POS: PerformanceObjective[] = [
 ];
 
 // Prepared Music - Official Lists (Annex D)
-// CORRECTED: Using exact titles from A-CR-CCP-166/PT-001 standards
+// VERIFIED: Exact titles from A-CR-CCP-166/PT-001 (2003-06-01) Annex D, pages D1-2-15 to D1-2-16
 export interface Song {
   id: string;
   title: string;
   composer?: string;
   list: 'A' | 'B';
   level: CadetLevel;
+  book?: string;
+  page?: string;
   rcmEquivalent?: string;
 }
 
 export const PREPARED_MUSIC: Song[] = [
-  // BASIC - Official List
-  { id: 'basic-a1', title: 'Western Portrait', composer: 'Traditional', list: 'A', level: 'BASIC' },
-  { id: 'basic-a2', title: 'Austrian Melody', composer: 'Traditional', list: 'A', level: 'BASIC' },
-  { id: 'basic-a3', title: 'The Minstrel Boy', composer: 'Traditional', list: 'A', level: 'BASIC' },
-  { id: 'basic-b1', title: 'Ode to Joy', composer: 'Beethoven', list: 'B', level: 'BASIC' },
-  { id: 'basic-b2', title: 'America (My Country \'Tis of Thee)', composer: 'Traditional', list: 'B', level: 'BASIC' },
-  { id: 'basic-b3', title: 'God Save the Queen', composer: 'Traditional', list: 'B', level: 'BASIC' },
-  { id: 'basic-b4', title: 'Scarborough Fair', composer: 'Traditional', list: 'B', level: 'BASIC' },
+  // BASIC - Official List (from D1-2-15)
+  { id: 'basic-a1', title: 'Western Portrait', list: 'A', level: 'BASIC', book: 'Best in Class', page: '19' },
+  { id: 'basic-a2', title: 'Austrian Melody', list: 'A', level: 'BASIC', book: 'Best in Class', page: '24-117' },
+  { id: 'basic-a3', title: 'The Minstrel Boy', list: 'A', level: 'BASIC', book: 'Best in Class', page: '28-136' },
+  { id: 'basic-b1', title: 'Ode to Joy', list: 'B', level: 'BASIC', book: 'Best in Class', page: '10' },
+  { id: 'basic-b2', title: 'America/God Save the Queen', list: 'B', level: 'BASIC', book: 'Best in Class', page: '32' },
+  { id: 'basic-b3', title: 'Scarborough Fair', list: 'B', level: 'BASIC', book: 'Best in Class', page: '29-138' },
   
-  // ONE - Official List
-  { id: 'one-a1', title: 'Abendlied', composer: 'Mozart', list: 'A', level: 'ONE' },
-  { id: 'one-a2', title: 'Andante', composer: 'Mozart', list: 'A', level: 'ONE' },
-  { id: 'one-a3', title: 'Winter Dreams', composer: 'Tchaikovsky', list: 'A', level: 'ONE' },
-  { id: 'one-a4', title: 'Aria', composer: 'Handel', list: 'A', level: 'ONE' },
-  { id: 'one-a5', title: 'Old Folks at Home', composer: 'Foster', list: 'A', level: 'ONE' },
-  { id: 'one-a6', title: 'Annie Laurie', composer: 'Traditional', list: 'A', level: 'ONE' },
-  { id: 'one-a7', title: 'Lullaby', composer: 'Brahms', list: 'A', level: 'ONE' },
-  { id: 'one-b1', title: 'Gavotte', composer: 'Handel', list: 'B', level: 'ONE' },
-  { id: 'one-b2', title: 'Fandango', composer: 'Traditional', list: 'B', level: 'ONE' },
-  { id: 'one-b3', title: 'Rigaudon', composer: 'Traditional', list: 'B', level: 'ONE' },
-  { id: 'one-b4', title: 'Scenes that are Brightest', composer: 'Traditional', list: 'B', level: 'ONE' },
-  { id: 'one-b5', title: 'Waltz', composer: 'Traditional', list: 'B', level: 'ONE' },
-  { id: 'one-b6', title: 'March', composer: 'Traditional', list: 'B', level: 'ONE' },
+  // ONE - Official List (from D1-2-15)
+  { id: 'one-a1', title: 'Abendlied', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '3' },
+  { id: 'one-a2', title: 'Andante', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '7' },
+  { id: 'one-a3', title: 'Winter Dreams', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '8' },
+  { id: 'one-a4', title: 'Aria', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '12' },
+  { id: 'one-a5', title: 'Old Folks at Home', list: 'A', level: 'ONE', book: 'Rubank Elementary Method', page: '39-3' },
+  { id: 'one-a6', title: 'Annie Laurie', list: 'A', level: 'ONE', book: 'Rubank Elementary Method', page: '39-4' },
+  { id: 'one-a7', title: 'Lullaby', list: 'A', level: 'ONE', book: 'Rubank Intermediate Level', page: '14' },
+  { id: 'one-b1', title: 'Gavotte', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '6' },
+  { id: 'one-b2', title: 'Fandango', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '13' },
+  { id: 'one-b3', title: 'Rigaudon', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '16' },
+  { id: 'one-b4', title: 'Gavotte', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '9' },
+  { id: 'one-b5', title: 'Scenes that are Brightest', list: 'B', level: 'ONE', book: 'Rubank Elementary Method', page: '44-5' },
+  { id: 'one-b6', title: 'Waltz', list: 'B', level: 'ONE', book: 'Rubank Elementary Method', page: '43-3' },
+  { id: 'one-b7', title: 'March', list: 'B', level: 'ONE', book: 'Rubank Elementary Method', page: '36-4' },
   
-  // TWO - Official List
-  { id: 'two-a1', title: 'At the Hearth', composer: 'Traditional', list: 'A', level: 'TWO' },
-  { id: 'two-a2', title: 'Meadowland', composer: 'Traditional', list: 'A', level: 'TWO' },
-  { id: 'two-a3', title: 'Etude in D Minor', composer: 'Czerny', list: 'A', level: 'TWO' },
-  { id: 'two-a4', title: 'Andante', composer: 'Mozart', list: 'A', level: 'TWO' },
-  { id: 'two-a5', title: 'Loreley', composer: 'Traditional', list: 'A', level: 'TWO' },
-  { id: 'two-b1', title: 'Hunter Chorus', composer: 'Weber', list: 'B', level: 'TWO' },
-  { id: 'two-b2', title: 'Polka', composer: 'Traditional', list: 'B', level: 'TWO' },
-  { id: 'two-b3', title: 'Duet Brillant', composer: 'Traditional', list: 'B', level: 'TWO' },
+  // TWO - Official List (from D1-2-15)
+  { id: 'two-a1', title: 'At the Hearth', list: 'A', level: 'TWO', book: 'Alto Saxophone Solos (easy)', page: '5' },
+  { id: 'two-a2', title: 'Meadowland', list: 'A', level: 'TWO', book: 'Alto Saxophone Solos (easy)', page: '2' },
+  { id: 'two-a3', title: 'Etude in D Minor', list: 'A', level: 'TWO', book: 'Rubank Intermediate Method', page: '24' },
+  { id: 'two-a4', title: 'Andante', list: 'A', level: 'TWO', book: 'Rubank Intermediate Method', page: '32' },
+  { id: 'two-a5', title: 'Loreley', list: 'A', level: 'TWO', book: 'Rubank Intermediate Method', page: '39' },
+  { id: 'two-b1', title: 'Hunter Chorus', list: 'B', level: 'TWO', book: 'Rubank Intermediate Method', page: '17' },
+  { id: 'two-b2', title: 'Polka', list: 'B', level: 'TWO', book: 'Rubank Intermediate Method', page: '28' },
+  { id: 'two-b3', title: 'Duet – Brillant', list: 'B', level: 'TWO', book: 'Rubank Intermediate Method', page: '43' },
   
-  // THREE (RCM Grade 2)
-  { id: 'three-a1', title: 'Air Gracile', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-a2', title: 'Allerseelen', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-a3', title: 'Concerto in B-flat Minor', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-a4', title: 'Romantic Piece', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-a5', title: 'Andante Grazioso', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-a6', title: 'On Wings of Song', list: 'A', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-b1', title: 'Canzonetta and Giga', list: 'B', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-b2', title: 'Allegro', list: 'B', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-b3', title: 'Allegro Moderato', list: 'B', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
-  { id: 'three-b4', title: 'Allegretto Brillante', list: 'B', level: 'THREE', rcmEquivalent: 'RCM Grade 2' },
+  // THREE - Official List (from D1-2-16) - Or selections from RCM Grade 2
+  { id: 'three-a1', title: 'Air Gracile', list: 'A', level: 'THREE', book: 'Alto Saxophone Solos (easy)', page: '3', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-a2', title: 'Allerseelen', list: 'A', level: 'THREE', book: 'Alto Saxophone Solos (easy)', page: '6', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-a3', title: 'Concerto in Bb Minor', list: 'A', level: 'THREE', book: 'Alto Saxophone Solos (easy)', page: '9', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-a4', title: 'Romantic Piece', list: 'A', level: 'THREE', book: 'Solos for the Alto Sax Player', page: '9', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-a5', title: 'Andante Grazioso', list: 'A', level: 'THREE', book: 'Rubank Advanced Method I', page: '21', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-a6', title: 'On Wings of Song', list: 'A', level: 'THREE', book: 'Rubank Advanced Method I', page: '68', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-b1', title: 'Canzonetta and Giga', list: 'B', level: 'THREE', book: 'Concert and Contest', page: '6', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-b2', title: 'Allegro', list: 'B', level: 'THREE', book: 'Rubank Advanced Method I', page: '25', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-b3', title: 'Allegro Moderato', list: 'B', level: 'THREE', book: 'Rubank Advanced Method I', page: '40', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'three-b4', title: 'Allegretto Brillante', list: 'B', level: 'THREE', book: 'Rubank Advanced Method I', page: '70', rcmEquivalent: 'RCM Grade 2' },
   
-  // FOUR (RCM Grade 4)
-  { id: 'four-a1', title: 'Romantic Piece', list: 'A', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-a2', title: 'Chartreuse', list: 'A', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-a3', title: 'Introduction and Rondo', list: 'A', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-a4', title: 'Album-Leaf', list: 'A', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-b1', title: 'Le Secret', list: 'B', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-b2', title: 'Minuet', list: 'B', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
-  { id: 'four-b3', title: 'Sicilienne and Allegro', list: 'B', level: 'FOUR', rcmEquivalent: 'RCM Grade 4' },
+  // FOUR - Official List (from D1-2-16) - Or selections from RCM Grade 4
+  { id: 'four-a1', title: 'Romantic Piece', list: 'A', level: 'FOUR', book: 'Solos for the Alto Sax Player', page: '9', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-a2', title: 'Chartreuse', list: 'A', level: 'FOUR', book: 'Alto Saxophone Solos (easy)', page: '12', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-a3', title: 'Introduction and Rondo', list: 'A', level: 'FOUR', book: 'Concert and Contest', page: '14', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-a4', title: 'Album-Leaf', list: 'A', level: 'FOUR', book: 'Solos for the Alto Sax Player', page: '12', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-b1', title: 'Le Secret', list: 'B', level: 'FOUR', book: 'Alto Saxophone Solos (easy)', page: '14', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-b2', title: 'Minuet', list: 'B', level: 'FOUR', book: 'Solos for the Alto Sax Player', page: '15', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'four-b3', title: 'Sicilienne and Allegro', list: 'B', level: 'FOUR', book: 'Solos for the Alto Sax Player', page: '4', rcmEquivalent: 'RCM Grade 4' },
   
-  // FIVE (RCM Grade 6)
-  { id: 'five-a1', title: 'Elegie', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-a2', title: 'Recitative and Allegro', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-a3', title: 'Vocalise', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-a4', title: 'Nocturne', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-a5', title: 'Larghetto', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-a6', title: 'Melodie', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-b1', title: 'Largo and Allegro', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-b2', title: 'Gypsy Rondo', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-b3', title: 'Fantaisie Mauresque', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-b4', title: 'Concertante', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
-  { id: 'five-b5', title: 'Andante and Allegro', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
+  // FIVE - Official List (from D1-2-16) - Or selections from RCM Grade 6
+  { id: 'five-a1', title: 'Elegie', list: 'A', level: 'FIVE', book: 'Concert and Contest', page: '13', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-a2', title: 'Recitative and Allegro', list: 'A', level: 'FIVE', book: 'Concert and Contest', page: '16', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-a3', title: 'Vocalise', list: 'A', level: 'FIVE', book: 'Solos for the Alto Sax Player', page: '22', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-a4', title: 'Nocturne', list: 'A', level: 'FIVE', book: 'Solos for the Alto Sax Player', page: '7', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-a5', title: 'Larghetto', list: 'A', level: 'FIVE', book: 'Solos for the Alto Sax Player', page: '8', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-a6', title: 'Melodie', list: 'A', level: 'FIVE', book: 'Rubank Advanced Method II', page: '75', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-b1', title: 'Largo and Allegro', list: 'B', level: 'FIVE', book: 'Concert and Contest', page: '12', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-b2', title: 'Gypsy Rondo', list: 'B', level: 'FIVE', book: 'Solos for the Alto Sax Player', page: '13', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-b3', title: 'Fantaisie Mauresque', list: 'B', level: 'FIVE', book: 'Concert and Contest', page: '18', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-b4', title: 'Concertante', list: 'B', level: 'FIVE', book: 'Concert and Contest', page: '20', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'five-b5', title: 'Andante and Allegro', list: 'B', level: 'FIVE', book: 'Rubank Advanced Method II', page: '77', rcmEquivalent: 'RCM Grade 6' },
 ];
 
 // Get songs for a specific level

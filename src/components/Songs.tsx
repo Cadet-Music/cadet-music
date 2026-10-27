@@ -138,8 +138,11 @@ export default function Songs() {
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-sm text-[#1a2332] dark:text-white">{song.title}</p>
+                    {song.book && (
+                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.book}{song.page ? `, p. ${song.page}` : ''}</p>
+                    )}
                     {song.rcmEquivalent && (
-                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">{song.rcmEquivalent}</p>
+                      <p className="text-xs text-[#c9a84c] dark:text-[#c9a84c] mt-1">{song.rcmEquivalent}</p>
                     )}
                   </div>
                   {isSelected && (
