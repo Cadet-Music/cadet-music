@@ -37,7 +37,7 @@ export default function Songs() {
 
   if (!user) return null;
 
-  const songs = getSongsForLevel(user.instrumentLevel);
+  const songs = getSongsForLevel(user.instrumentLevel, user.instrumentId);
   const requiredSongs = 2; // 1 from List A + 1 from List B
 
   const toggleSong = (songId: string) => {

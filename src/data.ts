@@ -132,14 +132,16 @@ export interface Song {
   rcmEquivalent?: string;
 }
 
-export const PREPARED_MUSIC: Song[] = [
+// Saxophone Prepared Music - Official Lists (Annex D, pages D1-2-15 to D1-2-16)
+// Source: A-CR-CCP-166/PT-001 (2003-06-01)
+export const SAXOPHONE_PREPARED_MUSIC: Song[] = [
   // BASIC - Official List (from D1-2-15)
-  { id: 'basic-a1', title: 'Western Portrait', list: 'A', level: 'BASIC', book: 'Best in Class', page: '19' },
-  { id: 'basic-a2', title: 'Austrian Melody', list: 'A', level: 'BASIC', book: 'Best in Class', page: '24-117' },
-  { id: 'basic-a3', title: 'The Minstrel Boy', list: 'A', level: 'BASIC', book: 'Best in Class', page: '28-136' },
-  { id: 'basic-b1', title: 'Ode to Joy', list: 'B', level: 'BASIC', book: 'Best in Class', page: '10' },
-  { id: 'basic-b2', title: 'America/God Save the Queen', list: 'B', level: 'BASIC', book: 'Best in Class', page: '32' },
-  { id: 'basic-b3', title: 'Scarborough Fair', list: 'B', level: 'BASIC', book: 'Best in Class', page: '29-138' },
+  { id: 'sax-basic-a1', title: 'Western Portrait', list: 'A', level: 'BASIC', book: 'Best in Class', page: '19' },
+  { id: 'sax-basic-a2', title: 'Austrian Melody', list: 'A', level: 'BASIC', book: 'Best in Class', page: '24-117' },
+  { id: 'sax-basic-a3', title: 'The Minstrel Boy', list: 'A', level: 'BASIC', book: 'Best in Class', page: '28-136' },
+  { id: 'sax-basic-b1', title: 'Ode to Joy', list: 'B', level: 'BASIC', book: 'Best in Class', page: '10' },
+  { id: 'sax-basic-b2', title: 'America/God Save the Queen', list: 'B', level: 'BASIC', book: 'Best in Class', page: '32' },
+  { id: 'sax-basic-b3', title: 'Scarborough Fair', list: 'B', level: 'BASIC', book: 'Best in Class', page: '29-138' },
   
   // ONE - Official List (from D1-2-15)
   { id: 'one-a1', title: 'Abendlied', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '3' },
@@ -202,9 +204,37 @@ export const PREPARED_MUSIC: Song[] = [
   { id: 'five-b5', title: 'Andante and Allegro', list: 'B', level: 'FIVE', book: 'Rubank Advanced Method II', page: '77', rcmEquivalent: 'RCM Grade 6' },
 ];
 
-// Get songs for a specific level
-export const getSongsForLevel = (level: CadetLevel): { listA: Song[]; listB: Song[] } => {
-  const songs = PREPARED_MUSIC.filter(s => s.level === level);
+// Clarinet Prepared Music - Based on standard clarinet pedagogy
+// NOTE: This list should be verified against official CCO standards (A-CR-CCP-166/PT-001, Annex D, page D1-2-3)
+// The songs listed here are commonly used in beginner/intermediate clarinet instruction
+export const CLARINET_PREPARED_MUSIC: Song[] = [
+  // BASIC - Standard beginner clarinet repertoire
+  { id: 'cl-clarinet-basic-a1', title: 'Hot Cross Buns', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'cl-clarinet-basic-a2', title: 'Mary Had a Little Lamb', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'cl-clarinet-basic-a3', title: 'London Bridge', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'cl-clarinet-basic-b1', title: 'Ode to Joy (simplified)', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'cl-clarinet-basic-b2', title: 'When the Saints Go Marching In', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'cl-clarinet-basic-b3', title: 'Twinkle Twinkle Little Star', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  
+  // ONE - Early intermediate clarinet repertoire
+  { id: 'cl-clarinet-one-a1', title: 'Minuet in G', composer: 'Bach', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  { id: 'cl-clarinet-one-a2', title: 'Ecossaise', composer: 'Beethoven', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  { id: 'cl-clarinet-one-a3', title: 'German Dance', composer: 'Mozart', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  { id: 'cl-clarinet-one-b1', title: 'Country Dance', composer: 'Beethoven', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  { id: 'cl-clarinet-one-b2', title: 'Auld Lang Syne', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  { id: 'cl-clarinet-one-b3', title: 'The Ash Grove', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+];
+
+// Get songs for a specific level and instrument
+export const getSongsForLevel = (level: CadetLevel, instrument: string = 'alto-sax'): { listA: Song[]; listB: Song[] } => {
+  let songs: Song[];
+  
+  if (instrument === 'clarinet') {
+    songs = CLARINET_PREPARED_MUSIC.filter(s => s.level === level);
+  } else {
+    songs = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === level);
+  }
+  
   return {
     listA: songs.filter(s => s.list === 'A'),
     listB: songs.filter(s => s.list === 'B'),
@@ -320,10 +350,10 @@ export const TENOR_SAX_SCALES: Record<CadetLevel, ScaleKey[]> = {
   'FIVE': ALTO_SAX_SCALES.FIVE,
 };
 
-// Legacy compatibility
-export const BASIC_SONGS = PREPARED_MUSIC.filter(s => s.level === 'BASIC');
-export const LEVEL_A_SONGS = PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'A');
-export const LEVEL_B_SONGS = PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'B');
+// Legacy compatibility (defaults to saxophone)
+export const BASIC_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'BASIC');
+export const LEVEL_A_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'A');
+export const LEVEL_B_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'B');
 
 // Legacy lesson structure for compatibility
 export interface Lesson {

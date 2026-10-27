@@ -17,6 +17,56 @@ export interface FundamentalConcept {
 
 export const SAXOPHONE_FUNDAMENTALS: FundamentalConcept[] = [
   {
+    id: 'articulation',
+    title: 'Articulation and Tonguing',
+    description: 'Articulation is how you start and separate notes using your tongue. Proper articulation is essential for clear, precise playing and musical expression.',
+    keyPoints: [
+      'Tongue touches the tip of the reed (not the middle or back)',
+      'Think of saying "TA" or "DAH" - the tongue motion is the same',
+      'Tongue should move quickly and lightly, not heavily',
+      'Air support continues constantly - tongue just interrupts it briefly',
+      'Different articulations: staccato (short), legato (smooth), accent (emphasized)',
+      'Keep jaw and throat relaxed while tonguing',
+      'Practice tonguing on a single pitch before adding finger changes',
+      'Speed comes from efficiency, not force'
+    ],
+    commonMistakes: [
+      'Tonguing too hard (causes harsh, percussive sound)',
+      'Stopping air flow when tonguing (causes notes to cut off abruptly)',
+      'Using too much tongue motion (slows down tonguing speed)',
+      'Tonguing from the middle of the tongue instead of the tip',
+      'Jaw moving when tonguing (should stay still)',
+      'Throat tightening when tonguing (restricts air flow)',
+      'Inconsistent articulation (some notes tongued, some slurred unintentionally)'
+    ],
+    practiceRoutine: 'Start by tonguing on a single note (G) with no finger changes. Practice: 1) Single tonguing: TA-rest-TA-rest (quarter notes), 2) Multiple tonguing: TA-TA-TA-TA (quarter notes), 3) Faster tonguing: TA-TA-TA-TA (eighth notes). Keep air support steady throughout. Then apply to scales: tongue each note of a G major scale. Practice for 5 minutes daily.'
+  },
+  {
+    id: 'tuning',
+    title: 'Tuning and Intonation',
+    description: 'Tuning is the process of adjusting your pitch to match other instruments or a reference pitch. Good intonation is essential for playing in ensemble and producing a professional sound.',
+    keyPoints: [
+      'Always tune to concert Bb (written G for alto sax, written C for tenor sax)',
+      'Use a tuner to check your pitch visually',
+      'Adjust mouthpiece position: push in to raise pitch, pull out to lower pitch',
+      'Small adjustments make big differences (1-2mm at a time)',
+      'Warm up before tuning (cold instruments play flat)',
+      'Check tuning in different registers (low, middle, high)',
+      'Learn your instrument\'s tendencies (which notes are naturally sharp/flat)',
+      'Adjust with embouchure and air support for fine-tuning while playing'
+    ],
+    commonMistakes: [
+      'Not warming up before tuning (instrument is cold and flat)',
+      'Making large mouthpiece adjustments (should be small, gradual changes)',
+      'Only tuning one note (need to check multiple registers)',
+      'Relying only on ear (use tuner for visual confirmation)',
+      'Not checking tuning regularly (temperature and humidity affect pitch)',
+      'Ignoring instrument tendencies (some notes are naturally sharp/flat)',
+      'Tuning too sharp (better to be slightly flat than sharp)'
+    ],
+    practiceRoutine: 'Daily tuning routine: 1) Warm up for 5 minutes, 2) Tune to concert Bb using tuner - adjust mouthpiece until tuner shows green/center, 3) Check tuning on middle G, low G, and high G, 4) Play a slow scale and check each note with tuner, 5) Note which notes need embouchure adjustment. Do this for 5 minutes daily. Always tune before playing with others.'
+  },
+  {
     id: 'embouchure',
     title: 'Proper Embouchure Formation',
     description: 'The embouchure is the way you set your mouth and facial muscles to play the saxophone. A correct embouchure is essential for producing a good tone and preventing bad habits.',
