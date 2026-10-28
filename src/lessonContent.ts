@@ -12,6 +12,12 @@ export interface LessonContent {
   keyPoints: string[];
   practiceInstructions: string;
   interactiveExercise?: InteractiveExerciseConfig;
+  levelStandards?: {
+    skillsDeveloped: string[];
+    levelGoal: string;
+    criticalSkill?: string;
+    nextLevelPrep?: string;
+  };
 }
 
 export interface ContentSection {
@@ -32,6 +38,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'song-western-portrait': {
     title: '🎵 Learning "Western Portrait" - Step by Step',
     introduction: 'Welcome to your first real song! "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. We\'ll use your microphone to check your pitch and compare your playing to a reference recording. Let\'s make music together!',
+    levelStandards: {
+      skillsDeveloped: ['Song performance', 'Phrase connection', 'Musical expression', 'Pitch accuracy'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Performing complete musical pieces',
+      nextLevelPrep: 'Song performance skills prepare you for more complex repertoire at higher levels'
+    },
     sections: [
       {
         heading: '🎼 Song Overview',
@@ -84,6 +95,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'song-ode-to-joy': {
     title: '🎵 Learning "Ode to Joy" - Step by Step',
     introduction: 'Get ready to play one of the most famous melodies ever written! "Ode to Joy" by Beethoven is a timeless classic that everyone will recognize. We\'ll learn it step by step, using your microphone to check your pitch and comparing to a reference recording. Let\'s make musical history!',
+    levelStandards: {
+      skillsDeveloped: ['Song performance', 'Phrase connection', 'Musical expression', 'Pitch accuracy'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Performing complete musical pieces',
+      nextLevelPrep: 'Song performance skills prepare you for more complex repertoire at higher levels'
+    },
     sections: [
       {
         heading: '🎼 Song Overview',
@@ -137,6 +153,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-intro': {
     title: '🎷 The Saxophone Detective: Discovering Your Instrument\'s Secrets',
     introduction: 'Welcome, detective! Today you\'re going to uncover the mysteries of your saxophone. Every great musician knows their instrument inside and out. Are you ready to become a saxophone expert?',
+    levelStandards: {
+      skillsDeveloped: ['Instrument knowledge', 'Proper handling', 'Basic maintenance awareness'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Building fundamental skills and establishing proper technique',
+      nextLevelPrep: 'This lesson prepares you for proper embouchure and breathing techniques in upcoming lessons'
+    },
     sections: [
       {
         heading: '🔍 Case File #1: The Four Main Suspects',
@@ -170,6 +191,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-maintenance': {
     title: '🧼 The Saxophone Spa: Keeping Your Instrument Happy & Healthy',
     introduction: 'Your saxophone is like a living thing - it needs care and attention to stay happy and healthy! Today you\'re going to learn how to give your sax the ultimate spa treatment. A well-cared-for saxophone sounds better, lasts longer, and is more fun to play!',
+    levelStandards: {
+      skillsDeveloped: ['Instrument care', 'Assembly technique', 'Daily maintenance routine'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Establishing proper instrument care habits',
+      nextLevelPrep: 'Proper maintenance ensures your instrument is ready for the technical challenges ahead'
+    },
     sections: [
       {
         heading: '💆‍♂️ The Assembly Ritual (5 Steps to Saxophone Paradise)',
@@ -204,6 +230,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-posture': {
     title: '👑 The Royal Saxophone Stance: Standing Like a Pro',
     introduction: 'Welcome to the Royal Court of Music! Today you\'re going to learn the noble art of saxophone posture. Great saxophonists don\'t just play well - they LOOK amazing while doing it! Proper posture makes you look professional, helps you breathe better, and prevents pain. Let\'s transform you into a saxophone royalty!',
+    levelStandards: {
+      skillsDeveloped: ['Proper posture', 'Hand position', 'Instrument holding technique'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Establishing proper physical technique',
+      nextLevelPrep: 'Good posture is essential for breathing, tone production, and technical development'
+    },
     sections: [
       {
         heading: '🏰 The Royal Foundation: Your Standing Position',
@@ -283,6 +314,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-notes': {
     title: '🎹 The Three Magic Keys: Unlocking B, A, and G',
     introduction: 'Congratulations, wizard! You\'ve mastered your first sound. Now it\'s time to learn your FIRST THREE NOTES! These are the building blocks of thousands of songs. By the end of this lesson, you\'ll be playing real music! Let\'s unlock the magic of B, A, and G!',
+    levelStandards: {
+      skillsDeveloped: ['First notes (B, A, G)', 'Left hand technique', 'Finger coordination'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Learning first notes and basic fingerings',
+      nextLevelPrep: 'These three notes form the foundation for scales and simple melodies'
+    },
     sections: [
       {
         heading: '🖐️ The Left Hand Trio: Your First Finger Friends',
@@ -329,6 +365,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-staff': {
     title: '📜 The Music Map: Reading the Secret Code',
     introduction: 'Welcome to the world of music reading! Sheet music is like a secret code that tells you exactly what to play. Today you\'re going to learn how to crack the code and read music like a pro! By the end of this lesson, you\'ll be able to look at sheet music and know exactly what notes to play. Let\'s decode the mystery!',
+    levelStandards: {
+      skillsDeveloped: ['Music staff reading', 'Note identification', 'Treble clef', 'Ledger lines'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Learning to read music notation',
+      nextLevelPrep: 'Music reading is essential for learning new pieces and sight reading'
+    },
     sections: [
       {
         heading: '🪜 The Staff: Your Musical Ladder',
@@ -380,6 +421,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-rhythm': {
     title: '🥁 The Heartbeat of Music: Quarter Notes & Rhythm',
     introduction: 'Welcome to the world of rhythm! Rhythm is the heartbeat of music - it\'s what makes you want to tap your foot, nod your head, or dance! Today you\'re going to learn about quarter notes, the most common rhythm in music. By the end of this lesson, you\'ll be able to keep a steady beat like a professional musician! Let\'s get rhythmic!',
+    levelStandards: {
+      skillsDeveloped: ['Quarter note rhythm', 'Steady beat', 'Counting in 4/4 time', 'Rhythm with rests'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Developing steady rhythm and timing',
+      nextLevelPrep: 'Rhythm skills are essential for all future musical development'
+    },
     sections: [
       {
         heading: '💓 What is a Beat? The Pulse of Music',
@@ -431,6 +477,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-eighth': {
     title: 'Rhythm: Eighth Notes',
     introduction: 'Eighth notes are faster than quarter notes. Each eighth note gets half a beat. Let\'s learn how to count and play them.',
+    levelStandards: {
+      skillsDeveloped: ['Eighth notes', 'Faster rhythms', 'Subdivision', 'Rhythmic accuracy'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding rhythmic ability',
+      nextLevelPrep: 'Eighth note mastery prepares you for more complex rhythms at higher levels'
+    },
     sections: [
       {
         heading: 'What are Eighth Notes?',
@@ -468,6 +519,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-time-sigs': {
     title: '📦 The Musical Boxes: Understanding Time Signatures',
     introduction: 'Have you ever wondered how musicians know how many beats to play before starting over? It\'s all about TIME SIGNATURES! Today you\'re going to learn the secret code that tells musicians how to organize rhythm. By the end of this lesson, you\'ll be able to look at any piece of music and know exactly how to count it. Let\'s unlock the mystery of musical time!',
+    levelStandards: {
+      skillsDeveloped: ['Time signature recognition', 'Beat organization', '4/4, 3/4, 2/4 time', 'Measure counting'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Understanding musical time organization',
+      nextLevelPrep: 'Time signature knowledge is essential for playing in different styles and tempos'
+    },
     sections: [
       {
         heading: '📦 What is a Measure? The Musical Container',
@@ -570,6 +626,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-dynamics': {
     title: '🔊 The Volume Knob: Mastering Dynamics',
     introduction: 'Music isn\'t just about the right notes - it\'s about the right FEELING! Dynamics are how we add emotion, drama, and expression to our playing. Today you\'re going to learn how to control your volume like a pro. By the end of this lesson, you\'ll be able to make your saxophone whisper like a secret or roar like a lion! Let\'s master the art of dynamics!',
+    levelStandards: {
+      skillsDeveloped: ['Dynamic control (p, mp, mf, f)', 'Volume manipulation', 'Musical expression', 'Air support for dynamics'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Developing basic dynamic control',
+      nextLevelPrep: 'Dynamic control is essential for musical expression and phrasing'
+    },
     sections: [
       {
         heading: '🎭 What are Dynamics? The Language of Emotion',
@@ -856,6 +917,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-repeat-signs': {
     title: '🔁 The Musical GPS: Navigation Signs & Repeats',
     introduction: 'Have you ever gotten lost in a piece of music? Don\'t worry - composers knew this would happen, so they created a GPS system for musicians! Today you\'re going to learn all the navigation signs that tell you where to go in the music. By the end of this lesson, you\'ll never get lost again! Let\'s master the musical map!',
+    levelStandards: {
+      skillsDeveloped: ['Repeat signs', 'First/second endings', 'D.C. and D.S.', 'Coda navigation'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Understanding musical navigation',
+      nextLevelPrep: 'Navigation skills are essential for playing complex pieces with repeats and sections'
+    },
     sections: [
       {
         heading: '🔁 Repeat Signs: The "Play Again" Buttons',
@@ -903,6 +969,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'basic-drill': {
     title: 'Band Drill Basics',
     introduction: 'Band drill is the art of marching and moving as a unit. It requires precision, discipline, and teamwork.',
+    levelStandards: {
+      skillsDeveloped: ['Attention position', 'Parade rest', 'Marking time', 'Forward march'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Developing discipline and teamwork',
+      nextLevelPrep: 'Drill skills are essential for band performances and ceremonies'
+    },
     sections: [
       {
         heading: 'The Attention Position',
@@ -940,6 +1011,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-maintenance': {
     title: 'Cork Care and Lubrication',
     introduction: 'As you advance, proper maintenance becomes more important. Let\'s learn about cork care and lubrication.',
+    levelStandards: {
+      skillsDeveloped: ['Advanced maintenance', 'Cork care', 'Instrument upkeep'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding technical ability and musical understanding',
+      nextLevelPrep: 'Proper maintenance ensures your instrument is ready for more advanced technical challenges'
+    },
     sections: [
       {
         heading: 'Understanding Cork',
@@ -976,6 +1052,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-scales': {
     title: 'Major Scales: Bb, Eb, F',
     introduction: 'Major scales are the foundation of music. At Level ONE, you\'ll learn three essential major scales at ♩=66.',
+    levelStandards: {
+      skillsDeveloped: ['Major scales (Bb, Eb, F)', 'Scale technique', 'Finger coordination', 'Tempo control (♩=66)'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding technical ability',
+      nextLevelPrep: 'Scale mastery prepares you for more complex scales and technical exercises at higher levels'
+    },
     sections: [
       {
         heading: 'Why These Three Scales?',
@@ -1019,6 +1100,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-chromatic': {
     title: 'The Chromatic Scale',
     introduction: 'The chromatic scale includes every note in an octave. It\'s essential for developing finger technique and understanding music theory.',
+    levelStandards: {
+      skillsDeveloped: ['Chromatic scale', 'All 12 notes', 'Finger technique', 'Half-step awareness'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding technical ability',
+      nextLevelPrep: 'Chromatic scale mastery prepares you for more advanced scales and technical exercises'
+    },
     sections: [
       {
         heading: 'What is the Chromatic Scale?',
@@ -1056,6 +1142,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-harmonic': {
     title: 'Harmonic Minor Scales',
     introduction: 'Harmonic minor scales have a distinctive sound used in many musical styles. Let\'s learn the pattern and practice your first harmonic minor scale.',
+    levelStandards: {
+      skillsDeveloped: ['Harmonic minor scales', 'Scale patterns', 'Minor key understanding'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding technical ability',
+      nextLevelPrep: 'Minor scale mastery prepares you for more complex harmonic structures at higher levels'
+    },
     sections: [
       {
         heading: 'What is Harmonic Minor?',
@@ -1093,6 +1184,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-intonation': {
     title: 'Tuning and Intonation Basics',
     introduction: 'Good intonation means playing in tune. Let\'s learn how to recognize and correct pitch problems.',
+    levelStandards: {
+      skillsDeveloped: ['Pitch recognition', 'Tuning with tuner', 'Intonation adjustment', 'Ear training'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Developing intonation awareness',
+      nextLevelPrep: '⚠️ CRITICAL: Level TWO requires independent intonation adjustment - this lesson builds that foundation'
+    },
     sections: [
       {
         heading: 'What is Intonation?',
@@ -1130,6 +1226,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-key-sigs': {
     title: 'Key Signatures',
     introduction: 'Key signatures tell us which notes are sharp or flat throughout a piece. Let\'s learn to read them quickly.',
+    levelStandards: {
+      skillsDeveloped: ['Key signature recognition', 'Order of sharps/flats', 'Key identification', 'Music theory'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Expanding music theory knowledge',
+      nextLevelPrep: 'Key signature mastery prepares you for more advanced theory at higher levels'
+    },
     sections: [
       {
         heading: 'What is a Key Signature?',
@@ -1169,6 +1270,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-sight': {
     title: 'Sight Reading Introduction',
     introduction: 'Sight reading is the ability to play music you\'ve never seen before. It\'s an essential skill for any musician.',
+    levelStandards: {
+      skillsDeveloped: ['Sight reading', 'Music reading fluency', 'Quick note recognition', 'Rhythm reading'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Developing sight reading ability',
+      nextLevelPrep: 'Sight reading skills are essential for ensemble playing and advanced repertoire'
+    },
     sections: [
       {
         heading: 'What is Sight Reading?',
@@ -1207,6 +1313,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   'one-drill': {
     title: 'Drill Movements and Marching',
     introduction: 'At Level ONE, you\'ll learn basic drill movements and marching techniques for band performances.',
+    levelStandards: {
+      skillsDeveloped: ['Forward march', 'Halt', 'Flanking', 'Dress and cover'],
+      levelGoal: '🎯 LEVEL ONE Goal: Developing Musician - Developing drill proficiency',
+      nextLevelPrep: 'Drill skills are essential for band performances and ceremonies'
+    },
     sections: [
       {
         heading: 'The Forward March',
@@ -1505,6 +1616,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-intro': {
     title: 'Meet Your Clarinet',
     introduction: 'The clarinet is a woodwind instrument with a beautiful, rich tone. It was invented around 1700 and has been a vital part of orchestras, bands, and jazz ensembles ever since.',
+    levelStandards: {
+      skillsDeveloped: ['Instrument knowledge', 'Proper handling', 'Basic maintenance'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Building fundamental skills and establishing proper technique',
+      nextLevelPrep: 'This lesson prepares you for proper embouchure and breathing techniques in the next lessons'
+    },
     sections: [
       {
         heading: 'Main Parts of the Clarinet',
@@ -1536,6 +1652,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-embouchure': {
     title: 'Clarinet Embouchure',
     introduction: 'The clarinet embouchure is different from saxophone. It requires a firmer, more focused approach with the corners of the mouth drawn forward.',
+    levelStandards: {
+      skillsDeveloped: ['Clarinet embouchure', 'Mouth position', 'Lip control'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Establishing proper embouchure technique',
+      nextLevelPrep: 'Proper embouchure is essential for tone production and intonation'
+    },
     sections: [
       {
         heading: 'The Milkshake Face',
@@ -1568,6 +1689,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-breathing': {
     title: 'Clarinet Breathing and Air Support',
     introduction: 'Clarinet requires focused, fast air support. The smaller mouthpiece requires more air pressure than saxophone.',
+    levelStandards: {
+      skillsDeveloped: ['Diaphragmatic breathing', 'Air support', 'Focused air stream'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Developing proper breathing technique',
+      nextLevelPrep: 'Breathing skills are essential for tone production and phrase control'
+    },
     sections: [
       {
         heading: 'Diaphragmatic Breathing',
@@ -1600,6 +1726,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-first-sound': {
     title: 'Producing Your First Sound on Clarinet',
     introduction: 'The clarinet requires a different approach than saxophone for producing the first sound. The smaller reed requires more focused air and precise embouchure.',
+    levelStandards: {
+      skillsDeveloped: ['First sound production', 'Embouchure application', 'Air control'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Producing first tone on clarinet',
+      nextLevelPrep: 'First sound mastery prepares you for learning notes and scales'
+    },
     sections: [
       {
         heading: 'Starting with Mouthpiece and Barrel',
@@ -1631,6 +1762,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-notes': {
     title: 'Your First Notes: E, D, C',
     introduction: 'Let\'s learn your first three notes on the clarinet: E, D, and C. These are played with your right hand.',
+    levelStandards: {
+      skillsDeveloped: ['First notes (E, D, C)', 'Right hand technique', 'Finger coordination'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Learning first notes and basic fingerings',
+      nextLevelPrep: 'These three notes form the foundation for scales and simple melodies'
+    },
     sections: [
       {
         heading: 'Right Hand Position',
@@ -1667,6 +1803,11 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   'clarinet-register': {
     title: 'The Register Key and Clarion Register',
     introduction: 'The clarinet has a special key called the register key (or speaker key) that allows you to play in the higher register. This is unique to the clarinet.',
+    levelStandards: {
+      skillsDeveloped: ['Register key operation', 'Clarion register', 'Register transitions'],
+      levelGoal: '🎯 BASIC Level Goal: Foundation - Understanding clarinet registers',
+      nextLevelPrep: 'Register knowledge prepares you for extended range playing at higher levels'
+    },
     sections: [
       {
         heading: 'The Register Key',
