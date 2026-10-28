@@ -6,6 +6,8 @@ import { CONCEPTS, Concept } from '../competency';
 import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
 import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
+import AudioReferencePlayer from './AudioReferencePlayer';
+import GuidedMicrophonePractice from './GuidedMicrophonePractice';
 
 type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
 import { AudioActivity } from '../audioActivities';
@@ -826,13 +828,57 @@ export default function LessonView() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-[#4a7c8a]/5 border border-[#4a7c8a]/30 dark:bg-[#4a7c8a]/10 rounded-lg p-4 mb-8"
+                className="bg-[#4a7c8a]/5 border border-[#4a7c8a]/30 dark:bg-[#4a7c8a]/10 rounded-lg p-4 mb-6"
               >
                 <p className="text-sm text-[#1a2332] dark:text-white">
                   <span className="font-semibold">🎯 Practice This: </span>
                   {lessonContentData.practiceInstructions}
                 </p>
               </motion.div>
+
+              {/* Audio Reference Player - for song lessons */}
+              {currentLessonId?.startsWith('song-') && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="mb-6"
+                >
+                  <AudioReferencePlayer
+                    audioUrl={`/audio/${currentLessonId}.mp3`}
+                    title={lessonContentData.title.replace('🎵 Learning ', '').replace(' - Step by Step', '')}
+                  />
+                </motion.div>
+              )}
+
+              {/* Guided Microphone Practice - for song lessons */}
+              {currentLessonId === 'song-western-portrait' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mb-6"
+                >
+                  <GuidedMicrophonePractice
+                    targetNotes={['Bb', 'C', 'D', 'Eb', 'F', 'Eb', 'D', 'C']}
+                    exerciseName="Practice the first phrase of Western Portrait"
+                  />
+                </motion.div>
+              )}
+
+              {currentLessonId === 'song-ode-to-joy' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mb-6"
+                >
+                  <GuidedMicrophonePractice
+                    targetNotes={['F', 'F', 'G', 'A', 'A', 'G', 'F', 'E']}
+                    exerciseName="Practice the famous opening of Ode to Joy"
+                  />
+                </motion.div>
+              )}
 
               <button onClick={() => setStep('quiz')} className="btn-accent w-full py-3.5">
                 <span className="flex items-center justify-center gap-2">Continue to Practice <ArrowRightIcon /></span>

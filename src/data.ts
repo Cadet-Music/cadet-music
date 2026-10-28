@@ -402,6 +402,8 @@ export const CURRICULUM: { id: string; title: string; level: number; lessons: Le
       { id: 'basic-drill', title: 'Band Drill Basics', type: 'playing', emoji: '🎖️', topic: 'PO 459', xp: 10, description: 'Position and movement', interactive: false, level: 'BASIC' as CadetLevel, po: 459 },
       { id: 'audio-basic-note', title: 'Audio Practice: Note G', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 20, description: 'Practice playing the note G with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },
       { id: 'audio-basic-scale', title: 'Audio Practice: Bb Major Scale', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 30, description: 'Practice the Bb Major scale with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },
+      { id: 'song-western-portrait', title: '🎵 Song: Western Portrait', type: 'playing', emoji: '🎼', topic: 'PO 454', xp: 50, description: 'Learn your first complete song step by step with microphone guidance', interactive: true, level: 'BASIC' as CadetLevel, po: 454, requiresMicrophone: true },
+      { id: 'song-ode-to-joy', title: '🎵 Song: Ode to Joy', type: 'playing', emoji: '🎼', topic: 'PO 454', xp: 50, description: 'Learn the famous Beethoven melody with microphone guidance', interactive: true, level: 'BASIC' as CadetLevel, po: 454, requiresMicrophone: true },
       { id: 'basic-exam', title: 'Basic Assessment', type: 'exam', emoji: '📝', topic: 'Exam', xp: 50, description: 'Complete the BASIC level', interactive: false, level: 'BASIC' as CadetLevel },
     ],
   },

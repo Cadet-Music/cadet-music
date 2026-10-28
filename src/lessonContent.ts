@@ -21,6 +21,111 @@ export interface ContentSection {
 }
 
 export const LESSON_CONTENT: Record<string, LessonContent> = {
+  // SONG LEARNING LESSONS - STEP BY STEP
+  'song-western-portrait': {
+    title: '🎵 Learning "Western Portrait" - Step by Step',
+    introduction: 'Welcome to your first real song! "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. We\'ll use your microphone to check your pitch and compare your playing to a reference recording. Let\'s make music together!',
+    sections: [
+      {
+        heading: '🎼 Song Overview',
+        content: '**"Western Portrait" Details:**\n- Level: BASIC\n- Key: Bb Major (2 flats: Bb, Eb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=80-100)\n- Difficulty: Easy - perfect for beginners!\n\n**What You\'ll Learn:**\n- Playing in Bb Major\n- Smooth phrase transitions\n- Musical expression\n- Rhythm and timing\n\n**Song Structure:**\n- Phrase 1: Bb - C - D - Eb (ascending)\n- Phrase 2: F - Eb - D - C (descending)\n- Phrase 3: Bb - C - D - Eb (repeat)\n- Phrase 4: F - Eb - D - C (repeat)\n- Ending: Bb (hold)',
+        example: '🎧 LISTEN FIRST: Before we start, listen to the reference recording 2-3 times. Tap your foot to the beat. Feel the rhythm. Imagine yourself playing it. This is your goal!',
+        tip: '💡 PRO TIP: Great musicians listen before they play. Spend time really hearing the song in your head before you pick up your saxophone.'
+      },
+      {
+        heading: '🎯 Step 1: Learn the First Phrase',
+        content: '**Phrase 1: The Opening (4 beats)**\n\nNotes: Bb - C - D - Eb\nRhythm: Quarter - Quarter - Quarter - Quarter\nCounting: "1 - 2 - 3 - 4"\n\n**Fingerings:**\n- Bb: Left hand (1-2-3) + right hand (1)\n- C: Left hand (1-2-3) + right hand (1-2)\n- D: Left hand (1-2-3) + right hand (1-2-3)\n- Eb: Left hand (1-2-3) + right hand (1-2-3) + side key\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (legato)\n3. Use steady air support throughout\n4. Keep your embouchure firm but relaxed\n5. Play the phrase 5 times in a row\n\n**Microphone Check:**\n🎤 Turn on your microphone and play the phrase. Watch the pitch detection. Are you hitting the right notes? Adjust your embouchure and air support as needed.',
+        example: '🎮 SLOW-MOTION PRACTICE: Play the phrase at half speed first. Bb... C... D... Eb... Make sure each note is clear and in tune. Then gradually speed up to normal tempo.',
+        tip: '🎯 FOCUS ON TRANSITIONS: The tricky part is moving smoothly between notes. Practice just the transitions: Bb→C, C→D, D→Eb. Make them seamless!'
+      },
+      {
+        heading: '🎯 Step 2: Learn the Second Phrase',
+        content: '**Phrase 2: The Response (4 beats)**\n\nNotes: F - Eb - D - C\nRhythm: Quarter - Quarter - Quarter - Quarter\nCounting: "1 - 2 - 3 - 4"\n\n**Fingerings:**\n- F: Right hand (1) only\n- Eb: Left hand (1-2-3) + right hand (1-2-3) + side key\n- D: Left hand (1-2-3) + right hand (1-2-3)\n- C: Left hand (1-2-3) + right hand (1-2)\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (descending pattern)\n3. Use steady air support throughout\n4. Keep your embouchure consistent\n5. Play the phrase 5 times in a row\n\n**Microphone Check:**\n🎤 Turn on your microphone and play the phrase. Check your pitch accuracy. Are the descending notes smooth and in tune?',
+        example: '🎮 MIRROR PRACTICE: Phrase 2 is the "mirror" of Phrase 1. If Phrase 1 goes up (Bb-C-D-Eb), Phrase 2 goes down (F-Eb-D-C). Practice them back-to-back to feel the symmetry!',
+        tip: '🎯 DESCENDING CHALLENGE: Going down is often harder than going up because the fingerings change more. Take it slow and focus on smooth transitions!'
+      },
+      {
+        heading: '🎯 Step 3: Connect the Phrases',
+        content: '**Playing Phrases 1 & 2 Together:**\n\nFull sequence: Bb-C-D-Eb | F-Eb-D-C\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Practice Method:**\n1. Play Phrase 1 slowly\n2. Take a breath (but keep the rhythm going!)\n3. Play Phrase 2 slowly\n4. Connect them smoothly\n5. Repeat 5 times\n\n**Breathing Strategy:**\n- Breathe at the bar line (between phrases)\n- Quick, deep breath from your diaphragm\n- Don\'t rush - keep the tempo steady\n- Think "breath on 4, play on 1"\n\n**Microphone Check:**\n🎤 Play both phrases with your microphone on. Check:\n- Are all notes in tune?\n- Is the rhythm steady?\n- Are the transitions smooth?\n- Is your tone consistent?',
+        example: '🎮 THE CONVERSATION: Think of the two phrases as a conversation. Phrase 1 asks a question (goes up), Phrase 2 answers it (goes down). Make them sound like they belong together!',
+        tip: '🎯 BREATHING IS KEY: The hardest part is breathing without breaking the rhythm. Practice breathing at the bar line until it feels natural. Count "1-2-3-4-BREATHE-1-2-3-4"!'
+      },
+      {
+        heading: '🎯 Step 4: Add Repetition',
+        content: '**Playing the Full Song (Phrases 1-4):**\n\nStructure:\n- Phrase 1: Bb-C-D-Eb\n- Phrase 2: F-Eb-D-C\n- Phrase 3: Bb-C-D-Eb (repeat of Phrase 1)\n- Phrase 4: F-Eb-D-C (repeat of Phrase 2)\n- Ending: Bb (hold for 2 beats)\n\n**Practice Method:**\n1. Play the entire song slowly\n2. Focus on smooth transitions between phrases\n3. Keep steady rhythm throughout\n4. Breathe at the bar lines\n5. Hold the final Bb for 2 beats\n\n**Musical Expression:**\n- Start at mezzo-forte (mf) volume\n- Slight crescendo in Phrase 3 (build excitement)\n- Decrescendo in Phrase 4 (wind down)\n- Final Bb: full, rich tone\n\n**Microphone Check:**\n🎤 Play the full song with your microphone. Compare your playing to the reference recording. Are you matching the tempo? Is your tone quality similar? Make adjustments as needed.',
+        example: '🎮 THE STORY ARC: The song tells a story:\n- Phrase 1: Introduction (here we go!)\n- Phrase 2: Development (going down)\n- Phrase 3: Climax (back up, more energy!)\n- Phrase 4: Resolution (coming back down)\n- Ending: Conclusion (final note, fade out)\n\nPlay it like you\'re telling a story!',
+        tip: '🎯 RECORD YOURSELF: Use the recording feature to record your playing. Listen back and compare to the reference. What can you improve? This is how professional musicians practice!'
+      },
+      {
+        heading: '🎯 Step 5: Performance Ready!',
+        content: '**Final Polish:**\n\n**Tempo Check:**\n- Target: ♩=80-100 BPM\n- Use a metronome to stay steady\n- Start slow (♩=60), gradually increase\n- Don\'t rush - steady is better than fast!\n\n**Tone Quality:**\n- Full, rich sound throughout\n- Consistent embouchure\n- Steady air support\n- No squeaks or airy sounds\n\n**Rhythm Accuracy:**\n- All quarter notes equal length\n- Steady pulse (like a clock)\n- No rushing or dragging\n- Smooth phrase transitions\n\n**Performance Tips:**\n- Stand or sit with good posture\n- Take a deep breath before starting\n- Play with confidence\n- Enjoy the music!\n\n**Final Microphone Check:**\n🎤 Record your final performance. Compare to the reference recording one last time. Celebrate your progress! You just learned your first complete song!',
+        example: '🎉 CONGRATULATIONS! You\'ve learned "Western Portrait" from start to finish! This is a real achievement. You can now play a complete song with proper technique, rhythm, and expression!',
+        tip: '🎯 KEEP PRACTICING: Play the song every day for a week. Each time, focus on something different: tone, rhythm, expression, speed. You\'ll keep improving!'
+      }
+    ],
+    keyPoints: [
+      '🎼 Song: "Western Portrait" in Bb Major, 4/4 time',
+      '🎯 Learn phrase by phrase, then connect them',
+      '💨 Breathe at bar lines, keep rhythm steady',
+      '🎤 Use microphone to check pitch and compare to reference',
+      '🎵 Add musical expression (crescendo, decrescendo)',
+      '🎉 Practice daily until performance-ready'
+    ],
+    practiceInstructions: '🎮 SONG MASTERY CHALLENGE:\n\n**Day 1: Phrase 1**\n- Learn Bb-C-D-Eb\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 2: Phrase 2**\n- Learn F-Eb-D-C\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 3: Connect Phrases**\n- Play Phrase 1 + Phrase 2\n- Practice breathing at bar line\n- Check with microphone\n- Goal: Play smoothly 5 times in a row\n\n**Day 4: Full Song**\n- Play all 4 phrases + ending\n- Focus on smooth transitions\n- Check with microphone\n- Goal: Play the full song 3 times\n\n**Day 5: Performance**\n- Add musical expression\n- Record your performance\n- Compare to reference\n- Celebrate your achievement!\n\n🏆 SONG MASTER BADGE: When you can play "Western Portrait" from memory with good tone, steady rhythm, and musical expression, you earn your first Song Master badge! 🎵✨'
+  },
+
+  'song-ode-to-joy': {
+    title: '🎵 Learning "Ode to Joy" - Step by Step',
+    introduction: 'Get ready to play one of the most famous melodies ever written! "Ode to Joy" by Beethoven is a timeless classic that everyone will recognize. We\'ll learn it step by step, using your microphone to check your pitch and comparing to a reference recording. Let\'s make musical history!',
+    sections: [
+      {
+        heading: '🎼 Song Overview',
+        content: '**"Ode to Joy" Details:**\n- Composer: Ludwig van Beethoven\n- Level: BASIC\n- Key: F Major (1 flat: Bb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=100-120)\n- Difficulty: Easy - great for beginners!\n\n**What You\'ll Learn:**\n- Playing in F Major\n- Smooth legato phrasing\n- Musical expression and dynamics\n- Classic melody recognition\n\n**Song Structure:**\n- Phrase 1: F - F - G - A | A - G - F - E\n- Phrase 2: D - D - E - F | F (hold) - E - E (hold)\n- Phrase 3: F - F - G - A | A - G - F - E\n- Phrase 4: D - D - E - F | E (hold) - D - D (hold)\n\n**Fun Fact:** This melody is the official anthem of the European Union and is used in countless movies, TV shows, and celebrations worldwide!',
+        example: '🎧 LISTEN FIRST: Listen to the reference recording 3 times. This melody is so famous you might already know it! Tap along to the beat. Sing it in your head. Feel the joy in the music!',
+        tip: '💡 PRO TIP: "Ode to Joy" is all about expressing joy and triumph. Play it with energy and confidence! Let the music shine through your playing.'
+      },
+      {
+        heading: '🎯 Step 1: Learn the First Phrase',
+        content: '**Phrase 1: The Famous Opening (8 beats)**\n\nNotes: F - F - G - A | A - G - F - E\nRhythm: All quarter notes\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Fingerings:**\n- F: Right hand (1) only\n- G: Left hand (1-2-3) only\n- A: Left hand (1-2) only\n- E: Right hand (1-2) only\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (legato)\n3. Use steady air support throughout\n4. Keep your embouchure firm but relaxed\n5. Play the phrase 5 times in a row\n\n**Microphone Check:**\n🎤 Turn on your microphone and play the phrase. Watch the pitch detection. Are you hitting the right notes? The pattern is: same-same-up-up | up-down-down-down',
+        example: '🎮 PATTERN RECOGNITION: Notice the pattern:\n- First half: F-F-G-A (stay, stay, up, up)\n- Second half: A-G-F-E (down, down, down, down)\n\nIt\'s like climbing up a hill, then sliding back down!',
+        tip: '🎯 FINGER TRANSITIONS: The tricky part is moving between hands. Practice just the transitions: F→G (right to left), A→G (left to left), F→E (left to right). Make them smooth!'
+      },
+      {
+        heading: '🎯 Step 2: Learn the Second Phrase',
+        content: '**Phrase 2: The Continuation (8 beats)**\n\nNotes: D - D - E - F | F (hold) - E - E (hold)\nRhythm: Quarter - Quarter - Quarter - Quarter | Half - Quarter - Half\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Fingerings:**\n- D: Right hand (1-2-3) only\n- E: Right hand (1-2) only\n- F: Right hand (1) only\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Notice the longer notes (half notes)\n3. Hold the long notes for 2 beats each\n4. Use steady air support throughout\n5. Play the phrase 5 times in a row\n\n**Microphone Check:**\n🎤 Turn on your microphone and play the phrase. Check:\n- Are the short notes (quarter notes) equal length?\n- Are the long notes (half notes) held for 2 beats?\n- Is your pitch accurate throughout?',
+        example: '🎮 RHYTHM PATTERN: Notice the rhythm change:\n- First half: 4 quarter notes (short-short-short-short)\n- Second half: half-quarter-half (long-short-long)\n\nIt\'s like: "walk-walk-walk-walk | RUN-walk-RUN"',
+        tip: '🎯 COUNTING IS KEY: The second phrase has longer notes, so counting is crucial. Count out loud: "1-2-3-4 | 1-and-2-and-3-and-4-and" to feel the rhythm!'
+      },
+      {
+        heading: '🎯 Step 3: Connect Phrases 1 & 2',
+        content: '**Playing Phrases 1 & 2 Together:**\n\nFull sequence:\n- Phrase 1: F-F-G-A | A-G-F-E\n- Phrase 2: D-D-E-F | F(hold)-E-E(hold)\n\nCounting: "1-2-3-4 | 1-2-3-4 | 1-2-3-4 | 1-2-3-4"\n\n**Practice Method:**\n1. Play Phrase 1 slowly\n2. Take a quick breath (keep the rhythm!)\n3. Play Phrase 2 slowly\n4. Connect them smoothly\n5. Repeat 5 times\n\n**Breathing Strategy:**\n- Breathe between phrases (after Phrase 1)\n- Quick, deep breath from diaphragm\n- Don\'t rush - keep the tempo steady\n- Think "play-play-play-play-BREATHE-play-play-play-play"\n\n**Microphone Check:**\n🎤 Play both phrases with your microphone on. Check:\n- Are all notes in tune?\n- Is the rhythm steady?\n- Are the transitions smooth?\n- Are the long notes held for the right duration?',
+        example: '🎮 THE CONVERSATION: Think of the two phrases as a conversation:\n- Phrase 1: "Here\'s the famous melody!"\n- Phrase 2: "And here\'s how it continues..."\n\nMake them flow together naturally!',
+        tip: '🎯 BREATHING PRACTICE: The hardest part is breathing without breaking the rhythm. Practice breathing at the phrase break until it feels natural. Count "1-2-3-4-BREATHE-1-2-3-4"!'
+      },
+      {
+        heading: '🎯 Step 4: Learn the Complete Song',
+        content: '**Playing the Full Song (All 4 Phrases):**\n\nStructure:\n- Phrase 1: F-F-G-A | A-G-F-E\n- Phrase 2: D-D-E-F | F(hold)-E-E(hold)\n- Phrase 3: F-F-G-A | A-G-F-E (repeat of Phrase 1)\n- Phrase 4: D-D-E-F | E(hold)-D-D(hold)\n\n**Practice Method:**\n1. Play the entire song slowly\n2. Focus on smooth transitions between phrases\n3. Keep steady rhythm throughout\n4. Breathe at the phrase breaks\n5. Hold the final notes properly\n\n**Musical Expression:**\n- Start at mezzo-forte (mf) volume\n- Slight crescendo through Phrase 3 (build excitement)\n- Decrescendo in Phrase 4 (wind down)\n- Final notes: full, rich tone, then fade\n\n**Microphone Check:**\n🎤 Play the full song with your microphone. Compare your playing to the reference recording. Are you matching the tempo? Is your tone quality similar? Make adjustments as needed.',
+        example: '🎮 THE STORY ARC: The song tells a story:\n- Phrase 1: "Joy! Joy! Rising up!"\n- Phrase 2: "Continuing, holding strong..."\n- Phrase 3: "Joy returns! Rising again!"\n- Phrase 4: "Fading, resolving, complete."\n\nPlay it like you\'re telling the story of joy!',
+        tip: '🎯 RECORD YOURSELF: Use the recording feature to record your playing. Listen back and compare to the reference. What can you improve? This is how professional musicians practice!'
+      },
+      {
+        heading: '🎯 Step 5: Performance Ready!',
+        content: '**Final Polish:**\n\n**Tempo Check:**\n- Target: ♩=100-120 BPM\n- Use a metronome to stay steady\n- Start slow (♩=80), gradually increase\n- Don\'t rush - steady is better than fast!\n\n**Tone Quality:**\n- Full, rich sound throughout\n- Consistent embouchure\n- Steady air support\n- No squeaks or airy sounds\n\n**Rhythm Accuracy:**\n- Quarter notes: 1 beat each\n- Half notes: 2 beats each\n- Steady pulse (like a clock)\n- No rushing or dragging\n\n**Performance Tips:**\n- Stand or sit with good posture\n- Take a deep breath before starting\n- Play with confidence and joy!\n- Let the music shine through\n\n**Final Microphone Check:**\n🎤 Record your final performance. Compare to the reference recording one last time. Celebrate your progress! You just learned one of the most famous melodies in the world!',
+        example: '🎉 CONGRATULATIONS! You\'ve learned "Ode to Joy" - a melody that has brought joy to millions of people for over 200 years! This is a incredible achievement. You\'re now part of musical history!',
+        tip: '🎯 SHARE YOUR MUSIC: Play "Ode to Joy" for your family and friends. They\'ll recognize it immediately and be amazed that YOU can play it! Music is meant to be shared!'
+      }
+    ],
+    keyPoints: [
+      '🎼 Song: "Ode to Joy" by Beethoven in F Major, 4/4 time',
+      '🎯 Learn phrase by phrase, then connect them',
+      '💨 Breathe between phrases, keep rhythm steady',
+      '🎤 Use microphone to check pitch and compare to reference',
+      '🎵 Add musical expression (crescendo, decrescendo)',
+      '🎉 Practice daily until performance-ready'
+    ],
+    practiceInstructions: '🎮 SONG MASTERY CHALLENGE:\n\n**Day 1: Phrase 1**\n- Learn F-F-G-A | A-G-F-E\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 2: Phrase 2**\n- Learn D-D-E-F | F(hold)-E-E(hold)\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 3: Connect Phrases**\n- Play Phrase 1 + Phrase 2\n- Practice breathing at phrase break\n- Check with microphone\n- Goal: Play smoothly 5 times in a row\n\n**Day 4: Full Song**\n- Play all 4 phrases\n- Focus on smooth transitions\n- Check with microphone\n- Goal: Play the full song 3 times\n\n**Day 5: Performance**\n- Add musical expression\n- Record your performance\n- Compare to reference\n- Celebrate your achievement!\n\n🏆 SONG MASTER BADGE: When you can play "Ode to Joy" from memory with good tone, steady rhythm, and musical expression, you earn your Song Master badge! You can now play one of the most famous melodies in the world! 🎵✨'
+  },
+
   // BASIC LESSONS - ADVENTURE THEME
   'basic-intro': {
     title: '🎷 The Saxophone Detective: Discovering Your Instrument\'s Secrets',
