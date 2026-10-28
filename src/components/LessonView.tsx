@@ -9,6 +9,14 @@ import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 import AudioReferencePlayer from './AudioReferencePlayer';
 import GuidedMicrophonePractice from './GuidedMicrophonePractice';
+import NoteIdentificationExercise from './theory/NoteIdentificationExercise';
+import KeySignatureBuilder from './theory/KeySignatureBuilder';
+import RhythmClappingExercise from './theory/RhythmClappingExercise';
+import IntervalRecognitionExercise from './theory/IntervalRecognitionExercise';
+import ScaleBuilderExercise from './theory/ScaleBuilderExercise';
+import ChordBuilderExercise from './theory/ChordBuilderExercise';
+import DynamicsPracticeExercise from './theory/DynamicsPracticeExercise';
+import TimeSignatureExercise from './theory/TimeSignatureExercise';
 
 type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
 import { AudioActivity } from '../audioActivities';
@@ -999,6 +1007,48 @@ export default function LessonView() {
                   {lessonContentData.practiceInstructions}
                 </p>
               </motion.div>
+
+              {/* Interactive Exercise */}
+              {lessonContentData.interactiveExercise && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 }}
+                  className="mb-6"
+                >
+                  <h3 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">
+                    {lessonContentData.interactiveExercise.title}
+                  </h3>
+                  <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-4">
+                    {lessonContentData.interactiveExercise.description}
+                  </p>
+                  
+                  {lessonContentData.interactiveExercise.type === 'note-identification' && (
+                    <NoteIdentificationExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'key-signature-builder' && (
+                    <KeySignatureBuilder />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'rhythm-clapping' && (
+                    <RhythmClappingExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'interval-recognition' && (
+                    <IntervalRecognitionExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'scale-builder' && (
+                    <ScaleBuilderExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'chord-builder' && (
+                    <ChordBuilderExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'dynamics-practice' && (
+                    <DynamicsPracticeExercise />
+                  )}
+                  {lessonContentData.interactiveExercise.type === 'time-signature' && (
+                    <TimeSignatureExercise />
+                  )}
+                </motion.div>
+              )}
 
               {/* Audio Reference Player - for song lessons */}
               {currentLessonId?.startsWith('song-') && (

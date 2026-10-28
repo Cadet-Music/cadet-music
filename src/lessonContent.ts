@@ -11,6 +11,7 @@ export interface LessonContent {
   sections: ContentSection[];
   keyPoints: string[];
   practiceInstructions: string;
+  interactiveExercise?: InteractiveExerciseConfig;
 }
 
 export interface ContentSection {
@@ -18,6 +19,12 @@ export interface ContentSection {
   content: string;
   example?: string;
   tip?: string;
+}
+
+export interface InteractiveExerciseConfig {
+  type: 'note-identification' | 'key-signature-builder' | 'rhythm-clapping' | 'interval-recognition' | 'scale-builder' | 'chord-builder' | 'dynamics-practice' | 'time-signature';
+  title?: string;
+  description?: string;
 }
 
 export const LESSON_CONTENT: Record<string, LessonContent> = {
@@ -362,6 +369,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       '🏗️ Ledger lines extend the staff up or down',
       '🎮 Reading music gets easier with daily practice'
     ],
+    interactiveExercise: {
+      type: 'note-identification',
+      title: '🎼 Note Identification Challenge',
+      description: 'Test your note reading skills! Identify notes on the staff.'
+    },
     practiceInstructions: '🎮 MUSIC READING MASTERY CHALLENGE:\n\n**Day 1: The Basics**\n- Write out the treble clef 10 times (practice your signature!)\n- Quiz yourself on line notes: E-G-B-D-F\n- Quiz yourself on space notes: F-A-C-E\n- Use the mnemonics until you have them memorized\n\n**Day 2: Note Hunting**\n- Find a piece of saxophone music\n- Find all the B\'s (middle line) - circle them\n- Find all the A\'s (2nd space) - circle them\n- Find all the G\'s (2nd line) - circle them\n- How many can you find in 2 minutes?\n\n**Day 3: Speed Reading**\n- Look at random notes on the staff\n- Name them as fast as you can\n- Time yourself: can you name 10 notes in 30 seconds?\n- Practice until you can do it without counting\n\n**Day 4: Ledger Lines**\n- Find Middle C (ledger line below staff)\n- Find other notes with ledger lines\n- Practice reading notes above and below the staff\n\n**Day 5: Real Music**\n- Look at "Mary Had a Little Lamb" sheet music\n- Can you read the notes before playing them?\n- Try to sight-read (play it while reading it for the first time)\n\n🏆 MUSIC READER BADGE: When you can look at any note on the staff and instantly know what it is (without counting), you earn your Music Reader badge! You can now read music like a pro! 🎵📜✨'
   },
 
@@ -408,6 +420,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       '⏰ Keep steady, even timing (use a metronome!)',
       '🎯 Count out loud and tap your foot'
     ],
+    interactiveExercise: {
+      type: 'rhythm-clapping',
+      title: '🥁 Rhythm Clapping Challenge',
+      description: 'Listen to the rhythm pattern, then clap along!'
+    },
     practiceInstructions: '🎮 RHYTHM MASTERY CHALLENGE:\n\n**Day 1: The Foundation**\n- Practice counting "1, 2, 3, 4" out loud while tapping your foot (1 minute)\n- Do this 5 times until it feels natural\n- Try it at different speeds (slow, medium, fast)\n\n**Day 2: Adding Notes**\n- Play B for 4 beats, A for 4 beats, G for 4 beats\n- Count out loud as you play: "1, 2, 3, 4" for each note\n- Focus on keeping steady timing\n\n**Day 3: Adding Rests**\n- Play this pattern: B (1 beat) - rest (1 beat) - A (1 beat) - rest (1 beat)\n- Count out loud: "1, 2, 3, 4"\n- Play on 1 and 3, rest on 2 and 4\n\n**Day 4: Rhythm Patterns**\n- Practice the four rhythm patterns from the lesson\n- Start slow, then speed up\n- Use a metronome if you have one\n\n**Day 5: Real Music**\n- Play "Mary Had a Little Lamb" with quarter notes\n- Count out loud as you play\n- Try to keep perfect timing\n\n🏆 RHYTHM MASTER BADGE: When you can play quarter notes and rests with perfect timing while counting out loud, you earn your Rhythm Master badge! You can now keep a beat like a pro! 🥁✨'
   },
 
@@ -498,6 +515,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       '📏 Bar lines separate measures',
       '💪 Beat 1 is always the strongest'
     ],
+    interactiveExercise: {
+      type: 'time-signature',
+      title: '⏱️ Time Signature Challenge',
+      description: 'Identify time signatures and count beats!'
+    },
     practiceInstructions: '🎮 TIME SIGNATURE MASTERY CHALLENGE:\n\n**Day 1: The Basics**\n- Practice counting "1, 2, 3, 4" for 4/4 time (1 minute)\n- Practice counting "1, 2, 3" for 3/4 time (1 minute)\n- Practice counting "1, 2" for 2/4 time (1 minute)\n- Clap on beat 1 of each measure\n\n**Day 2: Finding Time Signatures**\n- Look at 5 different pieces of music\n- Find the time signature in each one\n- Decode it (top number = beats, bottom number = note value)\n- Count out loud for each one\n\n**Day 3: Playing in Different Times**\n- Play a quarter note pattern in 4/4: B-B-B-B (count "1, 2, 3, 4")\n- Play a quarter note pattern in 3/4: B-B-B (count "1, 2, 3")\n- Play a quarter note pattern in 2/4: B-B (count "1, 2")\n- Feel the different rhythms!\n\n**Day 4: Real Music**\n- Find your favorite song\n- Try to figure out what time signature it\'s in\n- Count along with the music\n- Is it 4/4? 3/4? 2/4?\n\n**Day 5: The Challenge**\n- Look at random pieces of music\n- Instantly decode the time signature\n- Count out loud without hesitation\n- Play a simple pattern in that time signature\n\n🏆 TIME MASTER BADGE: When you can look at any time signature and instantly know how to count it, you earn your Time Master badge! You can now read the secret code of musical time! 📦✨'
   },
 
@@ -537,6 +559,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       'Second-to-last flat = major key',
       'Applies to all octaves'
     ],
+    interactiveExercise: {
+      type: 'key-signature-builder',
+      title: '🔑 Key Signature Builder',
+      description: 'Build key signatures by adding sharps and flats!'
+    },
     practiceInstructions: 'Practice identifying key signatures: Look at a piece of music and identify the key signature. Count the sharps or flats. Use the rules to determine the key. Practice with simple pieces in G Major (1 sharp) and F Major (1 flat).'
   },
 
@@ -583,6 +610,11 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       '💨 Loud = more air + support, Soft = less air + MORE control',
       '🎨 Use dynamics to tell the story of the music'
     ],
+    interactiveExercise: {
+      type: 'dynamics-practice',
+      title: '🔊 Dynamics Practice',
+      description: 'Practice recognizing and playing different dynamics!'
+    },
     practiceInstructions: '🎮 DYNAMIC MASTERY CHALLENGE:\n\n**Day 1: The Extremes**\n- Play G as loud as you can (fff) for 4 beats\n- Play G as soft as you can (ppp) for 4 beats\n- Alternate between fff and ppp\n- Focus on tone quality at both extremes\n\n**Day 2: The Crescendo**\n- Play G for 8 beats, starting at pp\n- Gradually crescendo to f by beat 8\n- Make the change smooth and gradual\n- Repeat 5 times\n\n**Day 3: The Decrescendo**\n- Play G for 8 beats, starting at f\n- Gradually decrescendo to pp by beat 8\n- Make the change smooth and gradual\n- Repeat 5 times\n\n**Day 4: The Swell**\n- Play G for 8 beats\n- Crescendo from pp to f (beats 1-4)\n- Decrescendo from f to pp (beats 5-8)\n- Create a "swell" effect\n- Repeat 5 times\n\n**Day 5: Musical Phrases**\n- Play B-A-G with dynamics\n- Start p, crescendo to f on A, decrescendo to p on G\n- Make it musical and expressive\n- Try different dynamic patterns\n\n🏆 DYNAMIC MASTER BADGE: When you can play smoothly from ppp to fff and back again with beautiful tone quality, you earn your Dynamic Master badge! You can now make your saxophone sing with emotion! 🔊✨'
   },
 
