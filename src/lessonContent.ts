@@ -1661,6 +1661,763 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
       'Practice smooth register transitions'
     ],
     practiceInstructions: 'Practice register transitions: 1) Low E to high B (4 beats each), 2) Low D to high A (4 beats each), 3) Low C to high G (4 beats each). Repeat each transition 5 times. Focus on smooth, seamless transitions with consistent tone quality.'
+  },
+
+  // Additional BASIC lessons
+  'basic-tuning': {
+    title: '🎯 Tuning Basics: Playing in Tune',
+    introduction: 'Tuning is essential for playing with others. Let\'s learn how to tune your saxophone and play in tune.',
+    sections: [
+      {
+        heading: 'What is Tuning?',
+        content: 'Tuning means adjusting your instrument so it plays at the correct pitch.\n\nConcert Bb is the standard tuning note for band instruments.\n\nFor alto saxophone:\n- Concert Bb = Written G\n- You play G and match it to the tuning note\n\nFor tenor saxophone:\n- Concert Bb = Written C\n- You play C and match it to the tuning note',
+        example: 'Think of tuning like matching your voice to a piano. You adjust until you sound the same.',
+        tip: 'Always tune with a tuning note from a tuner, piano, or the band director.'
+      },
+      {
+        heading: 'How to Adjust Your Saxophone',
+        content: 'To tune your saxophone, you adjust the mouthpiece position:\n\n**Push mouthpiece IN:**\n- Makes the saxophone shorter\n- Raises the pitch (if you\'re flat)\n\n**Pull mouthpiece OUT:**\n- Makes the saxophone longer\n- Lowers the pitch (if you\'re sharp)\n\nSmall adjustments make big differences!\n\nStart by playing your tuning note (G for alto, C for tenor) and check with a tuner.',
+        tip: 'Make tiny adjustments - 1-2mm at a time. Then play the note again and check the tuner.'
+      },
+      {
+        heading: 'Using a Tuner',
+        content: 'A tuner shows you if you\'re sharp, flat, or in tune:\n\n**Green/Center:** You\'re in tune! ✓\n**Red/Left:** You\'re flat (too low) - push mouthpiece in\n**Red/Right:** You\'re sharp (too high) - pull mouthpiece out\n\nMost tuners also show cents:\n- 0 cents = perfectly in tune\n- -50 to +50 cents = acceptable range\n- Beyond ±50 cents = needs adjustment',
+        example: 'If your tuner shows -20 cents, you\'re slightly flat. Push the mouthpiece in a tiny bit and try again.',
+        tip: 'Tune every day before practice! Your saxophone changes with temperature and humidity.'
+      },
+      {
+        heading: 'Tuning Different Notes',
+        content: 'After tuning your main note (G or C), check other notes:\n\n**Low notes** (D, E, F):\n- Often need more air support\n- May tend to be flat\n\n**Middle notes** (G, A, B, C):\n- Usually most in tune\n- Good reference points\n\n**High notes** (D, E, F and above):\n- Often tend to be sharp\n- Need relaxed embouchure\n\nPlay a scale and check each note with your tuner.',
+        tip: 'Every saxophone is different. Learn which notes on YOUR sax tend to be sharp or flat, and adjust your embouchure accordingly.'
+      }
+    ],
+    keyPoints: [
+      'Tune to concert Bb (written G for alto, C for tenor)',
+      'Push mouthpiece in to raise pitch (if flat)',
+      'Pull mouthpiece out to lower pitch (if sharp)',
+      'Make tiny adjustments (1-2mm at a time)',
+      'Check multiple notes, not just the tuning note',
+      'Tune every day before practice'
+    ],
+    practiceInstructions: 'Daily tuning routine: 1) Turn on tuner, 2) Play tuning note (G for alto, C for tenor) for 4 beats, 3) Check tuner - adjust mouthpiece if needed, 4) Play low D, E, F and check, 5) Play middle G, A, B, C and check, 6) Play high D, E, F and check, 7) Adjust embouchure for notes that are consistently sharp or flat. Do this for 5 minutes before every practice session.'
+  },
+
+  'basic-long-tones': {
+    title: '🎵 Long Tones: Building Beautiful Tone',
+    introduction: 'Long tones are the most important exercise for developing a beautiful, consistent tone. Let\'s master this fundamental skill.',
+    sections: [
+      {
+        heading: 'What are Long Tones?',
+        content: 'Long tones mean playing a single note for an extended period (8-12 beats) with:\n\n- Steady, consistent sound\n- No wavering or shaking\n- Beautiful, full tone quality\n- Even volume throughout\n\nThis builds embouchure strength, breath control, and tone quality.',
+        example: 'Think of a violinist holding a long, beautiful note. That\'s the quality you want on saxophone!',
+        tip: 'Long tones are boring but essential. Do them every day for 5-10 minutes. Your tone will improve dramatically.'
+      },
+      {
+        heading: 'How to Practice Long Tones',
+        content: 'Step-by-step long tone practice:\n\n1. Choose a comfortable middle note (G or A)\n2. Take a deep breath from your diaphragm\n3. Start the note with your tongue (ta)\n4. Hold the note for 8-12 beats\n5. Keep the tone steady and consistent\n6. End with a clean cutoff (don\'t let it fade)\n7. Rest for 4 beats\n8. Repeat on different notes',
+        tip: 'Focus on making the tone beautiful, not just long. Listen carefully to your sound.'
+      },
+      {
+        heading: 'Common Long Tone Problems',
+        content: 'Watch out for these issues:\n\n**Wavering sound:**\n- Cause: Unsteady air support\n- Fix: Use more abdominal support\n\n**Tone gets quieter:**\n- Cause: Running out of air\n- Fix: Take deeper breaths, use air more efficiently\n\n**Tone gets louder:**\n- Cause: Too much air pressure\n- Fix: Control air flow with abdominal muscles\n\n**Sound cuts out:**\n- Cause: Embouchure collapsing\n- Fix: Keep corners firm, don\'t bite',
+        tip: 'Record yourself playing long tones and listen back. You\'ll hear problems you didn\'t notice while playing.'
+      },
+      {
+        heading: 'Long Tone Routine',
+        content: 'Daily long tone routine (10 minutes):\n\n**Middle Register:**\n- G: 8 beats, rest 4 beats (repeat 3 times)\n- A: 8 beats, rest 4 beats (repeat 3 times)\n- B: 8 beats, rest 4 beats (repeat 3 times)\n\n**Low Register:**\n- D: 8 beats, rest 4 beats (repeat 2 times)\n- E: 8 beats, rest 4 beats (repeat 2 times)\n- F: 8 beats, rest 4 beats (repeat 2 times)\n\n**High Register:**\n- D: 8 beats, rest 4 beats (repeat 2 times)\n- E: 8 beats, rest 4 beats (repeat 2 times)\n- F: 8 beats, rest 4 beats (repeat 2 times)\n\n**Full Range:**\n- Play C-D-E-F-G-A-B-C ascending, holding each note 4 beats',
+        tip: 'Do this routine every day. In 2 weeks, you\'ll notice a huge improvement in your tone quality!'
+      }
+    ],
+    keyPoints: [
+      'Long tones = single note held for 8-12 beats',
+      'Focus on steady, consistent tone',
+      'Use diaphragmatic breathing',
+      'Keep embouchure firm but relaxed',
+      'Practice daily for 5-10 minutes',
+      'Record yourself to check progress'
+    ],
+    practiceInstructions: 'Daily long tone routine: 1) Play G for 8 beats (steady tone), rest 4 beats, repeat 3 times. 2) Play A for 8 beats, rest 4 beats, repeat 3 times. 3) Play B for 8 beats, rest 4 beats, repeat 3 times. 4) Do the same for low D, E, F and high D, E, F. 5) Finish with a full range scale (C to C) holding each note 4 beats. Total time: 10 minutes. Do this every day!'
+  },
+
+  'basic-tonguing': {
+    title: '👅 Basic Tonguing: Articulation Fundamentals',
+    introduction: 'Tonguing is how you start and separate notes with your tongue. Let\'s learn proper tonguing technique.',
+    sections: [
+      {
+        heading: 'What is Tonguing?',
+        content: 'Tonguing is the technique of using your tongue to articulate (start and separate) notes.\n\nWithout tonguing, notes would blur together (legato).\nWith tonguing, each note has a clear beginning.\n\nThink of tonguing like saying "ta-ta-ta-ta" - your tongue taps the reed to start each note.',
+        example: 'Try saying "ta-ta-ta-ta" out loud. Feel how your tongue touches the roof of your mouth? That\'s similar to tonguing on saxophone!',
+        tip: 'Tonguing should be light and quick, not heavy and slow.'
+      },
+      {
+        heading: 'Proper Tongue Position',
+        content: 'Correct tonguing technique:\n\n1. **Tongue position:** Tip of tongue touches tip of reed\n2. **Motion:** Quick tap, not a push\n3. **Air support:** Air continues flowing constantly\n4. **Embouchure:** Stays firm and unchanged\n\nThe tongue just interrupts the air stream briefly - it doesn\'t stop the air!',
+        example: 'Think of your tongue like a valve - it briefly stops the air, then releases it. The air pressure stays constant.',
+        tip: 'Don\'t tongue too hard! A light tap is all you need. Heavy tonguing sounds percussive and harsh.'
+      },
+      {
+        heading: 'Types of Articulation',
+        content: 'Different tonguing styles:\n\n**Staccato (short and detached):**\n- Very short notes\n- Tongue taps reed quickly\n- Notes are separated\n- Symbol: dot above/below note\n\n**Legato (smooth and connected):**\n- Notes flow together\n- Minimal tonguing\n- Often just tongue the first note\n- Symbol: slur line over notes\n\n**Accent (emphasized):**\n- Stronger attack on note\n- More air pressure\n- Tongue taps reed firmly\n- Symbol: > above note',
+        tip: 'Practice each type separately. Start with staccato, then legato, then accents.'
+      },
+      {
+        heading: 'Tonguing Exercises',
+        content: 'Practice these tonguing exercises daily:\n\n**Exercise 1: Single Tonguing**\nPlay G with tongue: "ta-rest-ta-rest-ta-rest"\n(quarter notes with rests between)\n\n**Exercise 2: Continuous Tonguing**\nPlay G continuously: "ta-ta-ta-ta"\n(quarter notes, no rests)\n\n**Exercise 3: Faster Tonguing**\nPlay G faster: "ta-ta-ta-ta"\n(eighth notes)\n\n**Exercise 4: Articulation Patterns**\nPlay scale with different articulations:\n- All staccato\n- All legato\n- Slurred groups of 2, then tongued\n- Slurred groups of 4, then tongued',
+        tip: 'Start slow! Speed comes from accuracy. Practice perfectly slow, then gradually faster.'
+      }
+    ],
+    keyPoints: [
+      'Tongue tip touches reed tip',
+      'Quick tap, not a push',
+      'Air support continues constantly',
+      'Staccato = short and detached',
+      'Legato = smooth and connected',
+      'Start slow, build speed gradually'
+    ],
+    practiceInstructions: 'Daily tonguing routine: 1) Single tonguing on G: "ta-rest-ta-rest" (5 times), 2) Continuous tonguing on G: "ta-ta-ta-ta" (5 times), 3) Faster tonguing on G: eighth notes (5 times), 4) Tonguing on scale: play G-A-B-A-G with tongue (5 times), 5) Articulation patterns: slur 2, tongue 2, repeat (5 times). Total time: 5 minutes. Do this every day!'
+  },
+
+  'basic-embouchure': {
+    title: '👄 Embouchure: Your Mouth as an Instrument',
+    introduction: 'Your embouchure is how you use your mouth, lips, and facial muscles to play. A correct embouchure is essential for good tone and intonation.',
+    sections: [
+      {
+        heading: 'What is Embouchure?',
+        content: 'Embouchure (ah-boo-SHURE) is the French word for "mouth."\n\nFor saxophone, it means:\n- How you position your mouth on the mouthpiece\n- How you use your lips, jaw, and facial muscles\n- How you control the reed vibration\n\nA good embouchure creates a seal around the mouthpiece and controls the reed vibration to produce a beautiful tone.',
+        example: 'Think of your embouchure like a camera lens - it focuses and controls the sound, just like a lens focuses light.',
+        tip: 'Your embouchure muscles will get tired at first - that\'s normal! They\'ll get stronger with practice.'
+      },
+      {
+        heading: 'Correct Embouchure Formation',
+        content: 'Step-by-step embouchure formation:\n\n1. **Bottom lip:** Curl over bottom teeth (like a cushion)\n2. **Top teeth:** Rest on top of mouthpiece (about 1/2 inch from tip)\n3. **Corners:** Firm and pulled inward (like saying "M")\n4. **Chin:** Flat and pointed down (not bunched up)\n5. **Jaw:** Dropped slightly (not clenched)\n\nThe embouchure should feel firm but not tense.',
+        example: 'Say the letter "M" and hold it. Feel how the corners of your mouth firm up? That\'s the foundation of good embouchure!',
+        tip: 'Don\'t bite! Your teeth should rest gently on the mouthpiece. Biting will squeeze the reed and make the sound squeaky.'
+      },
+      {
+        heading: 'Common Embouchure Problems',
+        content: 'Watch out for these mistakes:\n\n**Biting too hard:**\n- Causes: Squeaky, strained sound\n- Fix: Relax jaw, use corners for pressure instead\n\n**Corners pulling back:**\n- Causes: Thin, unfocused tone\n- Fix: Firm corners like saying "M"\n\n**Chin bunched up:**\n- Causes: Restricted reed vibration\n- Fix: Flatten chin, point it down\n\n**Bottom lip not covering teeth:**\n- Causes: Airy, unfocused sound\n- Fix: Roll lip over teeth more\n\n**Too much mouthpiece in mouth:**\n- Causes: Stuffy, muffled sound\n- Fix: Take less mouthpiece (about 1/2 inch)',
+        tip: 'Practice embouchure in front of a mirror. Check: Are corners firm? Is chin flat? Are you biting?'
+      },
+      {
+        heading: 'Building Embouchure Strength',
+        content: 'Your embouchure muscles need to get stronger. Here\'s how:\n\n**Exercise 1: Mouthpiece only**\nPut just the mouthpiece and neck together.\nForm embouchure and hold for 30 seconds.\nRest 30 seconds. Repeat 5 times.\n\n**Exercise 2: Long tones**\nPlay long tones (8-12 beats each).\nFocus on keeping embouchure firm and consistent.\nDo this for 5 minutes daily.\n\n**Exercise 3: Scales**\nPlay scales slowly.\nFocus on maintaining embouchure throughout.\nDon\'t let it collapse on high or low notes.',
+        tip: 'Your embouchure will get tired - that\'s normal! Take breaks when needed. It will get stronger over time.'
+      }
+    ],
+    keyPoints: [
+      'Bottom lip curled over teeth (cushion)',
+      'Top teeth on mouthpiece (1/2 inch from tip)',
+      'Corners firm like saying "M"',
+      'Chin flat and pointed down',
+      'Don\'t bite - use corners for pressure',
+      'Build strength with daily exercises'
+    ],
+    practiceInstructions: 'Daily embouchure routine: 1) Mouthpiece only: form embouchure and hold 30 seconds, rest 30 seconds, repeat 5 times. 2) Long tones: play G for 8 beats, focus on firm embouchure, repeat 5 times. 3) Scales: play G-A-B-A-G slowly, maintain embouchure throughout, repeat 5 times. Total time: 5 minutes. Do this every day!'
+  },
+
+  'basic-breathing': {
+    title: '💨 Breathing & Air Support: The Foundation of Sound',
+    introduction: 'Good breathing is the foundation of good playing. Let\'s learn proper breathing technique and air support.',
+    sections: [
+      {
+        heading: 'Diaphragmatic Breathing',
+        content: 'Saxophone players use diaphragmatic breathing (belly breathing), not chest breathing.\n\nHow to breathe correctly:\n1. Keep shoulders relaxed and down\n2. Breathe in through your mouth\n3. Your belly should expand outward\n4. Your chest should barely move\n5. Fill your lungs completely from bottom to top',
+        example: 'Lie down on your back and put a book on your belly. When you breathe in, the book should rise. When you breathe out, it should fall. That\'s diaphragmatic breathing!',
+        tip: 'Practice breathing exercises without your instrument first. Master the breathing technique before adding the saxophone.'
+      },
+      {
+        heading: 'Air Support',
+        content: 'Air support means using your abdominal muscles to control the air stream:\n\n1. Keep your abdominal muscles engaged (like doing a sit-up)\n2. Push air out steadily with your diaphragm\n3. Don\'t let the air collapse or fade\n4. Maintain consistent air pressure throughout the phrase',
+        example: 'Think of squeezing a tube of toothpaste - you want steady, even pressure from start to finish, not a burst at the beginning and nothing at the end.',
+        tip: 'Your air support should feel like you\'re doing a gentle sit-up while playing. Your abdominal muscles should be engaged.'
+      },
+      {
+        heading: 'Breath Control Exercises',
+        content: 'Practice these breathing exercises daily:\n\n1. Hissing exercise: Take a deep breath, hiss "ssss" for as long as possible. Aim for 20+ seconds.\n\n2. Counting exercise: Take a breath, count out loud "1-2-3-4-5-6-7-8" on one breath. Keep steady volume.\n\n3. Pulse exercise: Take a breath, pulse the air "ha-ha-ha-ha" while keeping support.',
+        tip: 'Do breathing exercises for 5 minutes every day. This will dramatically improve your playing.'
+      },
+      {
+        heading: 'Common Breathing Problems',
+        content: 'Watch out for these mistakes:\n\n- Raising shoulders when breathing (use belly instead)\n- Not taking enough air (fill completely)\n- Letting air collapse (maintain support)\n- Breathing through nose (use mouth for quick breaths)\n- Tensing up (stay relaxed)',
+        tip: 'Record yourself playing and watch your breathing. Are your shoulders moving? Is your belly expanding? Fix what you see.'
+      }
+    ],
+    keyPoints: [
+      'Breathe from diaphragm, not chest',
+      'Belly expands, shoulders stay down',
+      'Use abdominal muscles for air support',
+      'Maintain steady air pressure',
+      'Practice breathing exercises daily'
+    ],
+    practiceInstructions: 'Practice breathing exercises: 1) Hiss for 20 seconds, 2) Count to 8 on one breath, 3) Play long tones on G for 8 beats, focusing on steady air. Do this routine for 5 minutes every day.'
+  },
+
+  'basic-first-sound': {
+    title: '🎶 First Sound: Making Music!',
+    introduction: 'Now let\'s learn how to produce sound on the saxophone. This is called forming your embouchure.',
+    sections: [
+      {
+        heading: 'What is Embouchure?',
+        content: 'Embouchure (ah-boo-SHURE) is how you use your mouth, lips, and facial muscles to play a wind instrument.\n\nFor saxophone:\n- Your bottom lip covers your bottom teeth\n- The mouthpiece rests on your bottom lip\n- Your top teeth rest on top of the mouthpiece\n- The corners of your mouth are firm, like saying "M"',
+        example: 'Think of saying the letter "M" - feel how the corners of your mouth firm up? That\'s the foundation of good embouchure.',
+        tip: 'Don\'t bite! Your teeth should rest gently on the mouthpiece. Biting will squeeze the reed and make the sound squeaky.'
+      },
+      {
+        heading: 'Breathing and Air Support',
+        content: 'Good sound comes from good breathing:\n\n1. Breathe from your diaphragm (belly breathing), not your chest\n2. Keep your shoulders relaxed and down\n3. Use steady, fast air - think of fogging up a mirror\n4. Support the air with your abdominal muscles',
+        example: 'Imagine blowing out candles across the room - you need steady, focused air, not a weak puff.',
+        tip: 'Practice breathing exercises without the instrument first. Put your hand on your belly - it should expand when you breathe in.'
+      },
+      {
+        heading: 'Producing Your First Note',
+        content: 'Let\'s make a sound:\n\n1. Form your embouchure as described above\n2. Place the mouthpiece in your mouth - about 1/2 inch of the mouthpiece should be inside\n3. Take a deep breath from your diaphragm\n4. Blow steady, fast air through the instrument\n5. Keep your throat open (like saying "AW")\n\nYou should hear a clear, steady tone.',
+        tip: 'If you hear air noise but no pitch, you need more air speed. If it squeaks, check your embouchure - you might be biting.'
+      }
+    ],
+    keyPoints: [
+      'Embouchure: bottom lip over teeth, top teeth on mouthpiece',
+      'Corners of mouth firm like saying "M"',
+      'Breathe from diaphragm, not chest',
+      'Use steady, fast air like fogging a mirror',
+      'Don\'t bite - gentle pressure only'
+    ],
+    practiceInstructions: 'Practice forming your embouchure without the instrument for 2 minutes. Then, with just the mouthpiece and neck, try to produce a steady tone for 10 seconds at a time. Do this 5 times.'
+  },
+
+  'basic-more-notes': {
+    title: '🎹 More Notes: F, E, D',
+    introduction: 'Now let\'s add three more notes to your repertoire: F, E, and D. These use your right hand.',
+    sections: [
+      {
+        heading: 'Right Hand Position',
+        content: 'Your right hand plays the bottom three keys on the saxophone:\n\n- Index finger (1st finger): Plays F\n- Middle finger (2nd finger): Plays E\n- Ring finger (3rd finger): Plays D\n\nSame as left hand - curve your fingers like holding a baseball.',
+        example: 'Your right hand mirrors your left hand. Left hand plays B-A-G (top), right hand plays F-E-D (bottom).',
+        tip: 'Keep both hands balanced. Don\'t let the weight of the saxophone pull your right hand away from the keys.'
+      },
+      {
+        heading: 'Playing F',
+        content: 'To play F:\n\n1. Keep all left-hand fingers down (G position)\n2. Add your right index finger on the first right-hand key\n3. Blow steady air\n\nF is played with four fingers total: all three left-hand fingers plus right index.',
+        tip: 'Make sure your right index finger is curved and using the pad of your finger, not the tip.'
+      },
+      {
+        heading: 'Playing E',
+        content: 'To play E:\n\n1. Keep left-hand fingers down\n2. Keep right index finger down\n3. Add your right middle finger\n\nE is played with five fingers: all left-hand plus right index and middle.',
+        tip: 'Move smoothly from F to E. Your right middle finger should be ready and waiting.'
+      },
+      {
+        heading: 'Playing D',
+        content: 'To play D:\n\n1. Keep all left-hand fingers down\n2. Add all three right-hand fingers\n\nD is played with all six fingers down - the full "six-finger" note.',
+        tip: 'D is your lowest note so far. Make sure all keys are fully covered or the sound will be stuffy or squeaky.'
+      },
+      {
+        heading: 'Your Six-Note Scale',
+        content: 'You now know six notes: B-A-G-F-E-D\n\nThese form a descending scale pattern. Practice going up and down:\n\nD-E-F-G-A-B (ascending)\nB-A-G-F-E-D (descending)\n\nThis is the foundation for many melodies.',
+        example: 'Think of the musical phrase "Do-Re-Mi" from The Sound of Music. You can now play the first six notes of that scale!',
+        tip: 'Practice smooth transitions between notes. Think of your fingers as a wave flowing up and down the keys.'
+      }
+    ],
+    keyPoints: [
+      'Right hand: index=F, middle=E, ring=D',
+      'Six notes total: B-A-G-F-E-D',
+      'Keep fingers curved and close to keys',
+      'Cover keys completely for clear tone',
+      'Practice ascending and descending patterns'
+    ],
+    practiceInstructions: 'Practice the six-note scale: Play D-E-F-G-A-B ascending, then B-A-G-F-E-D descending. Do this 5 times slowly. Then play patterns: D-F-A, E-G-B, D-E-F-G-F-E-D. Focus on smooth finger movement.'
+  },
+
+  'basic-low-c': {
+    title: '🎺 Low C and Complete Range',
+    introduction: 'Let\'s add the final note to your basic range: Low C. This completes your six-note scale from C to B.',
+    sections: [
+      {
+        heading: 'Playing Low C',
+        content: 'Low C is played with all fingers down PLUS the side key:\n\n1. All six fingers down (D position)\n2. Add your left thumb on the thumb key (side key)\n3. Blow steady, supported air\n\nLow C is the lowest note in your basic range.',
+        tip: 'Low notes require more air support. Use steady, fast air and keep your embouchure firm.'
+      },
+      {
+        heading: 'Your Complete Range: C to B',
+        content: 'You now have a complete octave from C to B:\n\nC (lowest) - D - E - F - G - A - B (highest)\n\nThis is a major scale pattern. These eight notes are the foundation for most beginner music.',
+        example: 'Think of "Do-Re-Mi-Fa-Sol-La-Ti-Do" - you can now play all of these notes!',
+        tip: 'Practice playing from C all the way up to B, then back down. This builds finger coordination.'
+      },
+      {
+        heading: 'Low Note Technique',
+        content: 'Low notes (C, D, E) require special attention:\n\n- Use more air support\n- Keep embouchure firm but not tight\n- Make sure all keys are fully covered\n- Relax your throat (think "AW" sound)\n\nLow notes should be full and resonant, not stuffy or quiet.',
+        tip: 'If low notes squeak or don\'t speak, check that all keys are fully covered and you\'re using enough air.'
+      },
+      {
+        heading: 'Playing Across the Range',
+        content: 'Practice moving smoothly between low and high notes:\n\nC-G-C (low to high to low)\nB-D-B (high to low to high)\n\nThis builds flexibility and control across your entire range.',
+        tip: 'Don\'t bite or squeeze when going to low notes. Use air support, not embouchure pressure.'
+      }
+    ],
+    keyPoints: [
+      'Low C = all fingers + thumb key',
+      'Complete range: C to B (one octave)',
+      'Low notes need more air support',
+      'Keep all keys fully covered',
+      'Practice smooth transitions across the range'
+    ],
+    practiceInstructions: 'Practice your full range: Play C-D-E-F-G-A-B ascending, then B-A-G-F-E-D-C descending. Do this 5 times. Then play arpeggios: C-E-G-C, C-G-E-C. Focus on even tone quality across the entire range.'
+  },
+
+  // Additional ONE lessons
+  'one-accidentals': {
+    title: '♯♭ Accidentals: Sharps, Flats, and Naturals',
+    introduction: 'Accidentals are symbols that change the pitch of a note. Let\'s learn how to read and play them.',
+    sections: [
+      {
+        heading: 'What are Accidentals?',
+        content: 'Accidentals are symbols that appear before a note to change its pitch:\n\n**Sharp (♯):** Raises the note by one half step\n**Flat (♭):** Lowers the note by one half step\n**Natural (♮):** Cancels a previous sharp or flat\n\nAccidentals apply only to the note they precede and only for that measure.',
+        example: 'If you see F♯, play F sharp (one half step higher than F). If you see B♭, play B flat (one half step lower than B).',
+        tip: 'Remember: sharps go UP, flats go DOWN. Naturals bring you back to the natural note.'
+      },
+      {
+        heading: 'Half Steps and Whole Steps',
+        content: 'Understanding accidentals requires understanding half steps and whole steps:\n\n**Half step:** The distance from one key to the very next key (like C to C# or E to F)\n**Whole step:** Two half steps (like C to D or E to F#)\n\nOn saxophone, half steps are achieved by adding or removing one finger.',
+        example: 'C to C# is a half step (add right side key). C to D is a whole step (two half steps).',
+        tip: 'Practice playing half steps: C-C#, D-D#, F-F#, G-G#, A-A#. Then play them backwards.'
+      },
+      {
+        heading: 'Reading Accidentals in Music',
+        content: 'When you see accidentals in music:\n\n1. Check if there\'s a key signature first\n2. Accidentals in the music override the key signature\n3. The accidental lasts for the entire measure\n4. A natural sign cancels the sharp or flat\n\nExample: If the key signature has B♭, but you see B♮ in the music, play B natural (not B flat) for that measure.',
+        tip: 'Always check for accidentals before playing a note. They can change the entire meaning of the music!'
+      },
+      {
+        heading: 'Enharmonic Equivalents',
+        content: 'Some notes have two names:\n\n- C♯ = D♭ (same note, different names)\n- D♯ = E♭\n- F♯ = G♭\n- G♯ = A♭\n- A♯ = B♭\n\nThese are called enharmonic equivalents. They sound the same but are written differently depending on the musical context.',
+        example: 'On saxophone, F# and Gb use the same fingering. The name depends on the key signature and musical context.',
+        tip: 'Don\'t worry too much about enharmonics yet. Just know that they exist and mean the same note.'
+      }
+    ],
+    keyPoints: [
+      'Sharp (♯) raises pitch by half step',
+      'Flat (♭) lowers pitch by half step',
+      'Natural (♮) cancels sharp or flat',
+      'Accidentals last for one measure only',
+      'Half step = adjacent keys, Whole step = two half steps',
+      'Some notes have two names (enharmonic equivalents)'
+    ],
+    practiceInstructions: 'Practice accidentals: 1) Play C-C#-D-D#-E-F-F#-G-G#-A-A#-B (chromatic scale), 2) Play the same scale backwards, 3) Find a piece of music with accidentals and identify them, 4) Play the piece, paying attention to each accidental. Do this for 10 minutes daily.'
+  },
+
+  'one-articulation': {
+    title: '👅 Articulation: Staccato, Legato, and Accents',
+    introduction: 'Articulation is how you start and separate notes. Let\'s learn the three main types of articulation.',
+    sections: [
+      {
+        heading: 'What is Articulation?',
+        content: 'Articulation refers to how notes are played - specifically how they begin, continue, and end.\n\nThe three main types are:\n\n**Staccato:** Short, detached notes\n**Legato:** Smooth, connected notes\n**Accent:** Emphasized, stronger notes\n\nEach type has a specific symbol in music and requires different tonguing technique.',
+        example: 'Think of articulation like speech. Staccato is like saying "cat-cat-cat" (short words). Legato is like singing "caaaaat" (one long word). Accent is like saying "CAT!" (loud word).',
+        tip: 'Articulation gives music character and expression. Without it, music sounds monotonous and boring.'
+      },
+      {
+        heading: 'Staccato: Short and Detached',
+        content: 'Staccato notes are short and separated:\n\n**Symbol:** Dot above or below the note\n**Technique:** Tongue the note briefly, then stop the air\n**Sound:** "ta-ta-ta-ta" (short, bouncy)\n\nTo play staccato:\n1. Tongue the note normally\n2. Stop the air quickly with your tongue\n3. Leave a small gap between notes\n4. Keep the rhythm steady',
+        example: 'Imagine bouncing a ball - it goes up and down with space between each bounce. That\'s staccato!',
+        tip: 'Staccato doesn\'t mean rushing! Keep the rhythm steady. The notes are just shorter.'
+      },
+      {
+        heading: 'Legato: Smooth and Connected',
+        content: 'Legato notes flow smoothly together:\n\n**Symbol:** Slur line over the notes\n**Technique:** Tongue only the first note, then use air to connect the rest\n**Sound:** "daaaa-aaaa" (smooth, flowing)\n\nTo play legato:\n1. Tongue the first note\n2. Change fingers for the next notes without tonguing\n3. Keep the air flowing steadily\n4. Make the transitions seamless',
+        example: 'Think of legato like pouring honey - it flows smoothly without breaking. That\'s how your notes should connect!',
+        tip: 'Legato requires excellent finger technique. Practice slowly to ensure smooth transitions.'
+      },
+      {
+        heading: 'Accent: Emphasized and Strong',
+        content: 'Accented notes are emphasized:\n\n**Symbol:** > above or below the note\n**Technique:** Use more air pressure and a stronger tongue attack\n**Sound:** "TA-ta-ta-ta" (first note is louder)\n\nTo play accent:\n1. Use more air support\n2. Tongue the note more firmly\n3. Keep the embouchure firm\n4. Return to normal volume after the accent',
+        example: 'Think of an accent like a exclamation point! It adds emphasis and excitement to the music.',
+        tip: 'Don\'t bite or squeeze for accents! Use more air support, not more embouchure pressure.'
+      }
+    ],
+    keyPoints: [
+      'Staccato = short, detached (dot symbol)',
+      'Legato = smooth, connected (slur symbol)',
+      'Accent = emphasized, strong (> symbol)',
+      'Each requires different tonguing technique',
+      'Articulation gives music character and expression',
+      'Practice each type separately, then combine'
+    ],
+    practiceInstructions: 'Daily articulation routine: 1) Staccato: play G with tongue "ta-ta-ta-ta" (quarter notes, 5 times), 2) Legato: play G-A-B-A-G slurred (5 times), 3) Accent: play G with accent "TA-ta-ta-ta" (5 times), 4) Combine: play scale with different articulations (staccato, legato, accents), 5) Find a piece of music and identify the articulations, then play it correctly. Total time: 10 minutes daily.'
+  },
+
+  'one-aural': {
+    title: '👂 Aural Skills: Training Your Ear',
+    introduction: 'Aural skills mean training your ear to recognize musical elements. This is essential for playing in tune and with others.',
+    sections: [
+      {
+        heading: 'What are Aural Skills?',
+        content: 'Aural skills involve using your ear to:\n\n- Recognize pitches (high vs. low)\n- Identify intervals (distance between notes)\n- Clap rhythms accurately\n- Sing melodies back\n- Detect if something is in tune or out of tune\n\nThese skills develop over time with practice.',
+        example: 'Think of aural skills like learning a language. At first, you can\'t understand it, but with practice, you start to recognize patterns and meanings.',
+        tip: 'Aural skills take time to develop. Be patient and practice a little bit every day.'
+      },
+      {
+        heading: 'Pitch Recognition',
+        content: 'Learning to recognize pitches:\n\n**Exercise 1: High vs. Low**\nHave someone play two notes. Can you tell which is higher and which is lower?\n\n**Exercise 2: Same or Different**\nHave someone play a note, then play it again. Is it the same pitch or different?\n\n**Exercise 3: Sing Back**\nHave someone play a short melody (3-4 notes). Can you sing it back?',
+        example: 'Start with simple exercises. Can you tell if the second note is higher or lower than the first? With practice, you\'ll get better!',
+        tip: 'Use apps or online tools to practice pitch recognition. There are many free ear training resources available.'
+      },
+      {
+        heading: 'Rhythm Clapping',
+        content: 'Learning to clap rhythms accurately:\n\n**Exercise 1: Simple Patterns**\nClap quarter notes: "1-2-3-4" (steady beat)\n\n**Exercise 2: Eighth Notes**\nClap eighth notes: "1-and-2-and-3-and-4-and"\n\n**Exercise 3: Mixed Rhythms**\nClap mixed patterns: quarter, two eighths, quarter, half\n\n**Exercise 4: Clap Back**\nHave someone clap a rhythm, then clap it back exactly.',
+        example: 'Think of rhythm like a heartbeat - it should be steady and consistent. Use a metronome to help you stay in time.',
+        tip: 'Start with simple rhythms and gradually add complexity. Always use a metronome!'
+      },
+      {
+        heading: 'Interval Recognition',
+        content: 'Learning to recognize intervals:\n\n**Major 2nd:** "Happy Birthday" (first two notes)\n**Major 3rd:** "When the Saints Go Marching In" (first two notes)\n**Perfect 4th:** "Here Comes the Bride"\n**Perfect 5th:** "Star Wars" theme (first two notes)\n\nPractice by singing these songs and identifying the intervals.',
+        example: 'Can you hear the difference between a major 2nd (close together) and a perfect 5th (far apart)? With practice, you\'ll recognize them instantly!',
+        tip: 'Use familiar songs to remember intervals. The brain associates melodies with intervals.'
+      }
+    ],
+    keyPoints: [
+      'Aural skills = training your ear',
+      'Pitch recognition: high vs. low, same vs. different',
+      'Rhythm clapping: steady beat, accurate patterns',
+      'Interval recognition: use familiar songs',
+      'Practice daily, even just 5 minutes',
+      'Be patient - skills develop over time'
+    ],
+    practiceInstructions: 'Daily aural skills practice: 1) Pitch recognition: use an app or have someone play notes, identify high/low (2 minutes), 2) Rhythm clapping: clap quarter notes, eighth notes, mixed patterns with metronome (3 minutes), 3) Interval recognition: sing "Happy Birthday" (major 2nd), "Star Wars" (perfect 5th), identify intervals in songs you hear (2 minutes), 4) Sing back: have someone play 3-4 notes, sing them back (3 minutes). Total time: 10 minutes daily.'
+  },
+
+  // Additional TWO lessons
+  'two-intervals': {
+    title: '📏 Intervals: Measuring Musical Distance',
+    introduction: 'Intervals are the distance between two notes. Understanding intervals is essential for melody, harmony, and music theory.',
+    sections: [
+      {
+        heading: 'What are Intervals?',
+        content: 'An interval is the distance between two notes, measured in two ways:\n\n**Size:** How many letter names apart (2nd, 3rd, 4th, etc.)\n**Quality:** Whether it\'s major, minor, perfect, augmented, or diminished\n\nExample: C to E is a 3rd (C-D-E = three letter names). It\'s a major 3rd because it\'s 4 half steps.',
+        example: 'Think of intervals like measuring distance in steps. A 2nd is one step, a 3rd is two steps, etc.',
+        tip: 'Learn to recognize intervals by sound. Each interval has a distinctive "feel" that you can learn to identify.'
+      },
+      {
+        heading: 'Seconds and Thirds',
+        content: 'The most common intervals at Level TWO:\n\n**Seconds:**\n- Major 2nd: 2 half steps (C to D)\n- Minor 2nd: 1 half step (C to Db)\n\n**Thirds:**\n- Major 3rd: 4 half steps (C to E)\n- Minor 3rd: 3 half steps (C to Eb)\n\n**How to identify:**\n1. Count the letter names (C-D-E = 3rd)\n2. Count the half steps to determine quality',
+        example: 'C to D is a 2nd (two letters: C-D). Count the half steps: C-C#-D = 2 half steps = major 2nd.',
+        tip: 'Practice identifying intervals on your saxophone. Play C, then play D (major 2nd), then Db (minor 2nd). Hear the difference!'
+      },
+      {
+        heading: 'Perfect Intervals',
+        content: 'Perfect intervals have a special quality:\n\n**Perfect 4th:** 5 half steps (C to F)\n**Perfect 5th:** 7 half steps (C to G)\n**Perfect 8ve (Octave):** 12 half steps (C to C)\n\nPerfect intervals sound very stable and consonant. They don\'t have major/minor versions.',
+        example: 'The first two notes of "Here Comes the Bride" is a perfect 4th. Can you hear how stable and resolved it sounds?',
+        tip: 'Perfect intervals are the foundation of harmony. Learn to recognize them by ear!'
+      },
+      {
+        heading: 'Interval Recognition by Sound',
+        content: 'Learn to recognize intervals by familiar songs:\n\n**Major 2nd:** "Happy Birthday" (first two notes)\n**Minor 2nd:** "Jaws" theme\n**Major 3rd:** "When the Saints Go Marching In"\n**Minor 3rd:** "Greensleeves"\n**Perfect 4th:** "Here Comes the Bride"\n**Perfect 5th:** "Star Wars" theme\n**Major 6th:** "My Bonnie Lies Over the Ocean"\n**Octave:** "Somewhere Over the Rainbow"',
+        example: 'Can you hear the "Star Wars" interval (perfect 5th)? It\'s very distinctive! Use these songs to train your ear.',
+        tip: 'Practice singing these intervals. The more you sing them, the better you\'ll recognize them.'
+      }
+    ],
+    keyPoints: [
+      'Intervals = distance between two notes',
+      'Size: count letter names (2nd, 3rd, 4th, etc.)',
+      'Quality: major, minor, perfect, augmented, diminished',
+      'Major 2nd = 2 half steps, Minor 2nd = 1 half step',
+      'Major 3rd = 4 half steps, Minor 3rd = 3 half steps',
+      'Learn to recognize intervals by familiar songs'
+    ],
+    practiceInstructions: 'Daily interval practice: 1) Play and sing intervals on your saxophone: major 2nd, minor 2nd, major 3rd, minor 3rd, perfect 4th, perfect 5th (5 minutes), 2) Identify intervals in songs you hear (3 minutes), 3) Sing intervals from memory using familiar songs (2 minutes). Total time: 10 minutes daily. In 2 weeks, you\'ll be able to recognize intervals by ear!'
+  },
+
+  'two-chords': {
+    title: '🎼 Chords: Building Harmony',
+    introduction: 'Chords are three or more notes played together. Understanding chords is essential for harmony and music theory.',
+    sections: [
+      {
+        heading: 'What are Chords?',
+        content: 'A chord is three or more notes played at the same time.\n\nThe most basic chord is a **triad** - three notes:\n- Root (the note the chord is named after)\n- Third (determines if chord is major or minor)\n- Fifth (completes the chord)\n\nExample: C major chord = C + E + G',
+        example: 'Think of a chord like a team. The root is the captain, the third and fifth are team members. Together, they create harmony.',
+        tip: 'Chords are the foundation of harmony. Understanding them will help you understand how music works.'
+      },
+      {
+        heading: 'Major and Minor Triads',
+        content: 'The two most common types of triads:\n\n**Major Triad:**\n- Root + Major 3rd + Perfect 5th\n- Example: C major = C + E + G\n- Sounds: happy, bright, stable\n\n**Minor Triad:**\n- Root + Minor 3rd + Perfect 5th\n- Example: C minor = C + Eb + G\n- Sounds: sad, dark, melancholy',
+        example: 'Play C major (C-E-G) on your saxophone, then play C minor (C-Eb-G). Can you hear the difference? Major sounds happy, minor sounds sad.',
+        tip: 'The difference between major and minor is the third. Major 3rd = happy, Minor 3rd = sad.'
+      },
+      {
+        heading: 'Building Triads',
+        content: 'How to build triads on any note:\n\n**Major Triad:**\n1. Start with the root note\n2. Add a major 3rd above (4 half steps)\n3. Add a perfect 5th above (7 half steps from root)\n\n**Minor Triad:**\n1. Start with the root note\n2. Add a minor 3rd above (3 half steps)\n3. Add a perfect 5th above (7 half steps from root)\n\nExample: Build a G major triad\n- Root: G\n- Major 3rd: B (G-G#-A-A#-B = 4 half steps)\n- Perfect 5th: D (G-G#-A-A#-B-C-C#-D = 7 half steps)\n- G major = G + B + D',
+        tip: 'Practice building triads on different roots. Start with C, then G, then F, then D. Build both major and minor triads.'
+      },
+      {
+        heading: 'Chord Progressions',
+        content: 'Chords don\'t exist in isolation - they move in progressions:\n\n**Common Progressions:**\n- I-IV-V-I (C-F-G-C in C major)\n- I-V-vi-IV (C-G-Am-F in C major)\n\nThese progressions create the harmonic structure of music.\n\nMost pop, rock, and classical music uses these basic progressions.',
+        example: 'Listen to your favorite songs and try to identify the chord progression. Most songs use I-IV-V or similar patterns!',
+        tip: 'Understanding chord progressions will help you understand how music works and even compose your own music!'
+      }
+    ],
+    keyPoints: [
+      'Chords = 3+ notes played together',
+      'Triad = root + third + fifth',
+      'Major triad = happy sound (root + major 3rd + perfect 5th)',
+      'Minor triad = sad sound (root + minor 3rd + perfect 5th)',
+      'Build triads by stacking thirds',
+      'Chord progressions create harmonic structure'
+    ],
+    practiceInstructions: 'Daily chord practice: 1) Build and play major triads on C, G, D, A, E (5 minutes), 2) Build and play minor triads on C, G, D, A, E (5 minutes), 3) Listen to songs and try to identify if chords are major or minor (5 minutes), 4) Practice common chord progressions (I-IV-V-I) in different keys (5 minutes). Total time: 20 minutes daily.'
+  },
+
+  'two-transposition': {
+    title: '🔄 Transposition: Moving Music to Different Keys',
+    introduction: 'Transposition means moving music from one key to another. This is essential for playing with different instruments and singers.',
+    sections: [
+      {
+        heading: 'What is Transposition?',
+        content: 'Transposition means moving all the notes in a piece of music up or down by the same interval.\n\n**Why transpose?**\n- To match a singer\'s vocal range\n- To play with instruments in different keys\n- To make music easier or harder to play\n- To create variety in performance\n\n**Example:** Transposing a song from C major to G major means moving every note up by a perfect 5th.',
+        example: 'Think of transposition like moving a picture up or down on a wall. The picture stays the same, just in a different position.',
+        tip: 'Transposition is a valuable skill. It will help you play with other musicians and adapt music to your needs.'
+      },
+      {
+        heading: 'How to Transpose',
+        content: 'Step-by-step transposition process:\n\n1. **Determine the interval:** How far are you moving? (e.g., up a major 2nd)\n2. **Identify the new key:** What key are you transposing to?\n3. **Write the new key signature:** Adjust sharps/flats for the new key\n4. **Move each note:** Transpose every note by the same interval\n5. **Adjust accidentals:** Make sure all accidentals are correct in the new key\n6. **Check your work:** Play through to make sure it sounds right',
+        example: 'Transposing "Twinkle Twinkle" from C to G:\n- Original: C-C-G-G-A-A-G\n- Transposed up a 5th: G-G-D-D-E-E-D',
+        tip: 'Start with simple melodies. Once you\'re comfortable, try transposing more complex pieces.'
+      },
+      {
+        heading: 'Transposing for Saxophone',
+        content: 'Saxophones are transposing instruments:\n\n**Alto Sax (Eb):**\n- Written C sounds as concert Eb\n- To play with concert pitch instruments, transpose down a major 6th (or up a minor 3rd)\n\n**Tenor Sax (Bb):**\n- Written C sounds as concert Bb\n- To play with concert pitch instruments, transpose down a major 2nd (or up a major 9th)\n\nThis is why saxophone music is written in a different key than what you hear!',
+        example: 'If a piano plays concert C, alto sax plays written A (down a major 6th) to sound the same pitch.',
+        tip: 'Understanding transposition will help you play with other instruments and understand why saxophone music looks different.'
+      },
+      {
+        heading: 'Transposition Practice',
+        content: 'Practice transposition exercises:\n\n**Exercise 1: Simple Melodies**\nTake "Mary Had a Little Lamb" in C major. Transpose it to G major (up a 5th).\n\n**Exercise 2: Scales**\nPlay a C major scale, then transpose it to G major.\n\n**Exercise 3: Chord Progressions**\nPlay I-IV-V-I in C major, then transpose to G major.\n\n**Exercise 4: Real Music**\nFind a simple piece in C major and transpose it to F major.',
+        tip: 'Transposition gets easier with practice. Start with simple melodies and gradually work up to more complex pieces.'
+      }
+    ],
+    keyPoints: [
+      'Transposition = moving music to a different key',
+      'Determine interval, identify new key, move each note',
+      'Saxophones are transposing instruments (alto in Eb, tenor in Bb)',
+      'Practice with simple melodies first',
+      'Transposition helps you play with other musicians',
+      'Start simple, gradually increase complexity'
+    ],
+    practiceInstructions: 'Daily transposition practice: 1) Transpose "Mary Had a Little Lamb" from C to G (5 minutes), 2) Play C major scale, then G major scale (5 minutes), 3) Transpose I-IV-V-I progression from C to G (5 minutes), 4) Find a simple piece and transpose it to a different key (5 minutes). Total time: 20 minutes daily. In 2 weeks, you\'ll be comfortable transposing simple melodies!'
+  },
+
+  // Additional clarinet lessons
+  'clarinet-maintenance': {
+    title: '🧹 Clarinet Care: Assembly and Daily Maintenance',
+    introduction: 'Proper care of your clarinet is essential for good sound and instrument longevity. Let\'s learn how to assemble, disassemble, and maintain your clarinet.',
+    sections: [
+      {
+        heading: 'Clarinet Parts',
+        content: 'The clarinet has 5 main parts:\n\n1. **Mouthpiece** - Where you blow, has the reed and ligature\n2. **Barrel** - Short piece connecting mouthpiece to upper joint\n3. **Upper Joint** - Top section with left hand keys\n4. **Lower Joint** - Bottom section with right hand keys\n5. **Bell** - Flared end where sound comes out\n\nEach part must be handled carefully and assembled in the correct order.',
+        example: 'Think of the clarinet like a puzzle - each piece fits together in a specific order. Take your time and be gentle!',
+        tip: 'Always hold the clarinet by the joints, never by the keys. The keys are delicate and can bend easily.'
+      },
+      {
+        heading: 'Assembly Steps',
+        content: 'How to assemble your clarinet:\n\n1. **Grease the corks** - Apply cork grease to all corks (thin layer)\n2. **Attach bell to lower joint** - Twist gently until aligned\n3. **Attach lower joint to upper joint** - Twist gently until aligned\n4. **Attach barrel to upper joint** - Twist gently until aligned\n5. **Attach mouthpiece to barrel** - Twist gently until aligned\n6. **Attach reed** - Wet reed, place on mouthpiece, secure with ligature\n\nAlways assemble in this order to avoid damaging the instrument.',
+        tip: 'Never force any parts together. If something doesn\'t fit easily, check the alignment and try again.'
+      },
+      {
+        heading: 'Daily Care Routine',
+        content: 'After every practice session:\n\n1. **Swab the clarinet** - Use a cleaning swab to remove moisture\n2. **Wipe the mouthpiece** - Use a soft cloth to clean the mouthpiece\n3. **Check the reed** - Store it in a reed guard to dry properly\n4. **Disassemble carefully** - Reverse the assembly order\n5. **Case the clarinet** - Place it carefully in the case with all parts secure\n\nThis takes only 2-3 minutes but extends the life of your instrument significantly.',
+        example: 'Think of it like brushing your teeth - you do it every day to keep things clean and working properly.',
+        tip: 'Never leave your clarinet assembled when not playing. Moisture buildup can damage pads and cause mold.'
+      },
+      {
+        heading: 'Common Maintenance Problems',
+        content: 'Watch out for these issues:\n\n**Sticky keys:**\n- Cause: Moisture or dirt buildup\n- Fix: Clean keys with a soft cloth, use key oil sparingly\n\n**Squeaky sounds:**\n- Cause: Reed problem or air leak\n- Fix: Check reed condition, check for air leaks\n\n**Difficulty playing low notes:**\n- Cause: Pad not sealing properly\n- Fix: Have a technician check the pads\n\n**Cracked wood (wooden clarinets):**\n- Cause: Temperature changes or dryness\n- Fix: Keep clarinet in stable environment, oil bore regularly',
+        tip: 'If you notice any problems, don\'t try to fix them yourself. Take your clarinet to a qualified repair technician.'
+      }
+    ],
+    keyPoints: [
+      '5 main parts: mouthpiece, barrel, upper joint, lower joint, bell',
+      'Always assemble in correct order with cork grease',
+      'Swab after every practice session',
+      'Store reed in reed guard to dry',
+      'Never leave assembled when not playing',
+      'Take to technician for serious problems'
+    ],
+    practiceInstructions: 'Practice assembly: 1) Disassemble your clarinet completely, 2) Apply cork grease to all corks, 3) Assemble in correct order (bell → lower joint → upper joint → barrel → mouthpiece), 4) Time yourself - you should be able to do it in under 2 minutes, 5) After practice, do the complete care routine (swab, wipe mouthpiece, store reed, disassemble, case). Do this every day!'
+  },
+
+  'clarinet-posture': {
+    title: '🧍 Clarinet Posture: Standing and Sitting Correctly',
+    introduction: 'Proper posture is essential for good playing. Let\'s learn how to stand and sit correctly while playing clarinet.',
+    sections: [
+      {
+        heading: 'Standing Position',
+        content: 'How to stand while playing clarinet:\n\n1. **Feet:** Shoulder-width apart, weight evenly distributed\n2. **Back:** Straight but relaxed (not stiff)\n3. **Shoulders:** Down and back (not hunched)\n4. **Head:** Up, looking forward (not down at clarinet)\n5. **Clarinet angle:** 30-45 degrees from your body\n\nGood posture helps with breathing and prevents tension.',
+        example: 'Imagine a string pulling you up from the top of your head. You should feel tall and relaxed at the same time.',
+        tip: 'Practice standing in good posture without your clarinet first. Then add the clarinet and check your posture in a mirror.'
+      },
+      {
+        heading: 'Sitting Position',
+        content: 'How to sit while playing clarinet:\n\n1. **Chair:** Sit on the front half (don\'t lean back)\n2. **Feet:** Flat on the floor, shoulder-width apart\n3. **Back:** Straight but relaxed\n4. **Shoulders:** Down and back\n5. **Clarinet angle:** Same as standing (30-45 degrees)\n\nSitting posture should match standing posture.',
+        tip: 'Don\'t cross your legs while playing. Keep both feet flat on the floor for stability.'
+      },
+      {
+        heading: 'Holding the Clarinet',
+        content: 'How to hold the clarinet correctly:\n\n1. **Left hand on top:** Thumb on thumb rest, fingers curved on keys\n2. **Right hand on bottom:** Thumb under thumb rest, fingers curved on keys\n3. **Clarinet angle:** 30-45 degrees from your body\n4. **Mouthpiece position:** Comes to your mouth naturally (don\'t bend your neck)\n5. **Weight:** Mostly supported by your thumbs, not your hands',
+        example: 'Think of holding a baby bird - firm enough to support it, gentle enough not to hurt it.',
+        tip: 'The clarinet should come to your mouth, not your mouth going to the clarinet. Adjust the angle if needed.'
+      },
+      {
+        heading: 'Common Posture Problems',
+        content: 'Watch out for these mistakes:\n\n**Hunching shoulders:**\n- Causes tension and restricts breathing\n- Fix: Roll shoulders back and down\n\n**Bending neck down:**\n- Causes neck pain and poor tone\n- Fix: Adjust clarinet angle or use a neck strap\n\n**Gripping too tightly:**\n- Causes hand fatigue and slows you down\n- Fix: Relax your hands, let thumbs support the weight\n\n**Clarinet too vertical:**\n- Causes embouchure problems\n- Fix: Angle clarinet 30-45 degrees from body',
+        tip: 'Check yourself in a mirror while playing. Are your shoulders relaxed? Is your back straight? Is the clarinet at the right angle? Fix what you see.'
+      }
+    ],
+    keyPoints: [
+      'Stand or sit tall with relaxed shoulders',
+      'Feet shoulder-width apart, weight even',
+      'Clarinet at 30-45 degree angle',
+      'Left hand on top, right hand on bottom',
+      'Thumbs support the weight, hands relaxed',
+      'Check posture in a mirror regularly'
+    ],
+    practiceInstructions: 'Practice posture: 1) Stand in good posture for 2 minutes without clarinet, 2) Add clarinet and check angle (30-45 degrees), 3) Hold for 5 minutes, checking posture in mirror, 4) Practice sitting posture for 5 minutes, 5) Play a simple piece while maintaining good posture. Do this every day until good posture becomes automatic!'
+  },
+
+  'clarinet-tuning': {
+    title: '🎯 Clarinet Tuning: Playing in Tune',
+    introduction: 'Tuning is essential for playing with others. Let\'s learn how to tune your clarinet and play in tune.',
+    sections: [
+      {
+        heading: 'What is Tuning?',
+        content: 'Tuning means adjusting your clarinet so it plays at the correct pitch.\n\nConcert Bb is the standard tuning note for band instruments.\n\nFor clarinet (Bb instrument):\n- Concert Bb = Written C\n- You play C and match it to the tuning note\n\nThe clarinet barrel can be pushed in or pulled out to adjust the overall tuning.',
+        example: 'Think of tuning like matching your voice to a piano. You adjust until you sound the same.',
+        tip: 'Always tune with a tuning note from a tuner, piano, or the band director.'
+      },
+      {
+        heading: 'How to Adjust Your Clarinet',
+        content: 'To tune your clarinet, you adjust the barrel position:\n\n**Push barrel IN:**\n- Makes the clarinet shorter\n- Raises the pitch (if you\'re flat)\n\n**Pull barrel OUT:**\n- Makes the clarinet longer\n- Lowers the pitch (if you\'re sharp)\n\nSmall adjustments make big differences!\n\nStart by playing your tuning note (written C) and check with a tuner.',
+        tip: 'Make tiny adjustments - 1-2mm at a time. Then play the note again and check the tuner.'
+      },
+      {
+        heading: 'Using a Tuner',
+        content: 'A tuner shows you if you\'re sharp, flat, or in tune:\n\n**Green/Center:** You\'re in tune! ✓\n**Red/Left:** You\'re flat (too low) - push barrel in\n**Red/Right:** You\'re sharp (too high) - pull barrel out\n\nMost tuners also show cents:\n- 0 cents = perfectly in tune\n- -50 to +50 cents = acceptable range\n- Beyond ±50 cents = needs adjustment',
+        example: 'If your tuner shows -20 cents, you\'re slightly flat. Push the barrel in a tiny bit and try again.',
+        tip: 'Tune every day before practice! Your clarinet changes with temperature and humidity.'
+      },
+      {
+        heading: 'Tuning Different Notes',
+        content: 'After tuning your main note (written C), check other notes:\n\n**Low notes** (E, F, G):\n- Often need more air support\n- May tend to be flat\n\n**Middle notes** (A, B, C, D):\n- Usually most in tune\n- Good reference points\n\n**High notes** (E, F, G and above):\n- Often tend to be sharp\n- Need relaxed embouchure\n\nPlay a scale and check each note with your tuner.',
+        tip: 'Every clarinet is different. Learn which notes on YOUR clarinet tend to be sharp or flat, and adjust your embouchure accordingly.'
+      }
+    ],
+    keyPoints: [
+      'Tune to concert Bb (written C for clarinet)',
+      'Push barrel in to raise pitch (if flat)',
+      'Pull barrel out to lower pitch (if sharp)',
+      'Make tiny adjustments (1-2mm at a time)',
+      'Check multiple notes, not just the tuning note',
+      'Tune every day before practice'
+    ],
+    practiceInstructions: 'Daily tuning routine: 1) Turn on tuner, 2) Play tuning note (written C) for 4 beats, 3) Check tuner - adjust barrel if needed, 4) Play low E, F, G and check, 5) Play middle A, B, C, D and check, 6) Play high E, F, G and check, 7) Adjust embouchure for notes that are consistently sharp or flat. Do this for 5 minutes before every practice session.'
+  },
+
+  'clarinet-song-western': {
+    title: '🎵 Song: Western Portrait - Step by Step',
+    introduction: 'Welcome to your first complete song! "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. Let\'s make music together!',
+    sections: [
+      {
+        heading: '🎼 Song Overview',
+        content: '**"Western Portrait" Details:**\n- Level: BASIC\n- Key: Bb Major (2 flats: Bb, Eb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=80-100)\n- Difficulty: Easy - perfect for beginners!\n\n**What You\'ll Learn:**\n- Playing in Bb Major\n- Smooth phrase transitions\n- Musical expression\n- Rhythm and timing\n\n**Song Structure:**\n- Phrase 1: Bb - C - D - Eb (ascending)\n- Phrase 2: F - Eb - D - C (descending)\n- Phrase 3: Bb - C - D - Eb (repeat)\n- Phrase 4: F - Eb - D - C (repeat)\n- Ending: Bb (hold)',
+        example: '🎧 LISTEN FIRST: Before we start, listen to the reference recording 2-3 times. Tap your foot to the beat. Feel the rhythm. Imagine yourself playing it. This is your goal!',
+        tip: '💡 PRO TIP: Great musicians listen before they play. Spend time really hearing the song in your head before you pick up your clarinet.'
+      },
+      {
+        heading: '🎯 Step 1: Learn the First Phrase',
+        content: '**Phrase 1: The Opening (4 beats)**\n\nNotes: Bb - C - D - Eb\nRhythm: Quarter - Quarter - Quarter - Quarter\nCounting: "1 - 2 - 3 - 4"\n\n**Clarinet Fingerings:**\n- Bb: Left thumb + Left 1-2-3\n- C: Left thumb + Left 1-2\n- D: Left thumb + Left 1\n- Eb: Left thumb only\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (legato)\n3. Use steady air support throughout\n4. Keep your embouchure firm but relaxed\n5. Play the phrase 5 times in a row',
+        example: '🎮 SLOW-MOTION PRACTICE: Play the phrase at half speed first. Bb... C... D... Eb... Make sure each note is clear and in tune. Then gradually speed up to normal tempo.',
+        tip: '🎯 FOCUS ON TRANSITIONS: The tricky part is moving smoothly between notes. Practice just the transitions: Bb→C, C→D, D→Eb. Make them seamless!'
+      },
+      {
+        heading: '🎯 Step 2: Learn the Second Phrase',
+        content: '**Phrase 2: The Response (4 beats)**\n\nNotes: F - Eb - D - C\nRhythm: Quarter - Quarter - Quarter - Quarter\nCounting: "1 - 2 - 3 - 4"\n\n**Clarinet Fingerings:**\n- F: Right 1 only\n- Eb: Left thumb only\n- D: Left thumb + Left 1\n- C: Left thumb + Left 1-2\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (descending pattern)\n3. Use steady air support throughout\n4. Keep your embouchure consistent\n5. Play the phrase 5 times in a row',
+        example: '🎮 MIRROR PRACTICE: Phrase 2 is the "mirror" of Phrase 1. If Phrase 1 goes up (Bb-C-D-Eb), Phrase 2 goes down (F-Eb-D-C). Practice them back-to-back to feel the symmetry!',
+        tip: '🎯 DESCENDING CHALLENGE: Going down is often harder than going up because the fingerings change more. Take it slow and focus on smooth transitions!'
+      },
+      {
+        heading: '🎯 Step 3: Connect the Phrases',
+        content: '**Playing Phrases 1 & 2 Together:**\n\nFull sequence: Bb-C-D-Eb | F-Eb-D-C\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Practice Method:**\n1. Play Phrase 1 slowly\n2. Take a breath (but keep the rhythm going!)\n3. Play Phrase 2 slowly\n4. Connect them smoothly\n5. Repeat 5 times\n\n**Breathing Strategy:**\n- Breathe at the bar line (between phrases)\n- Quick, deep breath from your diaphragm\n- Don\'t rush - keep the tempo steady\n- Think "breath on 4, play on 1"',
+        example: '🎮 THE CONVERSATION: Think of the two phrases as a conversation. Phrase 1 asks a question (goes up), Phrase 2 answers it (goes down). Make them sound like they belong together!',
+        tip: '🎯 BREATHING IS KEY: The hardest part is breathing without breaking the rhythm. Practice breathing at the bar line until it feels natural. Count "1-2-3-4-BREATHE-1-2-3-4"!'
+      },
+      {
+        heading: '🎯 Step 4: Add Repetition',
+        content: '**Playing the Full Song (Phrases 1-4):**\n\nStructure:\n- Phrase 1: Bb-C-D-Eb\n- Phrase 2: F-Eb-D-C\n- Phrase 3: Bb-C-D-Eb (repeat of Phrase 1)\n- Phrase 4: F-Eb-D-C (repeat of Phrase 2)\n- Ending: Bb (hold for 2 beats)\n\n**Practice Method:**\n1. Play the entire song slowly\n2. Focus on smooth transitions between phrases\n3. Keep steady rhythm throughout\n4. Breathe at the bar lines\n5. Hold the final Bb for 2 beats\n\n**Musical Expression:**\n- Start at mezzo-forte (mf) volume\n- Slight crescendo in Phrase 3 (build excitement)\n- Decrescendo in Phrase 4 (wind down)\n- Final Bb: full, rich tone',
+        example: '🎮 THE STORY ARC: The song tells a story:\n- Phrase 1: Introduction (here we go!)\n- Phrase 2: Development (going down)\n- Phrase 3: Climax (back up, more energy!)\n- Phrase 4: Resolution (coming back down)\n- Ending: Conclusion (final note, fade out)\n\nPlay it like you\'re telling a story!',
+        tip: '🎯 RECORD YOURSELF: Use the recording feature to record your playing. Listen back and compare to the reference. What can you improve? This is how professional musicians practice!'
+      },
+      {
+        heading: '🎯 Step 5: Performance Ready!',
+        content: '**Final Polish:**\n\n**Tempo Check:**\n- Target: ♩=80-100 BPM\n- Use a metronome to stay steady\n- Start slow (♩=60), gradually increase\n- Don\'t rush - steady is better than fast!\n\n**Tone Quality:**\n- Full, rich sound throughout\n- Consistent embouchure\n- Steady air support\n- No squeaks or airy sounds\n\n**Rhythm Accuracy:**\n- All quarter notes equal length\n- Steady pulse (like a clock)\n- No rushing or dragging\n- Smooth phrase transitions\n\n**Performance Tips:**\n- Stand or sit with good posture\n- Take a deep breath before starting\n- Play with confidence\n- Enjoy the music!',
+        example: '🎉 CONGRATULATIONS! You\'ve learned "Western Portrait" from start to finish! This is a real achievement. You can now play a complete song with proper technique, rhythm, and expression!',
+        tip: '🎯 KEEP PRACTICING: Play the song every day for a week. Each time, focus on something different: tone, rhythm, expression, speed. You\'ll keep improving!'
+      }
+    ],
+    keyPoints: [
+      '🎼 Song: "Western Portrait" in Bb Major, 4/4 time',
+      '🎯 Learn phrase by phrase, then connect them',
+      '💨 Breathe at bar lines, keep rhythm steady',
+      '🎤 Use microphone to check pitch and compare to reference',
+      '🎵 Add musical expression (crescendo, decrescendo)',
+      '🎉 Practice daily until performance-ready'
+    ],
+    practiceInstructions: '🎮 SONG MASTERY CHALLENGE:\n\n**Day 1: Phrase 1**\n- Learn Bb-C-D-Eb\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 2: Phrase 2**\n- Learn F-Eb-D-C\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 3: Connect Phrases**\n- Play Phrase 1 + Phrase 2\n- Practice breathing at bar line\n- Check with microphone\n- Goal: Play smoothly 5 times in a row\n\n**Day 4: Full Song**\n- Play all 4 phrases + ending\n- Focus on smooth transitions\n- Check with microphone\n- Goal: Play the full song 3 times\n\n**Day 5: Performance**\n- Add musical expression\n- Record your performance\n- Compare to reference\n- Celebrate your achievement!\n\n🏆 SONG MASTER BADGE: When you can play "Western Portrait" from memory with good tone, steady rhythm, and musical expression, you earn your first Song Master badge! 🎵✨'
+  },
+
+  'clarinet-song-ode': {
+    title: '🎵 Song: Ode to Joy - Step by Step',
+    introduction: 'Get ready to play one of the most famous melodies ever written! "Ode to Joy" by Beethoven is a timeless classic that everyone will recognize. Let\'s learn it step by step!',
+    sections: [
+      {
+        heading: '🎼 Song Overview',
+        content: '**"Ode to Joy" Details:**\n- Composer: Ludwig van Beethoven\n- Level: BASIC\n- Key: F Major (1 flat: Bb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=100-120)\n- Difficulty: Easy - great for beginners!\n\n**What You\'ll Learn:**\n- Playing in F Major\n- Smooth legato phrasing\n- Musical expression and dynamics\n- Classic melody recognition\n\n**Song Structure:**\n- Phrase 1: F - F - G - A | A - G - F - E\n- Phrase 2: D - D - E - F | F (hold) - E - E (hold)\n- Phrase 3: F - F - G - A | A - G - F - E\n- Phrase 4: D - D - E - F | E (hold) - D - D (hold)\n\n**Fun Fact:** This melody is the official anthem of the European Union and is used in countless movies, TV shows, and celebrations worldwide!',
+        example: '🎧 LISTEN FIRST: Listen to the reference recording 3 times. This melody is so famous you might already know it! Tap along to the beat. Sing it in your head. Feel the joy in the music!',
+        tip: '💡 PRO TIP: "Ode to Joy" is all about expressing joy and triumph. Play it with energy and confidence! Let the music shine through your playing.'
+      },
+      {
+        heading: '🎯 Step 1: Learn the First Phrase',
+        content: '**Phrase 1: The Famous Opening (8 beats)**\n\nNotes: F - F - G - A | A - G - F - E\nRhythm: All quarter notes\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Clarinet Fingerings:**\n- F: Right 1 only\n- G: Left thumb + Left 1-2-3\n- A: Left thumb + Left 1-2\n- E: Right 1-2 only\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Connect the notes smoothly (legato)\n3. Use steady air support throughout\n4. Keep your embouchure firm but relaxed\n5. Play the phrase 5 times in a row',
+        example: '🎮 PATTERN RECOGNITION: Notice the pattern:\n- First half: F-F-G-A (stay, stay, up, up)\n- Second half: A-G-F-E (down, down, down, down)\n\nIt\'s like climbing up a hill, then sliding back down!',
+        tip: '🎯 FINGER TRANSITIONS: The tricky part is moving between hands. Practice just the transitions: F→G (right to left), A→G (left to left), F→E (left to right). Make them smooth!'
+      },
+      {
+        heading: '🎯 Step 2: Learn the Second Phrase',
+        content: '**Phrase 2: The Continuation (8 beats)**\n\nNotes: D - D - E - F | F (hold) - E - E (hold)\nRhythm: Quarter - Quarter - Quarter - Quarter | Half - Quarter - Half\nCounting: "1-2-3-4 | 1-2-3-4"\n\n**Clarinet Fingerings:**\n- D: Right 1-2-3 only\n- E: Right 1-2 only\n- F: Right 1 only\n\n**Practice Method:**\n1. Play each note slowly, checking your fingering\n2. Notice the longer notes (half notes)\n3. Hold the long notes for 2 beats each\n4. Use steady air support throughout\n5. Play the phrase 5 times in a row',
+        example: '🎮 RHYTHM PATTERN: Notice the rhythm change:\n- First half: 4 quarter notes (short-short-short-short)\n- Second half: half-quarter-half (long-short-long)\n\nIt\'s like: "walk-walk-walk-walk | RUN-walk-RUN"',
+        tip: '🎯 COUNTING IS KEY: The second phrase has longer notes, so counting is crucial. Count out loud: "1-2-3-4 | 1-and-2-and-3-and-4-and" to feel the rhythm!'
+      },
+      {
+        heading: '🎯 Step 3: Connect Phrases 1 & 2',
+        content: '**Playing Phrases 1 & 2 Together:**\n\nFull sequence:\n- Phrase 1: F-F-G-A | A-G-F-E\n- Phrase 2: D-D-E-F | F(hold)-E-E(hold)\n\nCounting: "1-2-3-4 | 1-2-3-4 | 1-2-3-4 | 1-2-3-4"\n\n**Practice Method:**\n1. Play Phrase 1 slowly\n2. Take a quick breath (keep the rhythm!)\n3. Play Phrase 2 slowly\n4. Connect them smoothly\n5. Repeat 5 times\n\n**Breathing Strategy:**\n- Breathe between phrases (after Phrase 1)\n- Quick, deep breath from diaphragm\n- Don\'t rush - keep the tempo steady\n- Think "play-play-play-play-BREATHE-play-play-play-play"',
+        example: '🎮 THE CONVERSATION: Think of the two phrases as a conversation:\n- Phrase 1: "Here\'s the famous melody!"\n- Phrase 2: "And here\'s how it continues..."\n\nMake them flow together naturally!',
+        tip: '🎯 BREATHING PRACTICE: The hardest part is breathing without breaking the rhythm. Practice breathing at the phrase break until it feels natural. Count "1-2-3-4-BREATHE-1-2-3-4"!'
+      },
+      {
+        heading: '🎯 Step 4: Learn the Complete Song',
+        content: '**Playing the Full Song (All 4 Phrases):**\n\nStructure:\n- Phrase 1: F-F-G-A | A-G-F-E\n- Phrase 2: D-D-E-F | F(hold)-E-E(hold)\n- Phrase 3: F-F-G-A | A-G-F-E (repeat of Phrase 1)\n- Phrase 4: D-D-E-F | E(hold)-D-D(hold)\n\n**Practice Method:**\n1. Play the entire song slowly\n2. Focus on smooth transitions between phrases\n3. Keep steady rhythm throughout\n4. Breathe at the phrase breaks\n5. Hold the final notes properly\n\n**Musical Expression:**\n- Start at mezzo-forte (mf) volume\n- Slight crescendo through Phrase 3 (build excitement)\n- Decrescendo in Phrase 4 (wind down)\n- Final notes: full, rich tone, then fade',
+        example: '🎮 THE STORY ARC: The song tells a story:\n- Phrase 1: "Joy! Joy! Rising up!"\n- Phrase 2: "Continuing, holding strong..."\n- Phrase 3: "Joy returns! Rising again!"\n- Phrase 4: "Fading, resolving, complete."\n\nPlay it like you\'re telling the story of joy!',
+        tip: '🎯 RECORD YOURSELF: Use the recording feature to record your playing. Listen back and compare to the reference. What can you improve? This is how professional musicians practice!'
+      },
+      {
+        heading: '🎯 Step 5: Performance Ready!',
+        content: '**Final Polish:**\n\n**Tempo Check:**\n- Target: ♩=100-120 BPM\n- Use a metronome to stay steady\n- Start slow (♩=80), gradually increase\n- Don\'t rush - steady is better than fast!\n\n**Tone Quality:**\n- Full, rich sound throughout\n- Consistent embouchure\n- Steady air support\n- No squeaks or airy sounds\n\n**Rhythm Accuracy:**\n- Quarter notes: 1 beat each\n- Half notes: 2 beats each\n- Steady pulse (like a clock)\n- No rushing or dragging\n\n**Performance Tips:**\n- Stand or sit with good posture\n- Take a deep breath before starting\n- Play with confidence and joy!\n- Let the music shine through',
+        example: '🎉 CONGRATULATIONS! You\'ve learned "Ode to Joy" - a melody that has brought joy to millions of people for over 200 years! This is a incredible achievement. You\'re now part of musical history!',
+        tip: '🎯 SHARE YOUR MUSIC: Play "Ode to Joy" for your family and friends. They\'ll recognize it immediately and be amazed that YOU can play it! Music is meant to be shared!'
+      }
+    ],
+    keyPoints: [
+      '🎼 Song: "Ode to Joy" by Beethoven in F Major, 4/4 time',
+      '🎯 Learn phrase by phrase, then connect them',
+      '💨 Breathe between phrases, keep rhythm steady',
+      '🎤 Use microphone to check pitch and compare to reference',
+      '🎵 Add musical expression (crescendo, decrescendo)',
+      '🎉 Practice daily until performance-ready'
+    ],
+    practiceInstructions: '🎮 SONG MASTERY CHALLENGE:\n\n**Day 1: Phrase 1**\n- Learn F-F-G-A | A-G-F-E\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 2: Phrase 2**\n- Learn D-D-E-F | F(hold)-E-E(hold)\n- Practice 10 times slowly\n- Check with microphone\n- Goal: Play smoothly 3 times in a row\n\n**Day 3: Connect Phrases**\n- Play Phrase 1 + Phrase 2\n- Practice breathing at phrase break\n- Check with microphone\n- Goal: Play smoothly 5 times in a row\n\n**Day 4: Full Song**\n- Play all 4 phrases\n- Focus on smooth transitions\n- Check with microphone\n- Goal: Play the full song 3 times\n\n**Day 5: Performance**\n- Add musical expression\n- Record your performance\n- Compare to reference\n- Celebrate your achievement!\n\n🏆 SONG MASTER BADGE: When you can play "Ode to Joy" from memory with good tone, steady rhythm, and musical expression, you earn your Song Master badge! You can now play one of the most famous melodies in the world! 🎵✨'
   }
 };
 
