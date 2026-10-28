@@ -231,6 +231,8 @@ export const getSongsForLevel = (level: CadetLevel, instrument: string = 'alto-s
   
   if (instrument === 'clarinet') {
     songs = CLARINET_PREPARED_MUSIC.filter(s => s.level === level);
+  } else if (instrument === 'bass-clarinet') {
+    songs = BASS_CLARINET_PREPARED_MUSIC.filter(s => s.level === level);
   } else {
     songs = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === level);
   }
@@ -355,6 +357,19 @@ export const BASIC_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'BAS
 export const LEVEL_A_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'A');
 export const LEVEL_B_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'B');
 
+// Bass Clarinet Prepared Music
+// Bass clarinet shares repertoire with regular clarinet but in a lower register
+// NOTE: This should be verified against official CCO standards
+export const BASS_CLARINET_PREPARED_MUSIC: Song[] = [
+  // BASIC - Same as clarinet but played in lower register
+  { id: 'bcl-basic-a1', title: 'Hot Cross Buns', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'bcl-basic-a2', title: 'Mary Had a Little Lamb', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'bcl-basic-a3', title: 'London Bridge', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'bcl-basic-b1', title: 'Ode to Joy (simplified)', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'bcl-basic-b2', title: 'When the Saints Go Marching In', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  { id: 'bcl-basic-b3', title: 'Twinkle Twinkle Little Star', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+];
+
 // Legacy lesson structure for compatibility
 export interface Lesson {
   id: string;
@@ -422,6 +437,8 @@ export const CURRICULUM: { id: string; title: string; level: number; lessons: Le
       { id: 'one-sight', title: 'Sight Reading Intro', type: 'theory', emoji: '👁️', topic: 'PO 456', xp: 15, description: '16 bars with assistance', interactive: true, level: 'ONE' as CadetLevel, po: 456 },
       { id: 'one-drill', title: 'Drill Movements', type: 'playing', emoji: '🎖️', topic: 'PO 459', xp: 10, description: 'Marching basics', interactive: false, level: 'ONE' as CadetLevel, po: 459 },
       { id: 'audio-pattern', title: 'Audio Practice: Arpeggio Pattern', type: 'audio', emoji: '🎤', topic: 'PO 451', xp: 35, description: 'Practice playing arpeggio patterns with your instrument', interactive: true, level: 'ONE' as CadetLevel, po: 451, requiresMicrophone: true },
+      { id: 'song-abendlied', title: '🎵 Song: Abendlied', type: 'playing', emoji: '🎼', topic: 'PO 454', xp: 50, description: 'Learn "Abendlied" step by step with microphone guidance', interactive: true, level: 'ONE' as CadetLevel, po: 454, requiresMicrophone: true },
+      { id: 'song-gavotte', title: '🎵 Song: Gavotte', type: 'playing', emoji: '🎼', topic: 'PO 454', xp: 50, description: 'Learn "Gavotte" step by step with microphone guidance', interactive: true, level: 'ONE' as CadetLevel, po: 454, requiresMicrophone: true },
       { id: 'one-exam', title: 'Level One Assessment', type: 'exam', emoji: '📝', topic: 'Exam', xp: 75, description: 'Complete Level ONE', interactive: false, level: 'ONE' as CadetLevel },
     ],
   },
