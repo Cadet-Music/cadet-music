@@ -4,6 +4,7 @@ import { useStore } from '../store';
 import { getLessonById } from '../data';
 import { CONCEPTS, Concept } from '../competency';
 import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
+import { getSongLessonById, SongLesson } from '../completeSongLessons';
 import confetti from 'canvas-confetti';
 import SaxophoneAssembly from './SaxophoneAssembly';
 import AudioReferencePlayer from './AudioReferencePlayer';
@@ -576,8 +577,13 @@ export default function LessonView() {
   const [noSax, setNoSax] = useState(false);
   const [exerciseIdx, setExerciseIdx] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [songPhaseIdx, setSongPhaseIdx] = useState(0);
 
   const lesson = currentLessonId ? getLessonById(currentLessonId) : null;
+  // Check if this is a song lesson
+  const isSongLesson = currentLessonId?.startsWith('song-') || false;
+  const songLesson = isSongLesson && currentLessonId ? getSongLessonById(currentLessonId) : null;
+  
   // Check if this is a clarinet lesson and load appropriate content
   const isClarinetLesson = currentLessonId?.startsWith('clarinet-');
   const lessonContentData = currentLessonId 
@@ -728,7 +734,165 @@ export default function LessonView() {
             </motion.div>
           )}
 
-          {step === 'learn' && lessonContentData && (
+          {step === 'learn' && isSongLesson && songLesson && (
+            <motion.div
+              key="song-learn"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              className="py-6"
+            >
+              <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-4">
+                {songLesson.title}
+              </h2>
+              
+              {/* Song Overview */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4 mb-6"
+              >
+                <div className="text-sm text-[#1a2332] dark:text-white space-y-2">
+                  <p><strong>Key:</strong> {songLesson.keySignature}</p>
+                  <p><strong>Time:</strong> {songLesson.timeSignature}</p>
+                  <p><strong>Tempo:</strong> {songLesson.tempo}</p>
+                  <p><strong>Difficulty:</strong> {songLesson.difficulty}</p>
+                </div>
+              </motion.div>
+              
+              {/* Phase Progress */}
+              <div className="flex items-center justify-center gap-2 mb-6">
+                {songLesson.phases.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      idx < songPhaseIdx ? 'bg-[#3a8a5c]' :
+                      idx === songPhaseIdx ? 'bg-[#c9a84c]' :
+                      'bg-[#e2e4e8] dark:bg-[#2a3545]'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              {/* Current Phase */}
+              {songLesson.phases[songPhaseIdx] && (
+                <motion.div
+                  key={songPhaseIdx}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="mb-6"
+                >
+                  <h3 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">
+                    {songLesson.phases[songPhaseIdx].name}
+                  </h3>
+                  
+                  <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-4">
+                    <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-3">
+                      {songLesson.phases[songPhaseIdx].description}
+                    </p>
+                    
+                    {songLesson.phases[songPhaseIdx].measures && (
+                      <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-2">
+                        <strong>Measures:</strong> {songLesson.phases[songPhaseIdx].measures}
+                      </p>
+                    )}
+                    
+                    {songLesson.phases[songPhaseIdx].notes && (
+                      <div className="mb-3">
+                        <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] mb-1">Notes:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {songLesson.phases[songPhaseIdx].notes!.map((note, idx) => (
+                            <span key={idx} className="px-2 py-1 bg-[#c9a84c]/10 text-[#c9a84c] rounded text-xs font-semibold">
+                              {note}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {songLesson.phases[songPhaseIdx].fingerings && (
+                      <div className="mb-3">
+                        <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] mb-1">Fingerings:</p>
+                        <ul className="space-y-1">
+                          {songLesson.phases[songPhaseIdx].fingerings!.map((fingering, idx) => (
+                            <li key={idx} className="text-xs text-[#1a2332] dark:text-white">
+                              • {fingering}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Practice Tips */}
+                  <div className="bg-[#c9a84c]/5 border border-[#c9a84c]/30 dark:bg-[#c9a84c]/10 rounded-lg p-4 mb-4">
+                    <p className="text-xs font-semibold text-[#1a2332] dark:text-white mb-2">Practice Tips:</p>
+                    <ul className="space-y-1">
+                      {songLesson.phases[songPhaseIdx].practiceTips.map((tip, idx) => (
+                        <li key={idx} className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">
+                          • {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Audio Reference */}
+                  {songLesson.phases[songPhaseIdx].audioReference && (
+                    <div className="mb-4">
+                      <AudioReferencePlayer
+                        audioUrl={songLesson.phases[songPhaseIdx].audioReference!.url}
+                        title={songLesson.phases[songPhaseIdx].audioReference!.description}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Microphone Exercise */}
+                  {songLesson.phases[songPhaseIdx].microphoneExercise && (
+                    <div className="mb-4">
+                      <GuidedMicrophonePractice
+                        targetNotes={songLesson.phases[songPhaseIdx].microphoneExercise!.targetNotes}
+                        exerciseName={songLesson.phases[songPhaseIdx].microphoneExercise!.exerciseName}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Navigation Buttons */}
+                  <div className="flex gap-3">
+                    {songPhaseIdx > 0 && (
+                      <button
+                        onClick={() => setSongPhaseIdx(songPhaseIdx - 1)}
+                        className="btn-secondary flex-1"
+                      >
+                        ← Previous Phase
+                      </button>
+                    )}
+                    {songPhaseIdx < songLesson.phases.length - 1 ? (
+                      <button
+                        onClick={() => setSongPhaseIdx(songPhaseIdx + 1)}
+                        className="btn-accent flex-1"
+                      >
+                        Next Phase →
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          completeLesson(lesson.id, lesson.xp);
+                          setStep('complete');
+                          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                        }}
+                        className="btn-accent flex-1"
+                      >
+                        Complete Song ✓
+                      </button>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+
+          {step === 'learn' && !isSongLesson && lessonContentData && (
             <motion.div
               key="learn"
               initial={{ opacity: 0, y: 12 }}

@@ -38,18 +38,39 @@ export default function Songs() {
   if (!user) return null;
 
   const songs = getSongsForLevel(user.instrumentLevel, user.instrumentId);
-  const requiredSongs = 2; // 1 from List A + 1 from List B
+  const listA = songs.listA;
+  const listB = songs.listB;
 
-  const toggleSong = (songId: string) => {
+  const toggleSong = (songId: string, listType: 'A' | 'B') => {
     const current = user.activeSongs;
+    
+    // Check if this song is already selected
     if (current.includes(songId)) {
       setActiveSongs(current.filter(s => s !== songId));
-    } else if (current.length < requiredSongs) {
+      return;
+    }
+    
+    // Get the other selected song from the opposite list
+    const otherListSongs = listType === 'A' ? listB : listA;
+    const selectedFromOtherList = current.find(s => 
+      otherListSongs.some(song => song.id === s)
+    );
+    
+    // If we already have a song from the other list, replace the current list's song
+    if (selectedFromOtherList) {
+      const currentListSongs = listType === 'A' ? listA : listB;
+      const newSongs = current.filter(s => !currentListSongs.some(song => song.id === s));
+      setActiveSongs([...newSongs, songId]);
+    } else {
+      // Otherwise, just add this song
       setActiveSongs([...current, songId]);
     }
   };
 
-  const canContinue = user.activeSongs.length >= requiredSongs;
+  // Check if we have exactly 1 from List A and 1 from List B
+  const hasOneFromA = listA.some(song => user.activeSongs.includes(song.id));
+  const hasOneFromB = listB.some(song => user.activeSongs.includes(song.id));
+  const canContinue = hasOneFromA && hasOneFromB;
 
   const handleContinue = () => {
     if (!canContinue) {
@@ -84,7 +105,7 @@ export default function Songs() {
                 ? 'bg-[#3a8a5c]/10 text-[#3a8a5c]' 
                 : 'bg-[#c44536]/10 text-[#c44536]'
             }`}>
-              {user.activeSongs.length}/{requiredSongs} selected
+              {user.activeSongs.length}/2 selected
             </span>
           </div>
         </div>
@@ -116,13 +137,13 @@ export default function Songs() {
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2">
-            {songs.listA.map(song => {
+            {listA.map(song => {
               const isSelected = user.activeSongs.includes(song.id);
               
               return (
                 <motion.button
                   key={song.id}
-                  onClick={() => toggleSong(song.id)}
+                  onClick={() => toggleSong(song.id, 'A')}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className={`card flex items-center gap-3 text-left py-3 px-4 transition-all ${
@@ -165,13 +186,13 @@ export default function Songs() {
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2">
-            {songs.listB.map(song => {
+            {listB.map(song => {
               const isSelected = user.activeSongs.includes(song.id);
               
               return (
                 <motion.button
                   key={song.id}
-                  onClick={() => toggleSong(song.id)}
+                  onClick={() => toggleSong(song.id, 'B')}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className={`card flex items-center gap-3 text-left py-3 px-4 transition-all ${
