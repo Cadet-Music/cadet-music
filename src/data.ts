@@ -204,26 +204,76 @@ export const SAXOPHONE_PREPARED_MUSIC: Song[] = [
   { id: 'five-b5', title: 'Andante and Allegro', list: 'B', level: 'FIVE', book: 'Rubank Advanced Method II', page: '77', rcmEquivalent: 'RCM Grade 6' },
 ];
 
-// Clarinet Prepared Music - Based on standard clarinet pedagogy
-// NOTE: This list should be verified against official CCO standards (A-CR-CCP-166/PT-001, Annex D, page D1-2-3)
-// The songs listed here are commonly used in beginner/intermediate clarinet instruction
+// CLARINET - Official List (pages D1-2-3 to D1-2-4)
+// Source: A-CR-CCP-166/PT-001 (2003-06-01)
 export const CLARINET_PREPARED_MUSIC: Song[] = [
-  // BASIC - Standard beginner clarinet repertoire
-  { id: 'cl-clarinet-basic-a1', title: 'Hot Cross Buns', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'cl-clarinet-basic-a2', title: 'Mary Had a Little Lamb', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'cl-clarinet-basic-a3', title: 'London Bridge', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'cl-clarinet-basic-b1', title: 'Ode to Joy (simplified)', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'cl-clarinet-basic-b2', title: 'When the Saints Go Marching In', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'cl-clarinet-basic-b3', title: 'Twinkle Twinkle Little Star', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
+  // BASIC
+  { id: 'cl-basic-a1', title: 'Western Portrait', list: 'A', level: 'BASIC', book: 'Best in Class', page: '19' },
+  { id: 'cl-basic-a2', title: 'Austrian Melody', list: 'A', level: 'BASIC', book: 'Best in Class', page: '24-117' },
+  { id: 'cl-basic-a3', title: 'The Minstrel Boy', list: 'A', level: 'BASIC', book: 'Best in Class', page: '28-136' },
+  { id: 'cl-basic-b1', title: 'Ode to Joy', list: 'B', level: 'BASIC', book: 'Best in Class', page: '10' },
+  { id: 'cl-basic-b2', title: 'America/God Save the Queen', list: 'B', level: 'BASIC', book: 'Best in Class', page: '32' },
+  { id: 'cl-basic-b3', title: 'Scarborough Fair', list: 'B', level: 'BASIC', book: 'Best in Class', page: '29-138' },
   
-  // ONE - Early intermediate clarinet repertoire
-  { id: 'cl-clarinet-one-a1', title: 'Minuet in G', composer: 'Bach', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
-  { id: 'cl-clarinet-one-a2', title: 'Ecossaise', composer: 'Beethoven', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
-  { id: 'cl-clarinet-one-a3', title: 'German Dance', composer: 'Mozart', list: 'A', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
-  { id: 'cl-clarinet-one-b1', title: 'Country Dance', composer: 'Beethoven', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
-  { id: 'cl-clarinet-one-b2', title: 'Auld Lang Syne', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
-  { id: 'cl-clarinet-one-b3', title: 'The Ash Grove', list: 'B', level: 'ONE', book: 'Standard intermediate method', page: 'varies' },
+  // ONE
+  { id: 'cl-one-a1', title: 'Rigaudon', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '3' },
+  { id: 'cl-one-a2', title: 'Elegy', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '5' },
+  { id: 'cl-one-a3', title: 'Professional', list: 'A', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '6' },
+  { id: 'cl-one-a4', title: 'It is Enough', list: 'A', level: 'ONE', book: 'First Solos for the Clarinet Player', page: '33' },
+  { id: 'cl-one-a5', title: 'Drink to me only with Thine Eyes', list: 'A', level: 'ONE', book: 'Rubank Elementary Method', page: '24' },
+  { id: 'cl-one-a6', title: 'America the Beautiful', list: 'A', level: 'ONE', book: 'Rubank Elementary Method', page: '42' },
+  { id: 'cl-one-a7', title: 'Meloday', list: 'A', level: 'ONE', book: 'Rubank Elementary Method', page: '44' },
+  { id: 'cl-one-b1', title: 'March', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '4' },
+  { id: 'cl-one-b2', title: 'Rio Grande', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '7' },
+  { id: 'cl-one-b3', title: 'Bouree', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '11' },
+  { id: 'cl-one-b4', title: 'Professional', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '13' },
+  { id: 'cl-one-b5', title: 'Rondo', list: 'B', level: 'ONE', book: 'Belwin Master Solos (Easy)', page: '16' },
+  { id: 'cl-one-b6', title: 'Tramp! Tramp! Tramp!', list: 'B', level: 'ONE', book: 'Rubank Elementary Method', page: '34' },
+  { id: 'cl-one-b7', title: 'Come Back to Erin', list: 'B', level: 'ONE', book: 'Rubank Elementary Method', page: '42' },
+  
+  // TWO
+  { id: 'cl-two-a1', title: 'Duet', list: 'A', level: 'TWO', book: 'Rubank Intermediate Method', page: '19' },
+  { id: 'cl-two-a2', title: 'Petite Duet', list: 'A', level: 'TWO', book: 'Rubank Intermediate Method', page: '26' },
+  { id: 'cl-two-a3', title: 'Sarabande', list: 'A', level: 'TWO', book: 'Belwin Master Solos (Easy)', page: '12' },
+  { id: 'cl-two-a4', title: 'Aria', list: 'A', level: 'TWO', book: 'Belwin Master Solos (Easy)', page: '15' },
+  { id: 'cl-two-a5', title: 'Two Chinese Folk Songs (I – Song of Hoe)', list: 'A', level: 'TWO', book: 'Belwin Master Solos (Easy)', page: '8' },
+  { id: 'cl-two-b1', title: 'Andante', list: 'B', level: 'TWO', book: 'Rubank Intermediate Method', page: '49' },
+  { id: 'cl-two-b2', title: 'Legato Duet', list: 'B', level: 'TWO', book: 'Rubank Intermediate Method', page: '12' },
+  { id: 'cl-two-b3', title: 'Russian Folk Song', list: 'B', level: 'TWO', book: 'Belwin Master Solos (Easy)', page: '10' },
+  { id: 'cl-two-b4', title: 'Two Chinese Folk Songs (II – The Filial Crow)', list: 'B', level: 'TWO', book: 'Belwin Master Solos (Easy)', page: '9' },
+  
+  // THREE (or RCM Grade 2)
+  { id: 'cl-three-a1', title: 'Solveig\'s Song', list: 'A', level: 'THREE', book: 'First Solos for the Clarinet Player', page: '9', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-a2', title: 'The Lonely Birch Tree', list: 'A', level: 'THREE', book: 'Clarinets Solos', page: '8', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-a3', title: 'Andante No. 18', list: 'A', level: 'THREE', book: 'Rubank Advanced Method 1', page: '40', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-b1', title: 'Wild Horseman', list: 'B', level: 'THREE', book: 'First Solos for the Clarinet Player', page: '4', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-b2', title: 'Caprice No. 14', list: 'B', level: 'THREE', book: 'Rubank Advanced Method 1', page: '74', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-b3', title: 'Andante Cantabile', list: 'B', level: 'THREE', book: 'Rubank Intermediate Level', page: '50', rcmEquivalent: 'RCM Grade 2' },
+  { id: 'cl-three-b4', title: 'Duet Brillant', list: 'B', level: 'THREE', book: 'Rubank Intermediate Level', page: '43', rcmEquivalent: 'RCM Grade 2' },
+  
+  // FOUR (or RCM Grade 4)
+  { id: 'cl-four-a1', title: 'Intermezzo Tango', list: 'A', level: 'FOUR', book: 'First Solos for the Clarinet Player', page: '12', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'cl-four-a2', title: 'Romance from Clarinet', list: 'A', level: 'FOUR', book: 'First Solos for the Clarinet Player', page: '16', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'cl-four-a3', title: 'Two Pieces (at the Brook and Intermezzo)', list: 'A', level: 'FOUR', book: 'Concert and Contest', page: '28', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'cl-four-b1', title: 'Alleluia – Mozart', list: 'B', level: 'FOUR', book: 'Solos for the Clarinet Player', page: '35', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'cl-four-b2', title: 'Andante - close', list: 'B', level: 'FOUR', book: 'Rubank Advanced Method 1', page: '71', rcmEquivalent: 'RCM Grade 4' },
+  { id: 'cl-four-b3', title: 'Larghetto', list: 'B', level: 'FOUR', book: 'Rubank Advanced Method 1', page: '68', rcmEquivalent: 'RCM Grade 4' },
+  
+  // FIVE (or RCM Grade 6)
+  { id: 'cl-five-a1', title: 'Larghetto', list: 'A', level: 'FIVE', book: 'Solos for the Clarinet Player', page: '20', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-a2', title: 'Larghetto from Clarinet Quartet', composer: 'Mozart', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-a3', title: 'Nocturne', composer: 'Bassi', list: 'A', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-b1', title: 'Promenade', list: 'B', level: 'FIVE', book: 'Concert and Contest', page: '14', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-b2', title: 'Variations Sentimentales', list: 'B', level: 'FIVE', book: 'Rubank Advanced Method II', page: '72', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-b3', title: 'Two Dances', composer: 'Kymlicka', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
+  { id: 'cl-five-b4', title: 'Divertimento in Bb', composer: 'Mozart', list: 'B', level: 'FIVE', rcmEquivalent: 'RCM Grade 6' },
 ];
+
+// BASS CLARINET - Uses same repertoire as clarinet (transposed down)
+export const BASS_CLARINET_PREPARED_MUSIC: Song[] = CLARINET_PREPARED_MUSIC.map(song => ({
+  ...song,
+  id: song.id.replace('cl-', 'bcl-'),
+}));
 
 // Get songs for a specific level and instrument
 export const getSongsForLevel = (level: CadetLevel, instrument: string = 'alto-sax'): { listA: Song[]; listB: Song[] } => {
@@ -356,19 +406,6 @@ export const TENOR_SAX_SCALES: Record<CadetLevel, ScaleKey[]> = {
 export const BASIC_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'BASIC');
 export const LEVEL_A_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'A');
 export const LEVEL_B_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'ONE' && s.list === 'B');
-
-// Bass Clarinet Prepared Music
-// Bass clarinet shares repertoire with regular clarinet but in a lower register
-// NOTE: This should be verified against official CCO standards
-export const BASS_CLARINET_PREPARED_MUSIC: Song[] = [
-  // BASIC - Same as clarinet but played in lower register
-  { id: 'bcl-basic-a1', title: 'Hot Cross Buns', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'bcl-basic-a2', title: 'Mary Had a Little Lamb', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'bcl-basic-a3', title: 'London Bridge', list: 'A', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'bcl-basic-b1', title: 'Ode to Joy (simplified)', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'bcl-basic-b2', title: 'When the Saints Go Marching In', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-  { id: 'bcl-basic-b3', title: 'Twinkle Twinkle Little Star', list: 'B', level: 'BASIC', book: 'Standard beginner method', page: 'varies' },
-];
 
 // Legacy lesson structure for compatibility
 export interface Lesson {
