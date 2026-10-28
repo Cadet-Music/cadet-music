@@ -72,27 +72,56 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
+    <motion.div 
+      className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Header */}
-      <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4">
+      <motion.div 
+        className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      >
         <div className="max-w-xl mx-auto flex items-center gap-4">
-          <button
+          <motion.button
             onClick={() => setCurrentView('dashboard')}
             className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+            whileHover={{ scale: 1.1, x: -3 }}
+            whileTap={{ scale: 0.95 }}
           >
             <ChevronLeftIcon />
-          </button>
-          <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Settings</h1>
+          </motion.button>
+          <motion.h1 
+            className="text-lg font-semibold text-[#1a2332] dark:text-white"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Settings
+          </motion.h1>
         </div>
-      </div>
+      </motion.div>
 
       {/* Tabs */}
-      <div className="max-w-xl mx-auto px-4 pt-4">
+      <motion.div 
+        className="max-w-xl mx-auto px-4 pt-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <div className="flex gap-1 bg-[#e8e8e8] dark:bg-[#1a2332] rounded-lg p-1 mb-6">
-          {tabs.map(tab => (
-            <button
+          {tabs.map((tab, index) => (
+            <motion.button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className={`flex-1 py-2.5 rounded-md font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === tab.id
                   ? 'bg-white dark:bg-[#2a3545] text-[#1a2332] dark:text-white shadow-sm'
@@ -101,7 +130,7 @@ export default function Settings() {
             >
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -268,7 +297,7 @@ export default function Settings() {
         )}
 
         <div className="h-8" />
-      </div>
+      </motion.div>
 
       {/* Level Warning Modal */}
       <AnimatePresence>
@@ -313,6 +342,6 @@ export default function Settings() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

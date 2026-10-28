@@ -81,37 +81,74 @@ export default function Songs() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">
+    <motion.div 
+      className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Header */}
-      <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4 sticky top-0 z-50">
+      <motion.div 
+        className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4 sticky top-0 z-50"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      >
         <div className="max-w-xl mx-auto flex items-center gap-4">
           {user.songsSelected && (
-            <button
+            <motion.button
               onClick={() => setCurrentView('dashboard')}
               className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors"
+              whileHover={{ scale: 1.1, x: -3 }}
+              whileTap={{ scale: 0.95 }}
             >
               <ChevronLeftIcon />
-            </button>
+            </motion.button>
           )}
-          <div className="flex items-center gap-2">
-            <span className="text-[#c9a84c]"><MusicIcon /></span>
+          <motion.div 
+            className="flex items-center gap-2"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <motion.span 
+              className="text-[#c9a84c]"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <MusicIcon />
+            </motion.span>
             <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">
               {user.songsSelected ? 'Your Songs' : 'Choose Your Songs'}
             </h1>
-          </div>
-          <div className="ml-auto">
-            <span className={`text-xs font-bold px-2 py-1 rounded ${
-              canContinue 
-                ? 'bg-[#3a8a5c]/10 text-[#3a8a5c]' 
-                : 'bg-[#c44536]/10 text-[#c44536]'
-            }`}>
+          </motion.div>
+          <motion.div 
+            className="ml-auto"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+          >
+            <motion.span 
+              className={`text-xs font-bold px-2 py-1 rounded ${
+                canContinue 
+                  ? 'bg-[#3a8a5c]/10 text-[#3a8a5c]' 
+                  : 'bg-[#c44536]/10 text-[#c44536]'
+              }`}
+              animate={canContinue ? { scale: [1, 1.1, 1] } : {}}
+              transition={{ duration: 0.5 }}
+            >
               {user.activeSongs.length}/2 selected
-            </span>
-          </div>
+            </motion.span>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="max-w-xl mx-auto px-4 py-6">
+      <motion.div 
+        className="max-w-xl mx-auto px-4 py-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         {/* Warning for first-time */}
         {!user.songsSelected && (
           <motion.div
@@ -133,7 +170,7 @@ export default function Songs() {
               List A
             </h3>
             <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
-              {user.activeSongs.filter(s => songs.listA.map(ls => ls.id).includes(s)).length}/1 selected
+              {user.activeSongs.filter(s => listA.map(ls => ls.id).includes(s)).length}/1 selected
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2">
@@ -182,7 +219,7 @@ export default function Songs() {
               List B
             </h3>
             <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
-              {user.activeSongs.filter(s => songs.listB.map(ls => ls.id).includes(s)).length}/1 selected
+              {user.activeSongs.filter(s => listB.map(ls => ls.id).includes(s)).length}/1 selected
             </span>
           </div>
           <div className="grid grid-cols-1 gap-2">
@@ -240,9 +277,10 @@ export default function Songs() {
             {user.songsSelected ? 'Save Changes' : 'Continue to Dashboard'}
           </button>
         </motion.div>
+      </motion.div>
 
-        {/* Warning Modal */}
-        <AnimatePresence>
+      {/* Warning Modal */}
+      <AnimatePresence>
           {showWarning && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -275,7 +313,6 @@ export default function Songs() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-    </div>
+    </motion.div>
   );
 }
