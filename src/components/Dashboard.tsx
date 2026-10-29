@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons, getLessonStatus } from '../data';
+import Footer from './Footer';
 
 export default function Dashboard() {
   const { user, setCurrentView, setCurrentLesson, updateStreak } = useStore();
@@ -386,6 +387,9 @@ export default function Dashboard() {
           )}
         </motion.div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

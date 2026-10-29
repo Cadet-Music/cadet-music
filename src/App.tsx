@@ -11,6 +11,9 @@ import Songs from './components/Songs';
 import Banner from './components/Banner';
 import Analytics from './components/Analytics';
 import AnimationDemo from './components/AnimationDemo';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import CookiePolicy from './components/CookiePolicy';
 import KonamiListener from './components/KonamiListener';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
@@ -105,6 +108,12 @@ function App() {
       return <><Analytics /><KonamiListener /><SecretCornerListener /></>;
     case 'animations':
       return <><AnimationDemo /><KonamiListener /><SecretCornerListener /></>;
+    case 'privacy':
+      return <><PrivacyPolicy /><KonamiListener /><SecretCornerListener /></>;
+    case 'terms':
+      return <><TermsOfService /><KonamiListener /><SecretCornerListener /></>;
+    case 'cookies':
+      return <><CookiePolicy /><KonamiListener /><SecretCornerListener /></>;
     default:
       return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
   }

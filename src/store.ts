@@ -57,7 +57,7 @@ export interface User {
   bannerStickers: BannerSticker[];
 }
 
-export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'animations';
+export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'animations' | 'privacy' | 'terms' | 'cookies';
 
 interface AppState {
   user: User | null;
