@@ -38,7 +38,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   // PRE-BASIC LESSONS - ABSOLUTE BEGINNERS
   'pre-intro': {
     title: 'Welcome to Music',
-    introduction: 'Welcome to the world of music! Before we start playing, let\'s understand what music is and why we learn to play instruments.',
+    introduction: 'Before we start playing, let\'s understand what music is and why we learn to play instruments.',
     levelStandards: {
       skillsDeveloped: ['Music appreciation', 'Understanding purpose', 'Motivation'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Understanding what music is',
@@ -48,19 +48,16 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'What is Music?',
         content: 'Music is organized sound that expresses emotions, tells stories, and brings people together. It\'s a universal language that everyone can understand.\n\nMusic has three main elements:\n1. **Melody** - The tune you hum or sing\n2. **Harmony** - Multiple notes played together\n3. **Rhythm** - The timing and beat of the music',
-        example: 'Think of your favorite song. The part you sing along to is the melody. The chords underneath are the harmony. The beat you tap your foot to is the rhythm.',
-        tip: 'Music is everywhere - in movies, games, celebrations, and even in nature. Listen to the world around you!'
+        tip: 'Music is everywhere - in movies, games, celebrations, and even in nature. Listen to the world around you.'
       },
       {
         heading: 'Why Learn an Instrument?',
         content: 'Learning an instrument offers many benefits:\n\n**Mental Benefits:**\n- Improves memory and concentration\n- Develops problem-solving skills\n- Enhances mathematical understanding\n- Boosts creativity\n\n**Physical Benefits:**\n- Improves coordination\n- Develops fine motor skills\n- Enhances breath control\n- Builds discipline\n\n**Social Benefits:**\n- Play with others in bands and orchestras\n- Perform for audiences\n- Connect with other musicians\n- Be part of a team',
-        example: 'Many famous people played instruments: Albert Einstein played violin, Steve Jobs played guitar, and countless leaders throughout history played music.',
-        tip: 'Learning an instrument is a journey. Be patient with yourself and celebrate every small victory!'
+        tip: 'Learning an instrument is a journey. Be patient with yourself and practice regularly.'
       },
       {
         heading: 'What to Expect',
-        content: 'Your musical journey will have several stages:\n\n**Stage 1: Pre-Basic (You are here!)**\n- Learn about your instrument\n- Understand basic care and handling\n- Make your first sounds\n- Learn proper posture and breathing\n\n**Stage 2: Basic**\n- Learn your first notes\n- Read simple music\n- Play easy songs\n- Develop fundamental techniques\n\n**Stage 3: Level One and Beyond**\n- Master more complex techniques\n- Play challenging pieces\n- Perform with others\n- Develop your musical voice',
-        tip: 'Every musician starts where you are now. With practice and patience, you\'ll be amazed at how far you can go!'
+        content: 'Your musical journey will have several stages:\n\n**Stage 1: Pre-Basic (Current Stage)**\n- Learn about your instrument\n- Understand basic care and handling\n- Make your first sounds\n- Learn proper posture and breathing\n\n**Stage 2: Basic**\n- Learn your first notes\n- Read simple music\n- Play easy songs\n- Develop fundamental techniques\n\n**Stage 3: Level One and Beyond**\n- Master more complex techniques\n- Play challenging pieces\n- Perform with others\n- Develop your musical voice'
       }
     ],
     keyPoints: [
@@ -75,7 +72,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 
   'pre-instrument-care': {
     title: 'Instrument Care Basics',
-    introduction: 'Your instrument is a valuable tool that needs proper care. Let\'s learn the basics of handling and maintaining your instrument.',
+    introduction: 'Your instrument is a valuable tool that needs proper care. Learn the basics of handling and maintaining your instrument.',
     levelStandards: {
       skillsDeveloped: ['Instrument handling', 'Basic maintenance', 'Respect for equipment'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Learning proper instrument care',
@@ -84,14 +81,13 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     sections: [
       {
         heading: 'Handling Your Instrument',
-        content: 'Your instrument is delicate and expensive. Always handle it with care:\n\n**Golden Rules:**\n1. Always wash your hands before playing\n2. Never eat or drink while playing\n3. Always use both hands when carrying\n4. Never set it down without support\n5. Always case it when not in use',
-        example: 'Think of your instrument like a baby - it needs gentle handling and constant attention.',
+        content: 'Your instrument is delicate and expensive. Always handle it with care:\n\n**Essential Rules:**\n1. Always wash your hands before playing\n2. Never eat or drink while playing\n3. Always use both hands when carrying\n4. Never set it down without support\n5. Always case it when not in use',
         tip: 'A well-cared-for instrument will last for decades and sound better than a neglected one.'
       },
       {
         heading: 'Basic Cleaning',
         content: 'After every practice session:\n\n**For Wind Instruments:**\n1. Swab out moisture from the body\n2. Wipe the mouthpiece clean\n3. Remove and dry the reed\n4. Wipe down the exterior with a soft cloth\n\n**Storage:**\n- Always store in the case\n- Keep in a moderate temperature environment\n- Avoid extreme heat or cold\n- Keep away from direct sunlight',
-        tip: 'Moisture is your instrument\'s enemy. Always dry it thoroughly before storing.'
+        tip: 'Moisture is your instrument\'s primary enemy. Always dry it thoroughly before storing.'
       },
       {
         heading: 'When to Get Help',
@@ -121,7 +117,6 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'Standing Position',
         content: 'Proper standing posture:\n\n1. **Feet:** Shoulder-width apart, weight evenly distributed\n2. **Back:** Straight but relaxed (not stiff)\n3. **Shoulders:** Down and back (not hunched)\n4. **Head:** Up, looking forward (not down at instrument)\n5. **Knees:** Slightly bent (not locked)',
-        example: 'Imagine a string pulling you up from the top of your head. You should feel tall and relaxed at the same time.',
         tip: 'Practice standing in good posture without your instrument first. Then add the instrument and check your posture in a mirror.'
       },
       {
@@ -157,19 +152,17 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'Diaphragmatic Breathing',
         content: 'Wind players use diaphragmatic breathing (belly breathing), not chest breathing:\n\n**How to Breathe:**\n1. Keep shoulders relaxed and down\n2. Breathe in through your mouth\n3. Your belly should expand outward\n4. Your chest should barely move\n5. Fill your lungs completely from bottom to top',
-        example: 'Lie down on your back and put a book on your belly. When you breathe in, the book should rise. When you breathe out, it should fall. That\'s diaphragmatic breathing!',
         tip: 'Practice breathing exercises without your instrument first. Master the breathing technique before adding the instrument.'
       },
       {
         heading: 'Breath Control',
-        content: 'Controlling your breath is just as important as taking it:\n\n**Exhaling:**\n- Use your abdominal muscles to control the air flow\n- Keep the air stream steady and consistent\n- Don\'t let the air collapse or fade\n- Think of squeezing a tube of toothpaste - steady pressure from start to finish',
-        example: 'Imagine blowing through a straw. You need steady, controlled air, not a burst followed by nothing.',
+        content: 'Controlling your breath is just as important as taking it:\n\n**Exhaling:**\n- Use your abdominal muscles to control the air flow\n- Keep the air stream steady and consistent\n- Don\'t let the air collapse or fade\n- Maintain steady pressure from start to finish',
         tip: 'Your abdominal muscles are your air control system. Keep them engaged while playing.'
       },
       {
         heading: 'Breathing Exercises',
         content: 'Practice these exercises daily:\n\n**Exercise 1: The Hiss**\nTake a deep breath, then hiss "ssss" for as long as possible. Aim for 20+ seconds. Keep the hiss steady and consistent.\n\n**Exercise 2: The Count**\nTake a deep breath, then count out loud: "1-2-3-4-5-6-7-8" on one breath. Keep steady volume throughout.\n\n**Exercise 3: The Pulse**\nTake a breath, then pulse the air: "ha-ha-ha-ha" while keeping support. Each pulse should be equal in strength.',
-        tip: 'Do breathing exercises for 5 minutes every day. This will dramatically improve your playing.'
+        tip: 'Do breathing exercises for 5 minutes every day. This will improve your playing significantly.'
       }
     ],
     keyPoints: [
@@ -184,7 +177,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 
   'pre-embouchure': {
     title: 'Embouchure Introduction',
-    introduction: 'Your embouchure is how you use your mouth to play. Let\'s learn the basics.',
+    introduction: 'Your embouchure is how you use your mouth to play. Learn the basics.',
     levelStandards: {
       skillsDeveloped: ['Mouth position', 'Lip control', 'Facial muscles'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Understanding embouchure basics',
@@ -194,14 +187,12 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'What is Embouchure?',
         content: 'Embouchure (ah-boo-SHURE) is the French word for "mouth." For wind instruments, it means how you use your mouth, lips, and facial muscles to play.\n\nA good embouchure:\n- Creates a seal around the mouthpiece\n- Controls the reed vibration\n- Produces a clear, focused tone\n- Allows for pitch control',
-        example: 'Think of your embouchure like a camera lens - it focuses and controls the sound, just like a lens focuses light.',
-        tip: 'Your embouchure muscles will get tired at first - that\'s normal! They\'ll get stronger with practice.'
+        tip: 'Your embouchure muscles will get tired at first - that\'s normal. They\'ll get stronger with practice.'
       },
       {
         heading: 'Basic Embouchure Formation',
         content: 'For saxophone and clarinet:\n\n1. **Bottom lip:** Curl over bottom teeth (like a cushion)\n2. **Top teeth:** Rest on top of mouthpiece\n3. **Corners:** Firm and pulled inward (like saying "M")\n4. **Chin:** Flat and pointed down (not bunched up)\n5. **Jaw:** Dropped slightly (not clenched)',
-        example: 'Say the letter "M" and hold it. Feel how the corners of your mouth firm up? That\'s the foundation of good embouchure!',
-        tip: 'Don\'t bite! Your teeth should rest gently on the mouthpiece. Biting will squeeze the reed and make the sound squeaky.'
+        tip: 'Don\'t bite. Your teeth should rest gently on the mouthpiece. Biting will squeeze the reed and make the sound squeaky.'
       },
       {
         heading: 'Common Embouchure Problems',
@@ -222,7 +213,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 
   'pre-first-sound': {
     title: 'Making Your First Sound',
-    introduction: 'Now let\'s learn how to produce sound on your instrument. This is an exciting moment!',
+    introduction: 'Learn how to produce sound on your instrument.',
     levelStandards: {
       skillsDeveloped: ['Sound production', 'Embouchure application', 'Air stream control'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Producing first tone',
@@ -237,13 +228,12 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'Making Sound',
         content: 'Now let\'s make your first sound:\n\n1. Form your embouchure\n2. Place mouthpiece in mouth\n3. Take a deep breath from your diaphragm\n4. Blow steady, fast air through the instrument\n5. Keep your throat open (like saying "AW")\n\nYou should hear a clear, steady tone.',
-        example: 'Think of fogging up a mirror - you need steady, fast air, not a weak puff.',
         tip: 'If you hear air but no pitch, you need more air speed. If it squeaks, check your embouchure - you might be biting.'
       },
       {
         heading: 'Troubleshooting',
-        content: 'Common problems and solutions:\n\n**No sound at all:**\n- Check: Is reed wet? Is mouthpiece positioned correctly?\n- Fix: Wet reed for 60 seconds, adjust position\n\n**Airy sound (no pitch):**\n- Check: Are you blowing fast enough?\n- Fix: Blow faster, think "fog the mirror"\n\n**Squeaking:**\n- Check: Are you biting? Is embouchure too tight?\n- Fix: Relax jaw, firm corners instead\n\n**Sound cuts out:**\n- Check: Are you running out of air?\n- Fix: Take deeper breaths, support with abdomen',
-        tip: 'Every problem has a solution! Be patient and keep trying. Even professionals had to start somewhere.'
+        content: 'Common problems and solutions:\n\n**No sound at all:**\n- Check: Is reed wet? Is mouthpiece positioned correctly?\n- Fix: Wet reed for 60 seconds, adjust position\n\n**Airy sound (no pitch):**\n- Check: Are you blowing fast enough?\n- Fix: Blow faster with steady air\n\n**Squeaking:**\n- Check: Are you biting? Is embouchure too tight?\n- Fix: Relax jaw, firm corners instead\n\n**Sound cuts out:**\n- Check: Are you running out of air?\n- Fix: Take deeper breaths, support with abdomen',
+        tip: 'Every problem has a solution. Be patient and keep trying.'
       }
     ],
     keyPoints: [
@@ -258,7 +248,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 
   'pre-assembly': {
     title: 'Assembly and Disassembly',
-    introduction: 'Learning to properly assemble and disassemble your instrument is essential. Let\'s practice this important skill.',
+    introduction: 'Learning to properly assemble and disassemble your instrument is essential. Practice this important skill.',
     levelStandards: {
       skillsDeveloped: ['Instrument assembly', 'Proper handling', 'Care routine'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Learning instrument assembly',
@@ -272,14 +262,13 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       },
       {
         heading: 'Disassembly Steps',
-        content: 'How to disassemble your instrument:\n\n**Reverse the assembly order:**\n1. Remove mouthpiece (twist gently)\n2. Remove reed and store in reed guard\n3. Disassemble joints (twist gently)\n4. Swab each piece to remove moisture\n5. Wipe exterior with soft cloth\n6. Store in case',
-        example: 'Think of disassembly like unwrapping a gift - be gentle and careful at each step.',
+        content: 'How to disassemble your instrument:\n\n**Reverse the assembly order:**\n1. Remove mouth mouthpiece (twist gently)\n2. Remove reed and (twist gently)\n3. Disassemble joints (twist gently)\n4. Swab each piece to remove moisture\n5. Wet reed and store in reed guard\n6. Store in case',
         tip: 'Always swab your instrument before storing it. Moisture left inside can damage pads and cause mold.'
       },
       {
         heading: 'Practice Routine',
         content: 'Practice assembly and disassembly:\n\n**Day 1-3:**\n- Assemble and disassemble 3 times each day\n- Time yourself - aim for under 2 minutes\n- Focus on gentle handling\n\n**Day 4-7:**\n- Assemble, play for 5 minutes, disassemble\n- Include cleaning routine\n- Aim for smooth, confident handling\n\n**Week 2:**\n- Assembly should become automatic\n- Focus on proper technique\n- Help others learn assembly',
-        tip: 'Speed comes from accuracy. Don\'t rush - do it right every time.'
+        tip: 'Speed comes from accuracy. Do it right every time.'
       }
     ],
     keyPoints: [
@@ -294,7 +283,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
 
   'pre-exam': {
     title: 'Pre-Basic Assessment',
-    introduction: 'Congratulations on completing the Pre-Basic level! Let\'s review what you\'ve learned and prepare to move on.',
+    introduction: 'Review what you\'ve learned and prepare to move on to the Basic level.',
     levelStandards: {
       skillsDeveloped: ['Knowledge review', 'Skill assessment', 'Progress evaluation'],
       levelGoal: 'PRE-BASIC Level Goal: Introduction - Demonstrating foundational knowledge',
@@ -314,7 +303,6 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
       {
         heading: 'Moving Forward',
         content: 'Once you\'ve completed Pre-Basic, you\'re ready for BASIC level where you\'ll:\n\n- Learn your first notes\n- Read simple music\n- Play easy songs\n- Develop fundamental techniques\n\nBASIC level builds on everything you\'ve learned in Pre-Basic. Make sure you\'re confident in all the foundational skills before moving on.',
-        example: 'Think of Pre-Basic like learning to walk before you run. You\'ve built the foundation - now it\'s time to build on it!',
         tip: 'Take your time. It\'s better to master Pre-Basic skills than to rush into BASIC level unprepared.'
       }
     ],
@@ -420,18 +408,17 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   // SONG LEARNING LESSONS - STEP BY STEP
   'song-western-portrait': {
     title: 'Learning "Western Portrait" - Step by Step',
-    introduction: 'Welcome to your first complete song. "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. We\'ll use your microphone to check your pitch and compare your playing to a reference recording. Let\'s begin.',
+    introduction: 'Learn your first complete song note by note, phrase by phrase. Use your microphone to check your pitch and compare your playing to a reference recording.',
     levelStandards: {
       skillsDeveloped: ['Song performance', 'Phrase connection', 'Musical expression', 'Pitch accuracy'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Performing complete musical pieces',
+      levelGoal: 'BASIC Level Goal: Foundation - Performing complete musical pieces',
       nextLevelPrep: 'Song performance skills prepare you for more complex repertoire at higher levels'
     },
     sections: [
       {
-        heading: '🎼 Song Overview',
-        content: '**"Western Portrait" Details:**\n- Level: BASIC\n- Key: Bb Major (2 flats: Bb, Eb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=80-100)\n- Difficulty: Easy - perfect for beginners!\n\n**What You\'ll Learn:**\n- Playing in Bb Major\n- Smooth phrase transitions\n- Musical expression\n- Rhythm and timing\n\n**Song Structure:**\n- Phrase 1: Bb - C - D - Eb (ascending)\n- Phrase 2: F - Eb - D - C (descending)\n- Phrase 3: Bb - C - D - Eb (repeat)\n- Phrase 4: F - Eb - D - C (repeat)\n- Ending: Bb (hold)',
-        example: '🎧 LISTEN FIRST: Before we start, listen to the reference recording 2-3 times. Tap your foot to the beat. Feel the rhythm. Imagine yourself playing it. This is your goal!',
-        tip: '💡 PRO TIP: Great musicians listen before they play. Spend time really hearing the song in your head before you pick up your saxophone.'
+        heading: 'Song Overview',
+        content: '**"Western Portrait" Details:**\n- Level: BASIC\n- Key: Bb Major (2 flats: Bb, Eb)\n- Time Signature: 4/4\n- Tempo: Moderate (♩=80-100)\n- Difficulty: Easy\n\n**What You\'ll Learn:**\n- Playing in Bb Major\n- Smooth phrase transitions\n- Musical expression\n- Rhythm and timing\n\n**Song Structure:**\n- Phrase 1: Bb - C - D - Eb (ascending)\n- Phrase 2: F - Eb - D - C (descending)\n- Phrase 3: Bb - C - D - Eb (repeat)\n- Phrase 4: F - Eb - D - C (repeat)\n- Ending: Bb (hold)',
+        tip: 'Listen to the reference recording 2-3 times before starting. Tap your foot to the beat and feel the rhythm.'
       },
       {
         heading: '🎯 Step 1: Learn the First Phrase',
