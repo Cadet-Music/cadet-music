@@ -4,6 +4,7 @@
  */
 
 import { CadetLevel } from './data';
+import { LevelStandard } from './levelStandards';
 
 export interface LessonContent {
   title: string;
@@ -36,8 +37,8 @@ export interface InteractiveExerciseConfig {
 export const LESSON_CONTENT: Record<string, LessonContent> = {
   // SONG LEARNING LESSONS - STEP BY STEP
   'song-western-portrait': {
-    title: '🎵 Learning "Western Portrait" - Step by Step',
-    introduction: 'Welcome to your first real song! "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. We\'ll use your microphone to check your pitch and compare your playing to a reference recording. Let\'s make music together!',
+    title: 'Learning "Western Portrait" - Step by Step',
+    introduction: 'Welcome to your first complete song. "Western Portrait" is a beautiful melody that you\'ll learn note by note, phrase by phrase. We\'ll use your microphone to check your pitch and compare your playing to a reference recording. Let\'s begin.',
     levelStandards: {
       skillsDeveloped: ['Song performance', 'Phrase connection', 'Musical expression', 'Pitch accuracy'],
       levelGoal: '🎯 BASIC Level Goal: Foundation - Performing complete musical pieces',
@@ -93,8 +94,8 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'song-ode-to-joy': {
-    title: '🎵 Learning "Ode to Joy" - Step by Step',
-    introduction: 'Get ready to play one of the most famous melodies ever written! "Ode to Joy" by Beethoven is a timeless classic that everyone will recognize. We\'ll learn it step by step, using your microphone to check your pitch and comparing to a reference recording. Let\'s make musical history!',
+    title: 'Learning "Ode to Joy" - Step by Step',
+    introduction: 'You are about to learn one of the most famous melodies ever written. "Ode to Joy" by Beethoven is a timeless classic recognized worldwide. We\'ll learn it step by step, using your microphone to check your pitch and comparing to a reference recording.',
     levelStandards: {
       skillsDeveloped: ['Song performance', 'Phrase connection', 'Musical expression', 'Pitch accuracy'],
       levelGoal: '🎯 BASIC Level Goal: Foundation - Performing complete musical pieces',
@@ -1618,7 +1619,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'The clarinet is a woodwind instrument with a beautiful, rich tone. It was invented around 1700 and has been a vital part of orchestras, bands, and jazz ensembles ever since.',
     levelStandards: {
       skillsDeveloped: ['Instrument knowledge', 'Proper handling', 'Basic maintenance'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Building fundamental skills and establishing proper technique',
+      levelGoal: 'BASIC Level Goal: Foundation - Building fundamental skills and establishing proper technique',
       nextLevelPrep: 'This lesson prepares you for proper embouchure and breathing techniques in the next lessons'
     },
     sections: [
@@ -1654,7 +1655,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'The clarinet embouchure is different from saxophone. It requires a firmer, more focused approach with the corners of the mouth drawn forward.',
     levelStandards: {
       skillsDeveloped: ['Clarinet embouchure', 'Mouth position', 'Lip control'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Establishing proper embouchure technique',
+      levelGoal: 'BASIC Level Goal: Foundation - Establishing proper embouchure technique',
       nextLevelPrep: 'Proper embouchure is essential for tone production and intonation'
     },
     sections: [
@@ -1691,7 +1692,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'Clarinet requires focused, fast air support. The smaller mouthpiece requires more air pressure than saxophone.',
     levelStandards: {
       skillsDeveloped: ['Diaphragmatic breathing', 'Air support', 'Focused air stream'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Developing proper breathing technique',
+      levelGoal: 'BASIC Level Goal: Foundation - Developing proper breathing technique',
       nextLevelPrep: 'Breathing skills are essential for tone production and phrase control'
     },
     sections: [
@@ -1728,7 +1729,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'The clarinet requires a different approach than saxophone for producing the first sound. The smaller reed requires more focused air and precise embouchure.',
     levelStandards: {
       skillsDeveloped: ['First sound production', 'Embouchure application', 'Air control'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Producing first tone on clarinet',
+      levelGoal: 'BASIC Level Goal: Foundation - Producing first tone on clarinet',
       nextLevelPrep: 'First sound mastery prepares you for learning notes and scales'
     },
     sections: [
@@ -1764,7 +1765,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'Let\'s learn your first three notes on the clarinet: E, D, and C. These are played with your right hand.',
     levelStandards: {
       skillsDeveloped: ['First notes (E, D, C)', 'Right hand technique', 'Finger coordination'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Learning first notes and basic fingerings',
+      levelGoal: 'BASIC Level Goal: Foundation - Learning first notes and basic fingerings',
       nextLevelPrep: 'These three notes form the foundation for scales and simple melodies'
     },
     sections: [
@@ -1805,7 +1806,7 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
     introduction: 'The clarinet has a special key called the register key (or speaker key) that allows you to play in the higher register. This is unique to the clarinet.',
     levelStandards: {
       skillsDeveloped: ['Register key operation', 'Clarion register', 'Register transitions'],
-      levelGoal: '🎯 BASIC Level Goal: Foundation - Understanding clarinet registers',
+      levelGoal: 'BASIC Level Goal: Foundation - Understanding clarinet registers',
       nextLevelPrep: 'Register knowledge prepares you for extended range playing at higher levels'
     },
     sections: [
@@ -1838,8 +1839,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
 
   // Additional BASIC lessons
   'basic-tuning': {
-    title: '🎯 Tuning Basics: Playing in Tune',
+    title: 'Tuning Basics: Playing in Tune',
     introduction: 'Tuning is essential for playing with others. Let\'s learn how to tune your saxophone and play in tune.',
+    levelStandards: {
+      skillsDeveloped: ['Pitch recognition', 'Tuning with tuner', 'Intonation adjustment', 'Ear training'],
+      levelGoal: 'BASIC Level Goal: Foundation - Developing intonation awareness',
+      nextLevelPrep: 'CRITICAL: Level TWO requires independent intonation adjustment - this lesson builds that foundation'
+    },
     sections: [
       {
         heading: 'What is Tuning?',
@@ -1876,8 +1882,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-long-tones': {
-    title: '🎵 Long Tones: Building Beautiful Tone',
+    title: 'Long Tones: Building Beautiful Tone',
     introduction: 'Long tones are the most important exercise for developing a beautiful, consistent tone. Let\'s master this fundamental skill.',
+    levelStandards: {
+      skillsDeveloped: ['Tone quality', 'Breath control', 'Embouchure strength', 'Consistency'],
+      levelGoal: 'BASIC Level Goal: Foundation - Developing tone quality and control',
+      nextLevelPrep: 'Beautiful tone is essential for all higher levels and musical expression'
+    },
     sections: [
       {
         heading: 'What are Long Tones?',
@@ -1913,8 +1924,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-tonguing': {
-    title: '👅 Basic Tonguing: Articulation Fundamentals',
+    title: 'Basic Tonguing: Articulation Fundamentals',
     introduction: 'Tonguing is how you start and separate notes with your tongue. Let\'s learn proper tonguing technique.',
+    levelStandards: {
+      skillsDeveloped: ['Tongue position', 'Articulation types', 'Note separation', 'Tongue speed'],
+      levelGoal: 'BASIC Level Goal: Foundation - Learning proper articulation technique',
+      nextLevelPrep: 'Articulation skills are essential for musical expression and advanced techniques'
+    },
     sections: [
       {
         heading: 'What is Tonguing?',
@@ -1951,8 +1967,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-embouchure': {
-    title: '👄 Embouchure: Your Mouth as an Instrument',
+    title: 'Embouchure: Your Mouth as an Instrument',
     introduction: 'Your embouchure is how you use your mouth, lips, and facial muscles to play. A correct embouchure is essential for good tone and intonation.',
+    levelStandards: {
+      skillsDeveloped: ['Mouth position', 'Lip control', 'Facial muscle development', 'Tone production'],
+      levelGoal: 'BASIC Level Goal: Foundation - Establishing proper embouchure technique',
+      nextLevelPrep: 'Proper embouchure is essential for tone production and intonation at all levels'
+    },
     sections: [
       {
         heading: 'What is Embouchure?',
@@ -1989,8 +2010,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-breathing': {
-    title: '💨 Breathing & Air Support: The Foundation of Sound',
+    title: 'Breathing & Air Support: The Foundation of Sound',
     introduction: 'Good breathing is the foundation of good playing. Let\'s learn proper breathing technique and air support.',
+    levelStandards: {
+      skillsDeveloped: ['Diaphragmatic breathing', 'Air support', 'Breath control', 'Abdominal engagement'],
+      levelGoal: 'BASIC Level Goal: Foundation - Developing proper breathing technique',
+      nextLevelPrep: 'Breathing skills are essential for tone production and phrase control at all levels'
+    },
     sections: [
       {
         heading: 'Diaphragmatic Breathing',
@@ -2026,8 +2052,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-first-sound': {
-    title: '🎶 First Sound: Making Music!',
+    title: 'First Sound: Making Music',
     introduction: 'Now let\'s learn how to produce sound on the saxophone. This is called forming your embouchure.',
+    levelStandards: {
+      skillsDeveloped: ['Sound production', 'Embouchure formation', 'Air stream control', 'Initial tone quality'],
+      levelGoal: 'BASIC Level Goal: Foundation - Producing first tone on saxophone',
+      nextLevelPrep: 'First sound mastery prepares you for learning notes and scales'
+    },
     sections: [
       {
         heading: 'What is Embouchure?',
@@ -2058,8 +2089,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-more-notes': {
-    title: '🎹 More Notes: F, E, D',
+    title: 'More Notes: F, E, D',
     introduction: 'Now let\'s add three more notes to your repertoire: F, E, and D. These use your right hand.',
+    levelStandards: {
+      skillsDeveloped: ['Right hand technique', 'Note expansion (F, E, D)', 'Finger coordination', 'Range extension'],
+      levelGoal: 'BASIC Level Goal: Foundation - Expanding note range with right hand',
+      nextLevelPrep: 'These notes complete the foundation for scales and simple melodies'
+    },
     sections: [
       {
         heading: 'Right Hand Position',
@@ -2100,8 +2136,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'basic-low-c': {
-    title: '🎺 Low C and Complete Range',
+    title: 'Low C and Complete Range',
     introduction: 'Let\'s add the final note to your basic range: Low C. This completes your six-note scale from C to B.',
+    levelStandards: {
+      skillsDeveloped: ['Low register technique', 'Complete octave (C to B)', 'Range extension', 'Low note control'],
+      levelGoal: 'BASIC Level Goal: Foundation - Completing first octave range',
+      nextLevelPrep: 'Complete range prepares you for more advanced scales and repertoire'
+    },
     sections: [
       {
         heading: 'Playing Low C',
@@ -2137,8 +2178,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
 
   // Additional ONE lessons
   'one-accidentals': {
-    title: '♯♭ Accidentals: Sharps, Flats, and Naturals',
+    title: 'Accidentals: Sharps, Flats, and Naturals',
     introduction: 'Accidentals are symbols that change the pitch of a note. Let\'s learn how to read and play them.',
+    levelStandards: {
+      skillsDeveloped: ['Sharp and flat recognition', 'Natural signs', 'Pitch alteration', 'Music notation'],
+      levelGoal: 'LEVEL ONE Goal: Developing Musician - Expanding music theory knowledge',
+      nextLevelPrep: 'Accidentals are essential for playing in different keys and reading complex music'
+    },
     sections: [
       {
         heading: 'What are Accidentals?',
@@ -2176,8 +2222,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'one-articulation': {
-    title: '👅 Articulation: Staccato, Legato, and Accents',
+    title: 'Articulation: Staccato, Legato, and Accents',
     introduction: 'Articulation is how you start and separate notes. Let\'s learn the three main types of articulation.',
+    levelStandards: {
+      skillsDeveloped: ['Staccato technique', 'Legato playing', 'Accent execution', 'Articulation control'],
+      levelGoal: 'LEVEL ONE Goal: Developing Musician - Developing articulation control',
+      nextLevelPrep: 'Articulation skills are essential for musical expression and advanced techniques'
+    },
     sections: [
       {
         heading: 'What is Articulation?',
@@ -2216,8 +2267,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'one-aural': {
-    title: '👂 Aural Skills: Training Your Ear',
+    title: 'Aural Skills: Training Your Ear',
     introduction: 'Aural skills mean training your ear to recognize musical elements. This is essential for playing in tune and with others.',
+    levelStandards: {
+      skillsDeveloped: ['Pitch recognition', 'Interval identification', 'Rhythm clapping', 'Melodic dictation'],
+      levelGoal: 'LEVEL ONE Goal: Developing Musician - Developing ear training skills',
+      nextLevelPrep: 'Aural skills are essential for ensemble playing and advanced musicianship'
+    },
     sections: [
       {
         heading: 'What are Aural Skills?',
@@ -2257,8 +2313,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
 
   // Additional TWO lessons
   'two-intervals': {
-    title: '📏 Intervals: Measuring Musical Distance',
+    title: 'Intervals: Measuring Musical Distance',
     introduction: 'Intervals are the distance between two notes. Understanding intervals is essential for melody, harmony, and music theory.',
+    levelStandards: {
+      skillsDeveloped: ['Interval identification', 'Seconds and thirds', 'Perfect intervals', 'Interval recognition by sound'],
+      levelGoal: 'LEVEL TWO Goal: Competent Performer - Understanding musical distance',
+      nextLevelPrep: 'Interval knowledge is essential for harmony, chords, and advanced theory'
+    },
     sections: [
       {
         heading: 'What are Intervals?',
@@ -2297,8 +2358,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'two-chords': {
-    title: '🎼 Chords: Building Harmony',
+    title: 'Chords: Building Harmony',
     introduction: 'Chords are three or more notes played together. Understanding chords is essential for harmony and music theory.',
+    levelStandards: {
+      skillsDeveloped: ['Triad construction', 'Major and minor chords', 'Chord progressions', 'Harmonic understanding'],
+      levelGoal: 'LEVEL TWO Goal: Competent Performer - Understanding harmony',
+      nextLevelPrep: 'Chord knowledge is essential for advanced theory and ensemble playing'
+    },
     sections: [
       {
         heading: 'What are Chords?',
@@ -2336,8 +2402,13 @@ export const CLARINET_LESSON_CONTENT: Record<string, LessonContent> = {
   },
 
   'two-transposition': {
-    title: '🔄 Transposition: Moving Music to Different Keys',
+    title: 'Transposition: Moving Music to Different Keys',
     introduction: 'Transposition means moving music from one key to another. This is essential for playing with different instruments and singers.',
+    levelStandards: {
+      skillsDeveloped: ['Key transposition', 'Interval application', 'Music theory application', 'Ensemble adaptation'],
+      levelGoal: 'LEVEL TWO Goal: Competent Performer - Understanding transposition',
+      nextLevelPrep: 'Transposition skills are essential for playing with other instruments and advanced theory'
+    },
     sections: [
       {
         heading: 'What is Transposition?',

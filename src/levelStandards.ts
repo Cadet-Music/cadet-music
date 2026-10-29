@@ -1,7 +1,7 @@
 /**
  * Level Standards and Goals
  * 
- * Defines what truly differentiates each level beyond just song repertoire.
+ * Defines what truly differentiates each level beyond just song repertoire and badges.
  * Each level has specific, measurable goals for technical skills, tone quality,
  * musicianship, and overall proficiency.
  * 
@@ -133,7 +133,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['basic tonguing', 'legato', 'staccato'],
       execution: 'Clear note beginnings with tongue',
-      speed: 'Moderate tempo (♩=60-80)',
+      speed: 'Moderate tempo (quarter = 60-80)',
     },
     
     sightReading: {
@@ -152,7 +152,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play Bb Major and F Major scales at ♩=60',
+        'Play Bb Major and F Major scales at quarter = 60',
         'Maintain consistent tone across middle register',
         'Execute basic tonguing cleanly',
         'Read music in 4/4 and 3/4 time',
@@ -240,7 +240,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['staccato', 'legato', 'accent', 'tenuto'],
       execution: 'Clear, controlled articulation at moderate tempos',
-      speed: 'Moderate to fast tempo (♩=70-100)',
+      speed: 'Moderate to fast tempo (quarter = 70-100)',
     },
     
     sightReading: {
@@ -259,7 +259,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play all required scales at ♩=66 with both tongued and slurred articulations',
+        'Play all required scales at quarter = 66 with both tongued and slurred articulations',
         'Maintain consistent tone across full range',
         'Execute all articulations cleanly',
         'Read music in all common time signatures',
@@ -350,7 +350,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['all standard articulations', 'combined articulations', 'various articulation patterns'],
       execution: 'Precise, controlled articulation at faster tempos',
-      speed: 'Fast tempo (♩=80-120)',
+      speed: 'Fast tempo (quarter = 80-120)',
     },
     
     sightReading: {
@@ -369,7 +369,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play all scales at ♩=72 with various articulations',
+        'Play all scales at quarter = 72 with various articulations',
         'Excellent tone quality across full range',
         'Precise intonation with ability to adjust',
         'Clean articulation at fast tempos',
@@ -460,7 +460,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['all articulations', 'complex combinations', 'historical styles'],
       execution: 'Excellent control and precision at all tempos',
-      speed: 'Very fast tempo (♪=60)',
+      speed: 'Very fast tempo (eighth = 60)',
     },
     
     sightReading: {
@@ -479,7 +479,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play all scales (2 octaves) from memory at ♪=60',
+        'Play all scales (2 octaves) from memory at eighth = 60',
         'Beautiful, consistent tone across full range',
         'Excellent intonation with quick adjustments',
         'Master all articulations at fast tempos',
@@ -571,7 +571,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['all articulations', 'historical styles', 'complex combinations'],
       execution: 'Perfect control at all tempos and dynamics',
-      speed: 'Very fast tempo (♪=72)',
+      speed: 'Very fast tempo (eighth = 72)',
     },
     
     sightReading: {
@@ -590,7 +590,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play all scales (2 octaves) from memory at ♪=72',
+        'Play all scales (2 octaves) from memory at eighth = 72',
         'Refined, beautiful tone with exceptional control',
         'Perfect intonation in ensemble context',
         'Master all articulations at very fast tempos',
@@ -682,7 +682,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     articulation: {
       required: ['all articulations', 'all historical styles', 'virtuosic combinations'],
       execution: 'Perfect control at all tempos, dynamics, and styles',
-      speed: 'Extremely fast tempo (♪=80)',
+      speed: 'Extremely fast tempo (eighth = 80)',
     },
     
     sightReading: {
@@ -701,7 +701,7 @@ export const LEVEL_STANDARDS: Record<CadetLevel, LevelStandard> = {
     
     goals: {
       technical: [
-        'Play all scales (2 octaves) from memory at ♪=80',
+        'Play all scales (2 octaves) from memory at eighth = 80',
         'World-class tone with complete control',
         'Perfect intonation in all contexts',
         'Virtuosic articulation at extreme tempos',
@@ -750,216 +750,32 @@ export const getLevelStandard = (level: CadetLevel): LevelStandard => {
 };
 
 /**
- * Check if a student meets level requirements
+ * Get all levels
  */
-export const checkLevelRequirements = (
-  level: CadetLevel,
-  studentSkills: {
-    scales: string[];
-    scaleTempo: number;
-    toneQuality: number; // 1-10 scale
-    intonation: number; // 1-10 scale
-    rhythm: number; // 1-10 scale
-    articulation: number; // 1-10 scale
-    sightReading: number; // 1-10 scale
-    musicianship: number; // 1-10 scale
-  }
-): {
-  meetsRequirements: boolean;
-  strengths: string[];
-  areasForImprovement: string[];
-  recommendations: string[];
-} => {
-  const standard = LEVEL_STANDARDS[level];
-  const strengths: string[] = [];
-  const areasForImprovement: string[] = [];
-  const recommendations: string[] = [];
-  
-  // Check scales
-  const requiredScales = standard.scales.required;
-  const hasAllScales = requiredScales.every(scale => studentSkills.scales.includes(scale));
-  const hasTempoRequirement = studentSkills.scaleTempo >= standard.scales.tempo;
-  
-  if (hasAllScales && hasTempoRequirement) {
-    strengths.push('Scales: Meets all requirements');
-  } else {
-    areasForImprovement.push('Scales: Missing required scales or tempo');
-    recommendations.push(`Focus on learning: ${requiredScales.filter(s => !studentSkills.scales.includes(s)).join(', ')}`);
-  }
-  
-  // Check tone quality
-  const toneThresholds: Record<CadetLevel, number> = {
-    'BASIC': 5,
-    'ONE': 6,
-    'TWO': 7,
-    'THREE': 8,
-    'FOUR': 9,
-    'FIVE': 9.5,
-  };
-  
-  if (studentSkills.toneQuality >= toneThresholds[level]) {
-    strengths.push('Tone Quality: Meets level standard');
-  } else {
-    areasForImprovement.push(`Tone Quality: Needs improvement (current: ${studentSkills.toneQuality}/10, required: ${toneThresholds[level]}/10)`);
-    recommendations.push('Focus on long tone exercises and tone production');
-  }
-  
-  // Check intonation
-  const intonationThresholds: Record<CadetLevel, number> = {
-    'BASIC': 4,
-    'ONE': 5,
-    'TWO': 7, // CRITICAL at Level 2
-    'THREE': 8,
-    'FOUR': 9,
-    'FIVE': 9.5,
-  };
-  
-  if (studentSkills.intonation >= intonationThresholds[level]) {
-    strengths.push('Intonation: Meets level standard');
-  } else {
-    areasForImprovement.push(`Intonation: Needs improvement (current: ${studentSkills.intonation}/10, required: ${intonationThresholds[level]}/10)`);
-    recommendations.push('Practice with tuner, focus on listening and adjusting');
-  }
-  
-  // Check rhythm
-  const rhythmThresholds: Record<CadetLevel, number> = {
-    'BASIC': 5,
-    'ONE': 6,
-    'TWO': 7,
-    'THREE': 8,
-    'FOUR': 9,
-    'FIVE': 9.5,
-  };
-  
-  if (studentSkills.rhythm >= rhythmThresholds[level]) {
-    strengths.push('Rhythm: Meets level standard');
-  } else {
-    areasForImprovement.push(`Rhythm: Needs improvement (current: ${studentSkills.rhythm}/10, required: ${rhythmThresholds[level]}/10)`);
-    recommendations.push('Practice with metronome, focus on subdivision');
-  }
-  
-  // Check articulation
-  const articulationThresholds: Record<CadetLevel, number> = {
-    'BASIC': 5,
-    'ONE': 6,
-    'TWO': 7,
-    'THREE': 8,
-    'FOUR': 9,
-    'FIVE': 9.5,
-  };
-  
-  if (studentSkills.articulation >= articulationThresholds[level]) {
-    strengths.push('Articulation: Meets level standard');
-  } else {
-    areasForImprovement.push(`Articulation: Needs improvement (current: ${studentSkills.articulation}/10, required: ${articulationThresholds[level]}/10)`);
-    recommendations.push('Practice articulation exercises slowly, then gradually increase tempo');
-  }
-  
-  // Check sight reading
-  const sightReadingThresholds: Record<CadetLevel, number> = {
-    'BASIC': 0, // Not required at Basic
-    'ONE': 5,
-    'TWO': 6,
-    'THREE': 7,
-    'FOUR': 8,
-    'FIVE': 9,
-  };
-  
-  if (level === 'BASIC' || studentSkills.sightReading >= sightReadingThresholds[level]) {
-    strengths.push('Sight Reading: Meets level standard');
-  } else {
-    areasForImprovement.push(`Sight Reading: Needs improvement (current: ${studentSkills.sightReading}/10, required: ${sightReadingThresholds[level]}/10)`);
-    recommendations.push('Practice sight reading daily, start with easy pieces');
-  }
-  
-  // Check musicianship
-  const musicianshipThresholds: Record<CadetLevel, number> = {
-    'BASIC': 4,
-    'ONE': 5,
-    'TWO': 6,
-    'THREE': 7,
-    'FOUR': 8,
-    'FIVE': 9,
-  };
-  
-  if (studentSkills.musicianship >= musicianshipThresholds[level]) {
-    strengths.push('Musicianship: Meets level standard');
-  } else {
-    areasForImprovement.push(`Musicianship: Needs improvement (current: ${studentSkills.musicianship}/10, required: ${musicianshipThresholds[level]}/10)`);
-    recommendations.push('Listen to professional recordings, study musical scores, practice expression');
-  }
-  
-  const meetsRequirements = areasForImprovement.length === 0 || 
-    (areasForImprovement.length <= 2 && !areasForImprovement.some(a => a.includes('CRITICAL')));
-  
-  return {
-    meetsRequirements,
-    strengths,
-    areasForImprovement,
-    recommendations,
-  };
+export const getAllLevels = (): CadetLevel[] => {
+  return ['BASIC', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'];
 };
 
 /**
- * Get progression path between levels
+ * Get next level
  */
-export const getProgressionPath = (fromLevel: CadetLevel, toLevel: CadetLevel): {
-  skillAreas: string[];
-  focusAreas: string[];
-  practiceRecommendations: string[];
-} => {
-  const fromStandard = LEVEL_STANDARDS[fromLevel];
-  const toStandard = LEVEL_STANDARDS[toLevel];
-  
-  const skillAreas: string[] = [];
-  const focusAreas: string[] = [];
-  const practiceRecommendations: string[] = [];
-  
-  // Compare scales
-  if (toStandard.scales.tempo > fromStandard.scales.tempo) {
-    focusAreas.push(`Increase scale tempo from ♩=${fromStandard.scales.tempo} to ♩=${toStandard.scales.tempo}`);
-    practiceRecommendations.push('Practice scales with metronome, gradually increase tempo');
+export const getNextLevel = (level: CadetLevel): CadetLevel | null => {
+  const levels = getAllLevels();
+  const currentIndex = levels.indexOf(level);
+  if (currentIndex === -1 || currentIndex === levels.length - 1) {
+    return null;
   }
-  
-  if (toStandard.scales.range !== fromStandard.scales.range) {
-    focusAreas.push(`Expand scale range from ${fromStandard.scales.range} to ${toStandard.scales.range}`);
-    practiceRecommendations.push('Practice scales in multiple octaves');
+  return levels[currentIndex + 1];
+};
+
+/**
+ * Get previous level
+ */
+export const getPreviousLevel = (level: CadetLevel): CadetLevel | null => {
+  const levels = getAllLevels();
+  const currentIndex = levels.indexOf(level);
+  if (currentIndex <= 0) {
+    return null;
   }
-  
-  // Compare tone
-  if (toStandard.tone.characteristics.length > fromStandard.tone.characteristics.length) {
-    focusAreas.push('Develop more refined tone quality');
-    practiceRecommendations.push('Focus on long tone exercises, tone matching with recordings');
-  }
-  
-  // Compare intonation
-  if (toStandard.intonation.tolerance !== fromStandard.intonation.tolerance) {
-    focusAreas.push(`Improve intonation precision from ${fromStandard.intonation.tolerance} to ${toStandard.intonation.tolerance}`);
-    practiceRecommendations.push('Practice with tuner, develop ear for intonation');
-  }
-  
-  // Compare rhythm
-  if (toStandard.rhythm.tempoRange.min > fromStandard.rhythm.tempoRange.min ||
-      toStandard.rhythm.tempoRange.max > fromStandard.rhythm.tempoRange.max) {
-    focusAreas.push('Expand tempo range and rhythmic complexity');
-    practiceRecommendations.push('Practice with metronome at various tempos, work on complex rhythms');
-  }
-  
-  // Compare sight reading
-  if (toStandard.sightReading.length !== fromStandard.sightReading.length) {
-    focusAreas.push(`Improve sight reading from ${fromStandard.sightReading.length} to ${toStandard.sightReading.length}`);
-    practiceRecommendations.push('Sight read daily, gradually increase difficulty');
-  }
-  
-  // Compare musicianship
-  if (toStandard.musicianship.dynamics.length > fromStandard.musicianship.dynamics.length) {
-    focusAreas.push('Develop more sophisticated dynamic control');
-    practiceRecommendations.push('Practice extreme dynamics, work on dynamic shading');
-  }
-  
-  return {
-    skillAreas,
-    focusAreas,
-    practiceRecommendations,
-  };
+  return levels[currentIndex - 1];
 };
