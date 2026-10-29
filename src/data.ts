@@ -424,6 +424,21 @@ export interface Lesson {
 
 export const CURRICULUM: { id: string; title: string; level: number; lessons: Lesson[] }[] = [
   {
+    id: 'pre-basic',
+    title: 'PRE-BASIC: Absolute Beginner',
+    level: -1,
+    lessons: [
+      { id: 'pre-intro', title: 'Welcome to Music', type: 'theory', emoji: '🎵', topic: 'Introduction', xp: 10, description: 'What is music and why we play', interactive: false, level: 'BASIC' as CadetLevel },
+      { id: 'pre-instrument-care', title: 'Instrument Care Basics', type: 'playing', emoji: '🧹', topic: 'Care', xp: 10, description: 'How to handle and care for your instrument', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-posture', title: 'Basic Posture', type: 'playing', emoji: '🧍', topic: 'Posture', xp: 10, description: 'How to stand and hold your instrument', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-breathing', title: 'Breathing Basics', type: 'playing', emoji: '💨', topic: 'Breathing', xp: 15, description: 'How to breathe properly', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-embouchure', title: 'Embouchure Introduction', type: 'playing', emoji: '👄', topic: 'Embouchure', xp: 15, description: 'How to form your mouth', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-first-sound', title: 'Making Your First Sound', type: 'playing', emoji: '🎶', topic: 'First Sound', xp: 20, description: 'Producing your first note', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-assembly', title: 'Assembly and Disassembly', type: 'playing', emoji: '🔧', topic: 'Assembly', xp: 15, description: 'How to put your instrument together', interactive: true, level: 'BASIC' as CadetLevel },
+      { id: 'pre-exam', title: 'Pre-Basic Assessment', type: 'exam', emoji: '📝', topic: 'Assessment', xp: 30, description: 'Complete the Pre-Basic level', interactive: false, level: 'BASIC' as CadetLevel },
+    ],
+  },
+  {
     id: 'clarinet-basic',
     title: 'CLARINET BASIC',
     level: 0,
@@ -471,6 +486,8 @@ export const CURRICULUM: { id: string; title: string; level: number; lessons: Le
       { id: 'basic-tuning', title: 'Tuning Basics', type: 'theory', emoji: '🎯', topic: 'Tuning', xp: 15, description: 'How to tune your saxophone', interactive: true, level: 'BASIC' as CadetLevel, po: 453 },
       { id: 'basic-long-tones', title: 'Long Tones', type: 'playing', emoji: '🎵', topic: 'Tone Quality', xp: 20, description: 'Developing a beautiful tone', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
       { id: 'basic-tonguing', title: 'Basic Tonguing', type: 'playing', emoji: '👅', topic: 'Articulation', xp: 20, description: 'Starting notes with your tongue', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'basic-articulation', title: 'Articulation Types', type: 'playing', emoji: '🎵', topic: 'Articulation', xp: 25, description: 'Staccato, legato, and accents', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
+      { id: 'basic-phrasing', title: 'Musical Phrasing', type: 'playing', emoji: '🎼', topic: 'Phrasing', xp: 25, description: 'Shaping musical sentences', interactive: true, level: 'BASIC' as CadetLevel, po: 451 },
       { id: 'basic-drill', title: 'Band Drill Basics', type: 'playing', emoji: '🎖️', topic: 'Band Drill', xp: 10, description: 'Position and movement', interactive: false, level: 'BASIC' as CadetLevel, po: 459 },
       { id: 'audio-basic-note', title: 'Audio Practice: Note G', type: 'audio', emoji: '🎤', topic: 'Audio Practice', xp: 20, description: 'Practice playing the note G with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },
       { id: 'audio-basic-scale', title: 'Audio Practice: Bb Major Scale', type: 'audio', emoji: '🎤', topic: 'Audio Practice', xp: 30, description: 'Practice the Bb Major scale with your instrument', interactive: true, level: 'BASIC' as CadetLevel, po: 451, requiresMicrophone: true },

@@ -35,6 +35,388 @@ export interface InteractiveExerciseConfig {
 }
 
 export const LESSON_CONTENT: Record<string, LessonContent> = {
+  // PRE-BASIC LESSONS - ABSOLUTE BEGINNERS
+  'pre-intro': {
+    title: 'Welcome to Music',
+    introduction: 'Welcome to the world of music! Before we start playing, let\'s understand what music is and why we learn to play instruments.',
+    levelStandards: {
+      skillsDeveloped: ['Music appreciation', 'Understanding purpose', 'Motivation'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Understanding what music is',
+      nextLevelPrep: 'This foundation prepares you for hands-on instrument learning'
+    },
+    sections: [
+      {
+        heading: 'What is Music?',
+        content: 'Music is organized sound that expresses emotions, tells stories, and brings people together. It\'s a universal language that everyone can understand.\n\nMusic has three main elements:\n1. **Melody** - The tune you hum or sing\n2. **Harmony** - Multiple notes played together\n3. **Rhythm** - The timing and beat of the music',
+        example: 'Think of your favorite song. The part you sing along to is the melody. The chords underneath are the harmony. The beat you tap your foot to is the rhythm.',
+        tip: 'Music is everywhere - in movies, games, celebrations, and even in nature. Listen to the world around you!'
+      },
+      {
+        heading: 'Why Learn an Instrument?',
+        content: 'Learning an instrument offers many benefits:\n\n**Mental Benefits:**\n- Improves memory and concentration\n- Develops problem-solving skills\n- Enhances mathematical understanding\n- Boosts creativity\n\n**Physical Benefits:**\n- Improves coordination\n- Develops fine motor skills\n- Enhances breath control\n- Builds discipline\n\n**Social Benefits:**\n- Play with others in bands and orchestras\n- Perform for audiences\n- Connect with other musicians\n- Be part of a team',
+        example: 'Many famous people played instruments: Albert Einstein played violin, Steve Jobs played guitar, and countless leaders throughout history played music.',
+        tip: 'Learning an instrument is a journey. Be patient with yourself and celebrate every small victory!'
+      },
+      {
+        heading: 'What to Expect',
+        content: 'Your musical journey will have several stages:\n\n**Stage 1: Pre-Basic (You are here!)**\n- Learn about your instrument\n- Understand basic care and handling\n- Make your first sounds\n- Learn proper posture and breathing\n\n**Stage 2: Basic**\n- Learn your first notes\n- Read simple music\n- Play easy songs\n- Develop fundamental techniques\n\n**Stage 3: Level One and Beyond**\n- Master more complex techniques\n- Play challenging pieces\n- Perform with others\n- Develop your musical voice',
+        tip: 'Every musician starts where you are now. With practice and patience, you\'ll be amazed at how far you can go!'
+      }
+    ],
+    keyPoints: [
+      'Music is organized sound with melody, harmony, and rhythm',
+      'Learning an instrument improves mental, physical, and social skills',
+      'Your journey starts with Pre-Basic and progresses through levels',
+      'Be patient and celebrate small victories',
+      'Every musician starts as a beginner'
+    ],
+    practiceInstructions: 'Listen to different types of music today. Try to identify the melody, harmony, and rhythm. Think about why you want to learn an instrument and what you hope to achieve. Write down your goals and keep them visible as you practice.'
+  },
+
+  'pre-instrument-care': {
+    title: 'Instrument Care Basics',
+    introduction: 'Your instrument is a valuable tool that needs proper care. Let\'s learn the basics of handling and maintaining your instrument.',
+    levelStandards: {
+      skillsDeveloped: ['Instrument handling', 'Basic maintenance', 'Respect for equipment'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Learning proper instrument care',
+      nextLevelPrep: 'Proper care habits established now will serve you throughout your musical journey'
+    },
+    sections: [
+      {
+        heading: 'Handling Your Instrument',
+        content: 'Your instrument is delicate and expensive. Always handle it with care:\n\n**Golden Rules:**\n1. Always wash your hands before playing\n2. Never eat or drink while playing\n3. Always use both hands when carrying\n4. Never set it down without support\n5. Always case it when not in use',
+        example: 'Think of your instrument like a baby - it needs gentle handling and constant attention.',
+        tip: 'A well-cared-for instrument will last for decades and sound better than a neglected one.'
+      },
+      {
+        heading: 'Basic Cleaning',
+        content: 'After every practice session:\n\n**For Wind Instruments:**\n1. Swab out moisture from the body\n2. Wipe the mouthpiece clean\n3. Remove and dry the reed\n4. Wipe down the exterior with a soft cloth\n\n**Storage:**\n- Always store in the case\n- Keep in a moderate temperature environment\n- Avoid extreme heat or cold\n- Keep away from direct sunlight',
+        tip: 'Moisture is your instrument\'s enemy. Always dry it thoroughly before storing.'
+      },
+      {
+        heading: 'When to Get Help',
+        content: 'Some problems need professional attention:\n\n**See a Technician If:**\n- Keys are bent or broken\n- Pads are torn or missing\n- Instrument won\'t play certain notes\n- There are visible cracks or dents\n- Keys stick or don\'t move smoothly\n\n**Don\'t Try to Fix:**\n- Bent keys (you might make it worse)\n- Pad replacement (requires special tools)\n- Major dents or cracks\n- Anything you\'re unsure about',
+        tip: 'Regular maintenance by a professional keeps your instrument in top condition and prevents costly repairs later.'
+      }
+    ],
+    keyPoints: [
+      'Always handle your instrument with clean hands',
+      'Never eat or drink while playing',
+      'Clean and dry your instrument after every use',
+      'Store it properly in its case',
+      'See a professional for repairs'
+    ],
+    practiceInstructions: 'Practice proper handling: 1) Wash hands, 2) Pick up instrument with both hands, 3) Assemble carefully, 4) Play for 5 minutes, 5) Disassemble and clean, 6) Store in case. Repeat this routine every time you practice until it becomes automatic.'
+  },
+
+  'pre-posture': {
+    title: 'Basic Posture',
+    introduction: 'Good posture is the foundation of good playing. Let\'s learn how to stand and hold your instrument properly.',
+    levelStandards: {
+      skillsDeveloped: ['Standing posture', 'Instrument holding', 'Body alignment'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Establishing proper physical foundation',
+      nextLevelPrep: 'Good posture prevents injury and enables better technique'
+    },
+    sections: [
+      {
+        heading: 'Standing Position',
+        content: 'Proper standing posture:\n\n1. **Feet:** Shoulder-width apart, weight evenly distributed\n2. **Back:** Straight but relaxed (not stiff)\n3. **Shoulders:** Down and back (not hunched)\n4. **Head:** Up, looking forward (not down at instrument)\n5. **Knees:** Slightly bent (not locked)',
+        example: 'Imagine a string pulling you up from the top of your head. You should feel tall and relaxed at the same time.',
+        tip: 'Practice standing in good posture without your instrument first. Then add the instrument and check your posture in a mirror.'
+      },
+      {
+        heading: 'Holding Your Instrument',
+        content: 'How to hold your instrument correctly:\n\n**General Principles:**\n- Instrument should come to your mouth, not your mouth to the instrument\n- Use a neck strap to support the weight\n- Keep wrists straight (not bent)\n- Fingers curved and relaxed\n- Thumbs support the instrument',
+        tip: 'If you\'re hunching over or straining your neck, adjust your strap or posture immediately.'
+      },
+      {
+        heading: 'Common Posture Problems',
+        content: 'Watch out for these mistakes:\n\n**Hunching Shoulders:**\n- Causes tension and restricts breathing\n- Fix: Roll shoulders back and down\n\n**Bending Neck:**\n- Causes neck pain and poor tone\n- Fix: Adjust instrument height with strap\n\n**Gripping Too Tightly:**\n- Causes hand fatigue and slows you down\n- Fix: Relax your hands, let the strap do the work\n\n**Locked Knees:**\n- Causes dizziness and poor balance\n- Fix: Keep knees slightly bent',
+        tip: 'Check yourself in a mirror while playing. Are your shoulders relaxed? Is your back straight? Is your head up? Fix what you see.'
+      }
+    ],
+    keyPoints: [
+      'Stand tall with relaxed shoulders',
+      'Instrument comes to your mouth, not vice versa',
+      'Use neck strap to support weight',
+      'Keep wrists straight and fingers curved',
+      'Check posture in a mirror regularly'
+    ],
+    practiceInstructions: 'Practice posture daily: 1) Stand in good posture for 2 minutes without instrument, 2) Add instrument and check alignment, 3) Hold for 5 minutes while checking in mirror, 4) Play simple exercises while maintaining posture. Do this every day until good posture becomes automatic.'
+  },
+
+  'pre-breathing': {
+    title: 'Breathing Basics',
+    introduction: 'Proper breathing is the foundation of wind instrument playing. Let\'s learn how to breathe correctly.',
+    levelStandards: {
+      skillsDeveloped: ['Diaphragmatic breathing', 'Breath control', 'Air support'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Learning proper breathing technique',
+      nextLevelPrep: 'Good breathing enables better tone, phrasing, and endurance'
+    },
+    sections: [
+      {
+        heading: 'Diaphragmatic Breathing',
+        content: 'Wind players use diaphragmatic breathing (belly breathing), not chest breathing:\n\n**How to Breathe:**\n1. Keep shoulders relaxed and down\n2. Breathe in through your mouth\n3. Your belly should expand outward\n4. Your chest should barely move\n5. Fill your lungs completely from bottom to top',
+        example: 'Lie down on your back and put a book on your belly. When you breathe in, the book should rise. When you breathe out, it should fall. That\'s diaphragmatic breathing!',
+        tip: 'Practice breathing exercises without your instrument first. Master the breathing technique before adding the instrument.'
+      },
+      {
+        heading: 'Breath Control',
+        content: 'Controlling your breath is just as important as taking it:\n\n**Exhaling:**\n- Use your abdominal muscles to control the air flow\n- Keep the air stream steady and consistent\n- Don\'t let the air collapse or fade\n- Think of squeezing a tube of toothpaste - steady pressure from start to finish',
+        example: 'Imagine blowing through a straw. You need steady, controlled air, not a burst followed by nothing.',
+        tip: 'Your abdominal muscles are your air control system. Keep them engaged while playing.'
+      },
+      {
+        heading: 'Breathing Exercises',
+        content: 'Practice these exercises daily:\n\n**Exercise 1: The Hiss**\nTake a deep breath, then hiss "ssss" for as long as possible. Aim for 20+ seconds. Keep the hiss steady and consistent.\n\n**Exercise 2: The Count**\nTake a deep breath, then count out loud: "1-2-3-4-5-6-7-8" on one breath. Keep steady volume throughout.\n\n**Exercise 3: The Pulse**\nTake a breath, then pulse the air: "ha-ha-ha-ha" while keeping support. Each pulse should be equal in strength.',
+        tip: 'Do breathing exercises for 5 minutes every day. This will dramatically improve your playing.'
+      }
+    ],
+    keyPoints: [
+      'Breathe from diaphragm, not chest',
+      'Belly expands, shoulders stay down',
+      'Use abdominal muscles for air control',
+      'Keep air stream steady and consistent',
+      'Practice breathing exercises daily'
+    ],
+    practiceInstructions: 'Daily breathing routine: 1) Hiss exercise: 5 times, aim for 20+ seconds each, 2) Counting exercise: 5 times, count to 8 on one breath, 3) Pulse exercise: 5 times, keep pulses even. Total time: 5 minutes. Do this every day!'
+  },
+
+  'pre-embouchure': {
+    title: 'Embouchure Introduction',
+    introduction: 'Your embouchure is how you use your mouth to play. Let\'s learn the basics.',
+    levelStandards: {
+      skillsDeveloped: ['Mouth position', 'Lip control', 'Facial muscles'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Understanding embouchure basics',
+      nextLevelPrep: 'Proper embouchure enables better tone and intonation'
+    },
+    sections: [
+      {
+        heading: 'What is Embouchure?',
+        content: 'Embouchure (ah-boo-SHURE) is the French word for "mouth." For wind instruments, it means how you use your mouth, lips, and facial muscles to play.\n\nA good embouchure:\n- Creates a seal around the mouthpiece\n- Controls the reed vibration\n- Produces a clear, focused tone\n- Allows for pitch control',
+        example: 'Think of your embouchure like a camera lens - it focuses and controls the sound, just like a lens focuses light.',
+        tip: 'Your embouchure muscles will get tired at first - that\'s normal! They\'ll get stronger with practice.'
+      },
+      {
+        heading: 'Basic Embouchure Formation',
+        content: 'For saxophone and clarinet:\n\n1. **Bottom lip:** Curl over bottom teeth (like a cushion)\n2. **Top teeth:** Rest on top of mouthpiece\n3. **Corners:** Firm and pulled inward (like saying "M")\n4. **Chin:** Flat and pointed down (not bunched up)\n5. **Jaw:** Dropped slightly (not clenched)',
+        example: 'Say the letter "M" and hold it. Feel how the corners of your mouth firm up? That\'s the foundation of good embouchure!',
+        tip: 'Don\'t bite! Your teeth should rest gently on the mouthpiece. Biting will squeeze the reed and make the sound squeaky.'
+      },
+      {
+        heading: 'Common Embouchure Problems',
+        content: 'Watch out for these mistakes:\n\n**Biting too hard:**\n- Causes: Squeaky, strained sound\n- Fix: Relax jaw, use corners for pressure instead\n\n**Corners pulling back:**\n- Causes: Thin, unfocused tone\n- Fix: Firm corners like saying "M"\n\n**Chin bunched up:**\n- Causes: Restricted reed vibration\n- Fix: Flatten chin, point it down',
+        tip: 'Practice embouchure in front of a mirror. Check: Are corners firm? Is chin flat? Are you biting?'
+      }
+    ],
+    keyPoints: [
+      'Embouchure = how you use your mouth to play',
+      'Bottom lip curled over teeth (cushion)',
+      'Top teeth on mouthpiece',
+      'Corners firm like saying "M"',
+      'Chin flat and pointed down',
+      'Don\'t bite - use corners for pressure'
+    ],
+    practiceInstructions: 'Daily embouchure routine: 1) Practice forming embouchure without instrument for 2 minutes, 2) Check in mirror - are corners firm? Is chin flat? 3) Hold position for 30 seconds, rest, repeat 5 times. Do this every day!'
+  },
+
+  'pre-first-sound': {
+    title: 'Making Your First Sound',
+    introduction: 'Now let\'s learn how to produce sound on your instrument. This is an exciting moment!',
+    levelStandards: {
+      skillsDeveloped: ['Sound production', 'Embouchure application', 'Air stream control'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Producing first tone',
+      nextLevelPrep: 'First sound mastery prepares you for learning notes'
+    },
+    sections: [
+      {
+        heading: 'Preparing to Play',
+        content: 'Before making your first sound:\n\n1. **Assemble your instrument** (or just mouthpiece and neck for saxophone)\n2. **Wet your reed** (30-60 seconds in your mouth)\n3. **Form your embouchure** (as practiced)\n4. **Take a deep breath** (from your diaphragm)\n5. **Position the mouthpiece** (about 1/2 inch in your mouth)',
+        tip: 'Make sure your reed is properly wet. A dry reed won\'t vibrate properly and will squeak.'
+      },
+      {
+        heading: 'Making Sound',
+        content: 'Now let\'s make your first sound:\n\n1. Form your embouchure\n2. Place mouthpiece in mouth\n3. Take a deep breath from your diaphragm\n4. Blow steady, fast air through the instrument\n5. Keep your throat open (like saying "AW")\n\nYou should hear a clear, steady tone.',
+        example: 'Think of fogging up a mirror - you need steady, fast air, not a weak puff.',
+        tip: 'If you hear air but no pitch, you need more air speed. If it squeaks, check your embouchure - you might be biting.'
+      },
+      {
+        heading: 'Troubleshooting',
+        content: 'Common problems and solutions:\n\n**No sound at all:**\n- Check: Is reed wet? Is mouthpiece positioned correctly?\n- Fix: Wet reed for 60 seconds, adjust position\n\n**Airy sound (no pitch):**\n- Check: Are you blowing fast enough?\n- Fix: Blow faster, think "fog the mirror"\n\n**Squeaking:**\n- Check: Are you biting? Is embouchure too tight?\n- Fix: Relax jaw, firm corners instead\n\n**Sound cuts out:**\n- Check: Are you running out of air?\n- Fix: Take deeper breaths, support with abdomen',
+        tip: 'Every problem has a solution! Be patient and keep trying. Even professionals had to start somewhere.'
+      }
+    ],
+    keyPoints: [
+      'Wet reed for 30-60 seconds before playing',
+      'Form embouchure correctly',
+      'Blow steady, fast air',
+      'Keep throat open and relaxed',
+      'Troubleshoot problems systematically'
+    ],
+    practiceInstructions: 'First sound practice: 1) Wet reed for 60 seconds, 2) Form embouchure, 3) Place mouthpiece in mouth, 4) Blow steady air, 5) Try to produce a clear tone for 10 seconds, 6) Rest, repeat 5 times. If it doesn\'t work, check the troubleshooting guide and try again.'
+  },
+
+  'pre-assembly': {
+    title: 'Assembly and Disassembly',
+    introduction: 'Learning to properly assemble and disassemble your instrument is essential. Let\'s practice this important skill.',
+    levelStandards: {
+      skillsDeveloped: ['Instrument assembly', 'Proper handling', 'Care routine'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Learning instrument assembly',
+      nextLevelPrep: 'Proper assembly protects your instrument and ensures it plays well'
+    },
+    sections: [
+      {
+        heading: 'Assembly Steps',
+        content: 'How to assemble your instrument:\n\n**For Saxophone:**\n1. Attach neck to body (tighten screw gently)\n2. Wet reed (30-60 seconds in mouth)\n3. Attach reed to mouthpiece (align tip with tip)\n4. Secure ligature (snug but not too tight)\n5. Attach mouthpiece to neck (push and twist gently)\n\n**For Clarinet:**\n1. Grease corks (thin layer)\n2. Attach bell to lower joint (twist gently)\n3. Attach lower joint to upper joint (twist gently)\n4. Attach barrel to upper joint (twist gently)\n5. Attach mouthpiece to barrel (twist gently)\n6. Wet and attach reed',
+        tip: 'Never force any parts together. If something doesn\'t fit easily, check the alignment and try again.'
+      },
+      {
+        heading: 'Disassembly Steps',
+        content: 'How to disassemble your instrument:\n\n**Reverse the assembly order:**\n1. Remove mouthpiece (twist gently)\n2. Remove reed and store in reed guard\n3. Disassemble joints (twist gently)\n4. Swab each piece to remove moisture\n5. Wipe exterior with soft cloth\n6. Store in case',
+        example: 'Think of disassembly like unwrapping a gift - be gentle and careful at each step.',
+        tip: 'Always swab your instrument before storing it. Moisture left inside can damage pads and cause mold.'
+      },
+      {
+        heading: 'Practice Routine',
+        content: 'Practice assembly and disassembly:\n\n**Day 1-3:**\n- Assemble and disassemble 3 times each day\n- Time yourself - aim for under 2 minutes\n- Focus on gentle handling\n\n**Day 4-7:**\n- Assemble, play for 5 minutes, disassemble\n- Include cleaning routine\n- Aim for smooth, confident handling\n\n**Week 2:**\n- Assembly should become automatic\n- Focus on proper technique\n- Help others learn assembly',
+        tip: 'Speed comes from accuracy. Don\'t rush - do it right every time.'
+      }
+    ],
+    keyPoints: [
+      'Always assemble in correct order',
+      'Never force parts together',
+      'Wet reed before attaching',
+      'Swab after every use',
+      'Store in case when not playing'
+    ],
+    practiceInstructions: 'Assembly challenge: 1) Assemble your instrument 3 times, timing yourself each time, 2) Disassemble and clean thoroughly, 3) Repeat 5 times total, 4) Aim to assemble in under 2 minutes by day 3. Practice this every day!'
+  },
+
+  'pre-exam': {
+    title: 'Pre-Basic Assessment',
+    introduction: 'Congratulations on completing the Pre-Basic level! Let\'s review what you\'ve learned and prepare to move on.',
+    levelStandards: {
+      skillsDeveloped: ['Knowledge review', 'Skill assessment', 'Progress evaluation'],
+      levelGoal: 'PRE-BASIC Level Goal: Introduction - Demonstrating foundational knowledge',
+      nextLevelPrep: 'This assessment confirms you\'re ready for BASIC level'
+    },
+    sections: [
+      {
+        heading: 'What You\'ve Learned',
+        content: 'In Pre-Basic, you\'ve learned:\n\n**Instrument Knowledge:**\n- What music is and why we play\n- How to handle and care for your instrument\n- Basic cleaning and maintenance\n\n**Physical Skills:**\n- Proper standing posture\n- Correct instrument holding\n- Diaphragmatic breathing\n- Basic embouchure formation\n\n**Practical Skills:**\n- Making your first sound\n- Assembling and disassembling\n- Basic troubleshooting',
+        tip: 'Review each of these areas. Are you confident in all of them? If not, go back and practice more.'
+      },
+      {
+        heading: 'Assessment Checklist',
+        content: 'Before moving to BASIC level, you should be able to:\n\n**Knowledge:**\n- ✓ Explain what music is\n- ✓ List 3 benefits of learning an instrument\n- ✓ Describe proper instrument care\n\n**Physical Skills:**\n- ✓ Stand with proper posture for 2 minutes\n- ✓ Hold instrument correctly\n- ✓ Breathe from diaphragm\n- ✓ Form basic embouchure\n\n**Practical Skills:**\n- ✓ Produce a clear tone for 10 seconds\n- ✓ Assemble instrument in under 2 minutes\n- ✓ Disassemble and clean properly',
+        tip: 'If you can\'t check all these boxes, spend more time practicing before moving on.'
+      },
+      {
+        heading: 'Moving Forward',
+        content: 'Once you\'ve completed Pre-Basic, you\'re ready for BASIC level where you\'ll:\n\n- Learn your first notes\n- Read simple music\n- Play easy songs\n- Develop fundamental techniques\n\nBASIC level builds on everything you\'ve learned in Pre-Basic. Make sure you\'re confident in all the foundational skills before moving on.',
+        example: 'Think of Pre-Basic like learning to walk before you run. You\'ve built the foundation - now it\'s time to build on it!',
+        tip: 'Take your time. It\'s better to master Pre-Basic skills than to rush into BASIC level unprepared.'
+      }
+    ],
+    keyPoints: [
+      'Review all Pre-Basic lessons',
+      'Complete the assessment checklist',
+      'Ensure confidence in all foundational skills',
+      'Don\'t rush - master the basics first',
+      'You\'re ready for BASIC level when all checkboxes are complete'
+    ],
+    practiceInstructions: 'Pre-Basic final review: 1) Go through each lesson and practice the skills, 2) Complete the assessment checklist, 3) Ask someone to observe your posture and embouchure, 4) Time your assembly/disassembly, 5) Play for 5 minutes focusing on tone quality. When you\'re confident in all areas, move to BASIC level!'
+  },
+
+  // BASIC LESSONS - ARTICULATION AND PHRASING
+  'basic-articulation': {
+    title: 'Articulation Types',
+    introduction: 'Articulation is how you start and separate notes. Different articulations create different musical effects. Let\'s learn the main types.',
+    levelStandards: {
+      skillsDeveloped: ['Staccato technique', 'Legato playing', 'Accent execution', 'Articulation control'],
+      levelGoal: 'BASIC Level Goal: Foundation - Developing articulation control',
+      nextLevelPrep: 'Articulation skills are essential for musical expression and advanced techniques'
+    },
+    sections: [
+      {
+        heading: 'Staccato: Short and Detached',
+        content: 'Staccato notes are short and separated:\n\n**Symbol:** Dot above or below the note\n**Technique:** Tongue the note briefly, then stop the air\n**Sound:** "ta-ta-ta-ta" (short, bouncy)\n\nTo play staccato:\n1. Tongue the note normally\n2. Stop the air quickly with your tongue\n3. Leave a small gap between notes\n4. Keep the rhythm steady',
+        example: 'Imagine bouncing a ball - it goes up and down with space between each bounce. That\'s staccato!',
+        tip: 'Staccato doesn\'t mean rushing! Keep the rhythm steady. The notes are just shorter.'
+      },
+      {
+        heading: 'Legato: Smooth and Connected',
+        content: 'Legato notes flow smoothly together:\n\n**Symbol:** Slur line over the notes\n**Technique:** Tongue only the first note, then use air to connect the rest\n**Sound:** "daaaa-aaaa" (smooth, flowing)\n\nTo play legato:\n1. Tongue the first note\n2. Change fingers for the next notes without tonguing\n3. Keep the air flowing steadily\n4. Make the transitions seamless',
+        example: 'Think of legato like pouring honey - it flows smoothly without breaking. That\'s how your notes should connect!',
+        tip: 'Legato requires excellent finger technique. Practice slowly to ensure smooth transitions.'
+      },
+      {
+        heading: 'Accent: Emphasized and Strong',
+        content: 'Accented notes are emphasized:\n\n**Symbol:** > above or below the note\n**Technique:** Use more air pressure and a stronger tongue attack\n**Sound:** "TA-ta-ta-ta" (first note is louder)\n\nTo play accent:\n1. Use more air support\n2. Tongue the note more firmly\n3. Keep the embouchure firm\n4. Return to normal volume after the accent',
+        example: 'Think of an accent like an exclamation point! It adds emphasis and excitement to the music.',
+        tip: 'Don\'t bite or squeeze for accents! Use more air support, not more embouchure pressure.'
+      },
+      {
+        heading: 'Combining Articulations',
+        content: 'Music often combines different articulations:\n\n**Example Pattern:**\n- Slurred group of 4 notes, then tongued\n- Accent on beat 1, then legato\n- Staccato passage followed by legato phrase\n\n**Practice Method:**\n1. Learn each articulation separately first\n2. Practice transitions between articulations\n3. Apply to simple melodies\n4. Focus on clear contrast between styles',
+        tip: 'The contrast between articulations is what makes music interesting. Make each type clearly different!'
+      }
+    ],
+    keyPoints: [
+      'Staccato = short, detached (dot symbol)',
+      'Legato = smooth, connected (slur symbol)',
+      'Accent = emphasized, strong (> symbol)',
+      'Each requires different tonguing technique',
+      'Articulation gives music character and expression',
+      'Practice each type separately, then combine'
+    ],
+    practiceInstructions: 'Daily articulation routine: 1) Staccato: play G with tongue "ta-ta-ta-ta" (quarter notes, 5 times), 2) Legato: play G-A-B-A-G slurred (5 times), 3) Accent: play G with accent "TA-ta-ta-ta" (5 times), 4) Combine: play scale with different articulations (staccato, legato, accents), 5) Find a piece of music and identify the articulations, then play it correctly. Total time: 10 minutes daily.'
+  },
+
+  'basic-phrasing': {
+    title: 'Musical Phrasing',
+    introduction: 'Phrasing is how you shape musical sentences. Just like speech has punctuation and emphasis, music has phrasing that makes it expressive and meaningful.',
+    levelStandards: {
+      skillsDeveloped: ['Phrase recognition', 'Musical shaping', 'Breath control', 'Expression'],
+      levelGoal: 'BASIC Level Goal: Foundation - Developing musical expression',
+      nextLevelPrep: 'Phrasing skills are essential for musical interpretation and performance'
+    },
+    sections: [
+      {
+        heading: 'What is a Phrase?',
+        content: 'A phrase is a musical sentence - a complete musical thought:\n\n**Characteristics:**\n- Usually 2, 4, or 8 bars long\n- Has a beginning, middle, and end\n- Often ends with a cadence (musical punctuation)\n- Like a sentence, it expresses a complete idea\n\n**How to Identify Phrases:**\n- Look for slurs (legato markings)\n- Listen for natural breathing points\n- Notice patterns and repetitions\n- Feel the musical "question and answer"',
+        example: 'Think of a phrase like a sentence: "The quick brown fox jumps over the lazy dog." It has a beginning, middle, and end. Music works the same way!',
+        tip: 'Sing the melody first. Where do you naturally breathe? Those are likely phrase endings.'
+      },
+      {
+        heading: 'Shaping a Phrase',
+        content: 'How to make a phrase musical:\n\n**The Arc:**\nMost phrases have a natural arc:\n- Start softly (piano)\n- Build to a climax (forte)\n- Resolve softly (piano)\n\n**The Shape:**\n- Beginning: Clear start, establish tempo\n- Middle: Build intensity, shape the melody\n- End: Clear conclusion, breathe naturally\n\n**Techniques:**\n- Use dynamics (crescendo/decrescendo)\n- Slight tempo changes (rubato)\n- Articulation contrast\n- Breath at phrase endings',
+        example: 'Think of a phrase like a wave: it builds up, reaches a peak, then comes back down. Shape your music like that!',
+        tip: 'Don\'t just play the notes - tell a story with them. What is the phrase saying?'
+      },
+      {
+        heading: 'Breathing and Phrasing',
+        content: 'Where to breathe in a phrase:\n\n**Golden Rules:**\n1. Never breathe in the middle of a musical idea\n2. Breathe at phrase endings (natural punctuation)\n3. Breathe where the composer indicates (comma, caesura)\n4. Plan your breaths in advance\n\n**Breath Markings:**\n- Comma (,) = short breath\n- Apostrophe (\') = quick breath\n- Caesura (//) = full breath, pause\n\n**Planning:**\n- Mark your music with breath marks\n- Practice breathing in those spots\n- Make breaths part of the music, not interruptions',
+        tip: 'Good breathing is invisible. The listener shouldn\'t notice when you breathe - it should feel natural.'
+      },
+      {
+        heading: 'Practicing Phrasing',
+        content: 'How to practice phrasing:\n\n**Step 1: Analysis**\n- Look at the music and identify phrases\n- Mark phrase endings with breath marks\n- Identify the climax of each phrase\n\n**Step 2: Singing**\n- Sing the melody (even if you can\'t sing well!)\n- Feel the natural phrasing\n- Notice where you want to breathe\n\n**Step 3: Playing**\n- Play the phrase slowly\n- Shape it with dynamics\n- Breathe at marked spots\n- Make it musical\n\n**Step 4: Refinement**\n- Record yourself\n- Listen back critically\n- Adjust and improve\n- Repeat until satisfied',
+        example: 'Think of phrasing like acting. You\'re not just saying words - you\'re expressing meaning and emotion. Make every phrase count!',
+        tip: 'Great phrasing separates good musicians from great musicians. Spend time on it!'
+      }
+    ],
+    keyPoints: [
+      'A phrase is a complete musical sentence',
+      'Most phrases have an arc: soft-loud-soft',
+      'Breathe at phrase endings, not in the middle',
+      'Plan your breaths in advance',
+      'Shape phrases with dynamics and expression',
+      'Make music tell a story'
+    ],
+    practiceInstructions: 'Daily phrasing practice: 1) Take a simple melody (like "Mary Had a Little Lamb"), 2) Identify the phrases (usually 4 bars each), 3) Mark breath points at phrase endings, 4) Sing the melody, feeling the phrasing, 5) Play it with shaping: start soft, build to middle, end soft, 6) Record yourself and listen back, 7) Adjust and improve. Do this with one melody every day!'
+  },
+
   // SONG LEARNING LESSONS - STEP BY STEP
   'song-western-portrait': {
     title: 'Learning "Western Portrait" - Step by Step',
@@ -971,7 +1353,7 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     title: 'Band Drill Basics',
     introduction: 'Band drill is the art of marching and moving as a unit. It requires precision, discipline, and teamwork.',
     levelStandards: {
-      skillsDeveloped: ['Attention position', 'Parade rest', 'Marking time', 'Forward march'],
+      skillsDeveloped: ['Attention position', 'Stand at ease', 'Marking time', 'Forward march'],
       levelGoal: '🎯 BASIC Level Goal: Foundation - Developing discipline and teamwork',
       nextLevelPrep: 'Drill skills are essential for band performances and ceremonies'
     },
@@ -983,9 +1365,9 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
         tip: 'Practice standing at attention for 2-3 minutes daily. It builds discipline and strength.'
       },
       {
-        heading: 'The Parade Rest Position',
-        content: 'Parade rest is a relaxed but formal position:\n\n1. Move left foot 12 inches to the left\n2. Keep legs straight\n3. Place right hand in left palm behind your back\n4. Left thumb over right thumb\n5. Keep head and eyes forward\n6. Remain silent',
-        tip: 'Parade rest is still a position of attention. Don\'t slouch or look around!'
+        heading: 'Stand At Ease',
+        content: 'Stand at ease is a relaxed but formal position:\n\n1. Move left foot 12 inches to the left\n2. Keep legs straight\n3. Place right hand in left palm behind your back\n4. Left thumb over right thumb\n5. Keep head and eyes forward\n6. Remain silent',
+        tip: 'Stand at ease is still a position of attention. Don\'t slouch or look around!'
       },
       {
         heading: 'Marking Time',
@@ -1001,12 +1383,12 @@ export const LESSON_CONTENT: Record<string, LessonContent> = {
     ],
     keyPoints: [
       'Attention: heels together, stand tall, remain still',
-      'Parade rest: left foot out, hands behind back',
+      'Stand at ease: left foot out, hands behind back',
       'Mark time: knees to 6 inches, stay in place',
       'Forward march: 30-inch step, heel to toe',
       'Always maintain formation and rhythm'
     ],
-    practiceInstructions: 'Practice drill positions daily: 1) Stand at attention for 2 minutes, 2) Move to parade rest and back to attention 10 times, 3) Mark time for 2 minutes at 120 BPM, 4) Practice forward march in your room (count your steps). Focus on precision and discipline.'
+    practiceInstructions: 'Practice drill positions daily: 1) Stand at attention for 2 minutes, 2) Move to stand at ease and back to attention 10 times, 3) Mark time for 2 minutes at 120 BPM, 4) Practice forward march in your room (count your steps). Focus on precision and discipline.'
   },
 
   'one-maintenance': {
