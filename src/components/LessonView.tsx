@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
 import { getLessonById } from '../data';
-import { CONCEPTS, Concept } from '../competency';
+import { CONCEPTS, Concept, ConceptStats } from '../competency';
+import { calculateAllAdaptiveWeights, applyConceptFloor } from '../adaptive';
 import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
 import { getSongLessonById, SongLesson } from '../completeSongLessons';
 import confetti from 'canvas-confetti';
@@ -172,6 +173,94 @@ function getExercisesForLesson(lessonId: string): Exercise[] {
   return exercises[lessonId] || [
     { type: 'multiple-choice', question: 'Did you complete the practice?', options: [{ text: 'Yes, I practiced!', correct: true }, { text: 'Not yet', correct: false }] },
   ];
+}
+
+/**
+ * Adaptive Exercise Selection (Phase 0 — closes the adaptivity loop, Gap B1/E4)
+ *
+ * The weighting engine in adaptive.ts (mastery tiers, recency multiplier,
+ * exploration quota, anti-spiral session caps, diversity rules, concept
+ * floors) is now wired into lesson practice. Instead of presenting a fixed
+ * exercise list, each lesson practice session orders its exercises by
+ * adaptive weight: concepts the cadet is still Learning/Developing (or has
+ * never attempted) surface first, stale concepts get boosted back into
+ * rotation, mastered concepts stay present via the concept floor, and the
+ * diversity rule prevents same-concept exercises from stacking back-to-back.
+ */
+
+interface AdaptiveSelectionResult {
+  selected: Exercise[];
+  /** Concepts the cadet needs the most work on, per the weighting engine. */
+  focusConcepts: Concept[];
+}
+
+/**
+ * Order this lesson's exercises using the adaptive weighting engine.
+ *
+ * - Exercises without a tagged concept keep their original position (front),
+ *   so lesson-specific content is never dropped or displaced unpredictably.
+ * - Concept-tagged exercises are ordered via weighted sampling WITHOUT
+ *   replacement within the lesson pool, so every assigned exercise is still
+ *   practiced, but weaker concepts come up sooner — and across repeated
+ *   attempts of the same lesson, the weakest concepts dominate the session.
+ */
+export function selectAdaptiveExercises(
+  baseExercises: Exercise[],
+  conceptMastery: Record<string, ConceptStats>,
+  rng: () => number = Math.random
+): AdaptiveSelectionResult {
+  const untagged = baseExercises.filter(e => !e.concept);
+  const tagged = baseExercises.filter(e => e.concept);
+
+  if (tagged.length === 0) {
+    return { selected: baseExercises, focusConcepts: [] };
+  }
+
+  // Unique concepts covered by this lesson's exercises
+  const lessonConcepts = Array.from(new Set(tagged.map(e => e.concept as Concept)));
+
+  // Compute adaptive weights with the engine's own primitives:
+  // state tiers + recency decay, then the concept-floor adjustment.
+  let weights = calculateAllAdaptiveWeights(conceptMastery, lessonConcepts);
+  weights = applyConceptFloor(weights, conceptMastery, lessonConcepts);
+
+  // Focus list: concepts sorted by weight, weakest-first (for UI transparency)
+  const focusConcepts = [...lessonConcepts].sort((a, b) => weights[b] - weights[a]);
+
+  // Weighted sampling without replacement, honoring the diversity rule
+  // (no same-concept exercise may be picked twice back-to-back when other
+  // options exist).
+  const remaining = [...tagged];
+  const ordered: Exercise[] = [];
+  let lastConcept: Concept | null = null;
+
+  while (remaining.length > 0) {
+    const eligible = remaining.filter(
+      e => e.concept !== lastConcept || remaining.every(r => r.concept === lastConcept)
+    );
+    const pool = eligible.length > 0 ? eligible : remaining;
+
+    let total = 0;
+    for (const e of pool) total += weights[e.concept as Concept] ?? 1;
+
+    let pickIndex = pool.length - 1; // floating-point safety: default to last item
+    if (total > 0) {
+      let r = rng() * total;
+      for (let i = 0; i < pool.length; i++) {
+        r -= weights[pool[i].concept as Concept] ?? 1;
+        if (r <= 0) { pickIndex = i; break; }
+      }
+    } else {
+      pickIndex = Math.floor(rng() * pool.length);
+    }
+
+    const chosen = pool[pickIndex];
+    ordered.push(chosen);
+    lastConcept = chosen.concept as Concept;
+    remaining.splice(remaining.indexOf(chosen), 1);
+  }
+
+  return { selected: [...untagged, ...ordered], focusConcepts };
 }
 
 function getLearnContent(lessonId: string): { title: string; content: string; tip: string; image?: string } {
@@ -582,6 +671,9 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
 
 export default function LessonView() {
   const { user, currentLessonId, setCurrentView, completeLesson, setCurrentLesson, recordCorrectAnswer, recordIncorrectAnswer } = useStore();
+  // Adaptive exercise ordering is generated once per lesson session (stable
+  // across re-renders so the quiz doesn't reshuffle mid-question).
+  const [sessionKey, setSessionKey] = useState(0);
   const [step, setStep] = useState<LessonStep>('intro');
   const [noSax, setNoSax] = useState(false);
   const [exerciseIdx, setExerciseIdx] = useState(0);
@@ -598,7 +690,16 @@ export default function LessonView() {
   const lessonContentData = currentLessonId 
     ? (isClarinetLesson ? getClarinetLessonContent(currentLessonId) : getLessonContent(currentLessonId))
     : null;
-  const exercises = currentLessonId ? getExercisesForLesson(currentLessonId) : [];
+
+  // Phase 0 adaptivity loop (Gap B1/E4): order this lesson's exercises with
+  // the adaptive weighting engine against the cadet's concept mastery data.
+  const adaptiveSession = useMemo(() => {
+    const base = currentLessonId ? getExercisesForLesson(currentLessonId) : [];
+    return selectAdaptiveExercises(base, user?.progress.conceptMastery ?? {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLessonId, sessionKey]);
+  const exercises = adaptiveSession.selected;
+  const focusConcepts: Concept[] = adaptiveSession.focusConcepts;
 
   if (!lesson || !user) return null;
 
@@ -1095,7 +1196,15 @@ export default function LessonView() {
                 </motion.div>
               )}
 
-              <button onClick={() => setStep('quiz')} className="btn-accent w-full py-3.5">
+              <button
+                onClick={() => {
+                  // Regenerate the adaptive ordering fresh for each practice run,
+                  // reflecting the cadet's latest mastery data.
+                  setSessionKey(k => k + 1);
+                  setStep('quiz');
+                }}
+                className="btn-accent w-full py-3.5"
+              >
                 <span className="flex items-center justify-center gap-2">Continue to Practice <ArrowRightIcon /></span>
               </button>
             </motion.div>
@@ -1109,6 +1218,16 @@ export default function LessonView() {
               exit={{ opacity: 0, x: -20 }}
               className="py-6"
             >
+              {/* Adaptive focus banner — shows which concepts the engine is prioritizing */}
+              {focusConcepts.length > 0 && (
+                <div className="mb-4 rounded-lg bg-[#c9a84c]/10 border border-[#c9a84c]/40 px-4 py-2.5 text-center" role="status">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-[#a3863a] dark:text-[#c9a84c]">Adaptive Focus: </span>
+                  <span className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                    {focusConcepts.slice(0, 2).map(c => c.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())).join(' & ')}
+                  </span>
+                </div>
+              )}
+
               {/* Exercise counter */}
               <div className="flex items-center justify-center gap-1.5 mb-6">
                 {exercises.map((_, i) => (
