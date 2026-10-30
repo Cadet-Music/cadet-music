@@ -13,6 +13,7 @@ import {
   getMasteryColor,
   getAllConceptStats,
 } from '../competency';
+import Footer from './Footer';
 
 export default function Analytics() {
   const { user } = useStore();
@@ -266,6 +267,7 @@ export default function Analytics() {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

@@ -21,6 +21,7 @@ import TimeSignatureExercise from './theory/TimeSignatureExercise';
 type LessonStep = 'intro' | 'learn' | 'quiz' | 'complete';
 import { AudioActivity } from '../audioActivities';
 import AudioPracticeActivity from './AudioPracticeActivity';
+import Footer from './Footer';
 
 type ExerciseType = 'multiple-choice' | 'note-match' | 'rhythm-tap' | 'true-false' | 'fill-order' | 'audio';
 

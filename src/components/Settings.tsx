@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore, Instrument } from '../store';
 import { CadetLevel, LEVELS, LEVEL_INFO, getSongsForLevel } from '../data';
+import Footer from './Footer';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -342,6 +343,7 @@ export default function Settings() {
           </motion.div>
         )}
       </AnimatePresence>
+      <Footer />
     </motion.div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore, STICKER_DEFS, BANNER_BGS } from '../store';
+import Footer from './Footer';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -202,6 +203,7 @@ export default function Banner() {
           </p>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }
