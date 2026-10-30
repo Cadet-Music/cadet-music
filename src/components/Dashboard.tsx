@@ -102,6 +102,14 @@ export default function Dashboard() {
           </motion.div>
           <div className="flex gap-2">
             <motion.button
+              onClick={() => setCurrentView('tone-coach')}
+              className="btn-primary"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🎓 Tone Coach
+            </motion.button>
+            <motion.button
               onClick={() => setCurrentView('animations')}
               className="btn-secondary"
               whileHover={{ scale: 1.05 }}

@@ -14,6 +14,7 @@ import AnimationDemo from './components/AnimationDemo';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import TermsOfService from './components/TermsOfService';
 import CookiePolicy from './components/CookiePolicy';
+import ToneCoachView from './components/ToneCoachView';
 import KonamiListener from './components/KonamiListener';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
@@ -114,6 +115,8 @@ function App() {
       return <><TermsOfService /><KonamiListener /><SecretCornerListener /></>;
     case 'cookies':
       return <><CookiePolicy /><KonamiListener /><SecretCornerListener /></>;
+    case 'tone-coach':
+      return <><ToneCoachView /><KonamiListener /><SecretCornerListener /></>;
     default:
       return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
   }
