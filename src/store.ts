@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CadetLevel, LEVEL_INFO } from './data';
 import { ConceptStats, Concept, recordCorrectAnswer, recordIncorrectAnswer, initializeConceptMastery } from './competency';
+import { DayRecord, ensureDayRecord, refreshQuestProgress, claimQuests as claimQuestsPure } from './quests';
+import { PracticeLogEntry, makeEntry, computeFreezeBank } from './practiceLog';
 
 export type Instrument = 'alto' | 'tenor' | 'baritone' | 'soprano';
 export type LessonStatus = 'locked' | 'available' | 'completed';
@@ -29,7 +31,18 @@ export interface UserProgress {
   stickers: string[];
   goalsCompleted: number;
   conceptMastery: Record<string, ConceptStats>;
+  /** Daily practice goal in minutes (self-reported via the Practice Log) */
+  dailyGoalMinutes: number;
+  /** Earned by consistently hitting the daily goal; spendable to repair a broken streak */
+  streakFreezes: number;
+  /** Lifetime best streak */
+  longestStreak: number;
+  /** Set when updateStreak() repairs a gap using a freeze */
+  lastFreezeUsedDate?: string;
 }
+
+/** Per-day activity counters + quest progress. Keyed by YYYY-MM-DD. */
+export type ActivityHistory = Record<string, DayRecord>;
 
 export interface BannerSticker {
   id: string;
@@ -66,7 +79,11 @@ interface AppState {
   currentLessonId: string | null;
   lessonComplete: boolean;
   adminUnlocked: boolean;
-  
+  /** Day-keyed activity counters + daily quests */
+  activity: ActivityHistory;
+  /** Self-reported real-world practice sessions */
+  practiceLog: PracticeLogEntry[];
+
   // Actions
   setUser: (user: User | null) => void;
   login: (data: { username: string; rank?: string; lastName?: string; email?: string }) => void;
@@ -85,12 +102,18 @@ interface AppState {
   setInstrumentLevel: (level: CadetLevel) => void;
   addSticker: (sticker: string) => void;
   updateStreak: () => void;
+  useStreakFreeze: () => boolean;
   setBannerBg: (bg: string) => void;
   addBannerSticker: (sticker: BannerSticker) => void;
   removeBannerSticker: (id: string) => void;
   updateBannerSticker: (id: string, updates: Partial<BannerSticker>) => void;
   resetAll: () => void;
-  
+
+  // Daily goals & quests
+  setDailyGoalMinutes: (minutes: number) => void;
+  logPracticeSession: (minutes: number, focusConcepts: Concept[], notes?: string) => void;
+  claimQuests: () => number;
+
   // Competency tracking
   recordCorrectAnswer: (concept: Concept) => void;
   recordIncorrectAnswer: (concept: Concept) => void;
@@ -135,6 +158,9 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
     stickers: [],
     goalsCompleted: 0,
     conceptMastery: {},
+    dailyGoalMinutes: 15,
+    streakFreezes: 0,
+    longestStreak: 0,
   },
   activeSongs: [],
   theoryLevel: 'BASIC',
@@ -152,10 +178,12 @@ export const useStore = create<AppState>()(
       darkMode: false,
       currentView: 'login',
       currentLessonId: null,
-      lessonComplete: false,
+            lessonComplete: false,
       adminUnlocked: false,
-      
-      setUser: (user) => set({ user }),
+      activity: {},
+      practiceLog: [],
+
+      setUser: (user) => set({ user }),: (user) => set({ user }),
       
       login: (data) => {
         const user = defaultUser(data);
@@ -192,6 +220,14 @@ export const useStore = create<AppState>()(
         const newLevel = Math.floor(newXp / 100);
         const newGoalsCompleted = alreadyCompleted ? user.progress.goalsCompleted : user.progress.goalsCompleted + 1;
         
+        // Daily activity tracking (drives practice quests)
+        const today = new Date().toISOString().split('T')[0];
+        const prevActivity = { ...get().activity };
+        if (!alreadyCompleted) {
+          const day = ensureDayRecord(prevActivity[today], today, user.progress.streak);
+          prevActivity[today] = refreshQuestProgress({ ...day, lessonsCompleted: day.lessonsCompleted + 1 }, user.progress.streak);
+        }
+
         const newStickers = [...user.progress.stickers];
         if (newCompleted.length >= 5 && !newStickers.includes('first-5')) newStickers.push('first-5');
         if (newCompleted.length >= 20 && !newStickers.includes('dedicated')) newStickers.push('dedicated');
@@ -215,10 +251,11 @@ export const useStore = create<AppState>()(
               lastActiveDate: new Date().toISOString().split('T')[0],
             },
           },
+                    activity: prevActivity,
           lessonComplete: true,
         });
       },
-      
+
       setInstrument: (instrument) => {
         const user = get().user;
         if (!user) return;
