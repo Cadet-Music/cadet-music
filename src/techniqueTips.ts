@@ -41,6 +41,24 @@ export type TipCategory =
 /** How the coach can assess this tip. See honesty rules in file header. */
 export type TipDetection = 'audio' | 'self-check' | 'video-check';
 
+/** Numeric proficiency tier used by the tip catalogue (1 = brand-new cadet,
+ *  5 = senior). Kept as a number so tips can be ordered and filtered; the
+ *  CadetLevel string union from data.ts is NOT used here because the app's
+ *  real levels are strings like 'BASIC'/'ONE', not numbers. */
+export type TipLevel = 1 | 2 | 3 | 4 | 5;
+
+/** Map the app's CadetLevel to a tip level band. */
+export function cadetLevelToTipLevel(level: CadetLevel): TipLevel {
+  switch (level) {
+    case 'BASIC': return 1;
+    case 'ONE': return 2;
+    case 'TWO': return 2;
+    case 'THREE': return 3;
+    case 'FOUR': return 4;
+    case 'FIVE': return 5;
+  }
+}
+
 /** Where the tip is allowed to appear. "song-phase" refers to the phase
  *  cards inside LessonView.tsx (there is no bar-by-bar UI). */
 export type TipTrigger = 'lesson-step' | 'song-phase' | 'song-start' | 'after-attempt';
@@ -48,7 +66,7 @@ export type TipTrigger = 'lesson-step' | 'song-phase' | 'song-start' | 'after-at
 export interface TechniqueTip {
   id: string;
   instrument: TipInstrument;
-  level: CadetLevel;
+  level: TipLevel;
   category: TipCategory;
   detection: TipDetection;
   trigger: TipTrigger[];
@@ -170,14 +188,15 @@ export const TECHNIQUE_TIPS: TipEntry[] = [
     instrument: 'all',
     level: 2,
     category: 'tone',
-    // BLOCKED: the only pitch DSP (detectPitchAutocorrelation) has a verified
-    // zero-lag defect (see techniqueCoach.test.ts TEST 1 → Infinity Hz), so
-    // this tip cannot honestly claim audio detection until the bug is fixed.
-    // Revert to detection: 'audio' + audioCapability: 'pitch-accuracy' when
-    // the synthetic 440 Hz test passes.
-    detection: 'self-check',
+    // UNBLOCKED Oct 2026: the detectPitchAutocorrelation zero-lag defect was
+    // FIXED in src/audio.ts (lag search now starts at MIN_LAG; normalized
+    // dot-product autocorrelation). The synthetic 440 Hz test in
+    // src/tests/techniqueCoach.test.ts TEST 1 now passes within ±10 cents,
+    // so this tip may honestly claim audio detection.
+    detection: 'audio',
+    audioCapability: 'pitch-accuracy',
     trigger: ['lesson-step', 'after-attempt'],
-    tip: "Here's something you can improve: if your note sits flat (a little below centre pitch), usually the air slowed down — ask your instructor to listen or compare with a tuner app, since the app cannot measure pitch reliably yet.",
+    tip: "Here's something you can improve: I measured your note sitting flat (a little below centre pitch) — that usually means the air slowed down.",
     action: 'Speed the air up slightly (think "hee" air direction) and keep your corners firm but not biting, then re-check the pitch.',
     drill: 'Play the note, hear it flat, adjust air speed, play it again — three attempts, stopping when the meter reads close to centre. 30 seconds.',
     reviewStatus: 'verified',

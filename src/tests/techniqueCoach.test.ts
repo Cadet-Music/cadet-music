@@ -41,14 +41,15 @@ function envelopeSamples(
 
 // ============================================================
 // TEST 1 — pitch detection on a real 440 Hz sine
-// KNOWN DEFECT (reported, not hidden): detectPitchAutocorrelation in
-// src/audio.ts starts its lag search at offset = 0. At zero lag the
-// difference is identically 0, so correlation = 1.0 wins immediately and
-// frequency = sampleRate / 0 = Infinity. This test DEMONSTRATES that defect:
-// it asserts the current behaviour fails the ±10-cent check and prints the
-// bogus reading. Until the DSP bug is fixed, NO tip may rely on live pitch
-// readings (see techniqueTips.ts header). The articulation tests below pass
-// against real code.
+// HISTORY: this test originally DOCUMENTED a defect — the lag search in
+// detectPitchAutocorrelation started at offset 0, where every signal
+// correlates perfectly with itself (r = 1.0), producing
+// frequency = sampleRate / 0 = Infinity.
+// STATUS (Oct 2026): DEFECT FIXED in src/audio.ts — the search now starts
+// at MIN_LAG and uses normalized dot-product autocorrelation. This test now
+// asserts the CORRECT behaviour: 440 Hz detected within ±10 cents. While
+// the bug existed, the 'tone-air-support-pitch' tip was held back as
+// self-check; it is now legitimately detection: "audio".
 // ============================================================
 console.log('TEST detectPitchAutocorrelation: 440 Hz sine');
 {
@@ -63,11 +64,9 @@ console.log('TEST detectPitchAutocorrelation: 440 Hz sine');
     console.log(`    detected frequency: ${result.frequency}`);
     console.log(`    cent deviation from A440: ${Number.isFinite(centsDev) ? centsDev.toFixed(1) + ' cents' : 'N/A (non-finite frequency)'}`);
     console.log(`    confidence: ${result.confidence.toFixed(2)}`);
+    ok(Number.isFinite(result.frequency), `frequency is finite (zero-lag Infinity defect is fixed; got ${result.frequency})`);
     const withinTolerance = Number.isFinite(centsDev) && Math.abs(centsDev) <= 10;
-    ok(withinTolerance, `frequency within ±10 cents of 440 Hz — CURRENTLY FAILING due to zero-lag defect (audio.ts line ~94: loop starts at offset 0 → freq = ${result.frequency})`);
-    if (!withinTolerance) {
-      console.log('    NOTE: expected failure — defect documented above; pitch-dependent tips are blocked until fixed.');
-    }
+    ok(withinTolerance, `frequency within ±10 cents of 440 Hz (deviation: ${Number.isFinite(centsDev) ? centsDev.toFixed(1) : 'N/A'} cents)`);
   }
 }
 
