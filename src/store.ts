@@ -453,10 +453,20 @@ export const useStore = create<AppState>()(
       recordCorrectAnswer: (concept) => {
         const user = get().user;
         if (!user) return;
-        
+
         const updatedMastery = recordCorrectAnswer(user.progress.conceptMastery, concept);
-        
+
+        // Daily activity tracking (drives the "get N answers right" practice quests)
+        const today = new Date().toISOString().split('T')[0];
+        const activity = { ...get().activity };
+        const day = ensureDayRecord(activity[today], today, user.progress.streak);
+        activity[today] = refreshQuestProgress(
+          { ...day, correctAnswers: day.correctAnswers + 1 },
+          user.progress.streak
+        );
+
         set({
+          activity,
           user: {
             ...user,
             progress: {

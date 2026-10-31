@@ -1,25 +1,38 @@
 import type React from "react";
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, lazy, Suspense } from 'react';
 import { useStore } from './store';
 import Login from './components/Login';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import LessonView from './components/LessonView';
-import Settings from './components/Settings';
-import Leaderboard from './components/Leaderboard';
-import AdminPanel from './components/AdminPanel';
-import Songs from './components/Songs';
-import Banner from './components/Banner';
-import Analytics from './components/Analytics';
-import AnimationDemo from './components/AnimationDemo';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsOfService from './components/TermsOfService';
-import CookiePolicy from './components/CookiePolicy';
-import ToneCoachView from './components/ToneCoachView';
 import KonamiListener from './components/KonamiListener';
 import CommandPalette from './components/CommandPalette';
 import ShortcutsHelp from './components/ShortcutsHelp';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+
+// Route-level code splitting: heavy / rarely-visited views load on demand
+const Settings = lazy(() => import('./components/Settings'));
+const Leaderboard = lazy(() => import('./components/Leaderboard'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const Songs = lazy(() => import('./components/Songs'));
+const Banner = lazy(() => import('./components/Banner'));
+const Analytics = lazy(() => import('./components/Analytics'));
+const AnimationDemo = lazy(() => import('./components/AnimationDemo'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
+const CookiePolicy = lazy(() => import('./components/CookiePolicy'));
+const ToneCoachView = lazy(() => import('./components/ToneCoachView'));
+
+function PageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-3 animate-spin inline-block">🎵</div>
+        <p className="text-text-secondary">Loading…</p>
+      </div>
+    </div>
+  );
+}
 
 // Secret corner click detector - NO VISUAL FEEDBACK
 const CORNER_THRESHOLD = 120;
@@ -141,10 +154,19 @@ function App() {
   }, [darkMode]);
 
   if (adminUnlocked && currentView === 'admin') {
-    return <><AdminPanel /><SecretCornerListener /></>;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <AdminPanel />
+        <SecretCornerListener />
+      </Suspense>
+    );
   }
 
-  return <AppShell />;
+  return (
+    <Suspense fallback={<PageFallback />}>
+      <AppShell />
+    </Suspense>
+  );
 }
 
 export default App;
