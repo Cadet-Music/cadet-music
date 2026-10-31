@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons, getLessonStatus } from '../data';
 import Footer from './Footer';
+import QuestsAndPractice from './QuestsAndPractice';
 
 export default function Dashboard() {
   const { user, setCurrentView, setCurrentLesson, updateStreak } = useStore();
@@ -171,6 +172,9 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </div>
+
+        {/* Daily Quests + Practice Log */}
+        <QuestsAndPractice />
 
         {/* Next Lesson with Impressive Animation */}
         {nextLesson && (

@@ -45,7 +45,7 @@ const seenIds = new Set<string>();
 for (const tip of TECHNIQUE_TIPS as TechniqueTip[]) {
   // Required fields present and non-empty
   for (const f of REQUIRED_FIELDS) {
-    const v = (tip as Record<string, unknown>)[f];
+    const v = (tip as unknown as Record<string, unknown>)[f];
     ok(v !== undefined && v !== null && (Array.isArray(v) ? v.length > 0 : String(v).length > 0),
       `${tip.id}: field "${f}" present and non-empty`);
   }

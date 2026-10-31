@@ -183,7 +183,7 @@ export const useStore = create<AppState>()(
       activity: {},
       practiceLog: [],
 
-      setUser: (user) => set({ user }),: (user) => set({ user }),
+      setUser: (user) => set({ user }),
       
       login: (data) => {
         const user = defaultUser(data);
@@ -317,21 +317,112 @@ export const useStore = create<AppState>()(
         const today = new Date().toISOString().split('T')[0];
         const lastActive = user.progress.lastActiveDate;
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-        
+
         let newStreak = user.progress.streak;
+        let freezes = user.progress.streakFreezes ?? 0;
+        let usedFreeze = false;
         if (lastActive === today) return;
         if (lastActive === yesterday) {
           newStreak += 1;
-        } else if (lastActive !== today) {
-          newStreak = 1;
+        } else {
+          // Gap of 2+ days — try to repair with a banked Streak Freeze
+          const gapDays = Math.round((new Date(today).getTime() - new Date(lastActive).getTime()) / 86400000);
+          if (freezes > 0 && gapDays >= 2 && gapDays <= freezes + 1) {
+            newStreak += 1; // streak continues, protected
+            freezes -= 1;
+            usedFreeze = true;
+          } else {
+            newStreak = 1;
+          }
         }
-        
+
+        const longestStreak = Math.max(user.progress.longestStreak ?? 0, newStreak);
+        const activity = { ...get().activity };
+        activity[today] = refreshQuestProgress(ensureDayRecord(activity[today], today, newStreak), newStreak);
+
+        set({
+          activity,
+          user: {
+            ...user,
+            progress: {
+              ...user.progress,
+              streak: newStreak,
+              longestStreak,
+              streakFreezes: freezes,
+              lastActiveDate: today,
+              ...(usedFreeze ? { lastFreezeUsedDate: today } : {}),
+            },
+          },
+        });
+      },
+
+      useStreakFreeze: () => {
+        const user = get().user;
+        if (!user || (user.progress.streakFreezes ?? 0) <= 0) return false;
+        const today = new Date().toISOString().split('T')[0];
         set({
           user: {
             ...user,
-            progress: { ...user.progress, streak: newStreak, lastActiveDate: today },
+            progress: {
+              ...user.progress,
+              streakFreezes: user.progress.streakFreezes - 1,
+              lastFreezeUsedDate: today,
+            },
           },
         });
+        return true;
+      },
+
+      // Daily goals & practice log
+      setDailyGoalMinutes: (minutes) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, progress: { ...user.progress, dailyGoalMinutes: Math.max(5, Math.min(240, minutes)) } } });
+      },
+
+      logPracticeSession: (minutes, focusConcepts, notes) => {
+        const user = get().user;
+        if (!user) return;
+        const entry = makeEntry(minutes, focusConcepts, notes);
+        const practiceLog = [...get().practiceLog, entry];
+        const dayKey = entry.day;
+
+        // Update day record with the new session count
+        const activity = { ...get().activity };
+        const day = ensureDayRecord(activity[dayKey], dayKey, user.progress.streak);
+        activity[dayKey] = refreshQuestProgress({ ...day, practiceSessions: day.practiceSessions + 1 }, user.progress.streak);
+
+        // Passive reward: every SESSIONS_PER_FREEZE logged sessions earns a freeze (bank capped)
+        const freezes = computeFreezeBank(practiceLog.length, user.progress.streakFreezes ?? 0);
+
+        set({
+          practiceLog,
+          activity,
+          user: {
+            ...user,
+            progress: { ...user.progress, streakFreezes: freezes, lastActiveDate: dayKey },
+          },
+        });
+      },
+
+      claimQuests: () => {
+        const user = get().user;
+        if (!user) return 0;
+        const today = new Date().toISOString().split('T')[0];
+        const activity = { ...get().activity };
+        const record = ensureDayRecord(activity[today], today, user.progress.streak);
+        const { record: updated, xp } = claimQuestsPure(record);
+        if (xp <= 0) return 0;
+        activity[today] = updated;
+        const newXp = user.progress.xp + xp;
+        set({
+          activity,
+          user: {
+            ...user,
+            progress: { ...user.progress, xp: newXp, level: Math.floor(newXp / 100) },
+          },
+        });
+        return xp;
       },
 
       setBannerBg: (bg) => {

@@ -1,3 +1,4 @@
+import type React from "react";
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useStore } from './store';
 import Login from './components/Login';
@@ -16,6 +17,9 @@ import TermsOfService from './components/TermsOfService';
 import CookiePolicy from './components/CookiePolicy';
 import ToneCoachView from './components/ToneCoachView';
 import KonamiListener from './components/KonamiListener';
+import CommandPalette from './components/CommandPalette';
+import ShortcutsHelp from './components/ShortcutsHelp';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 
 // Secret corner click detector - NO VISUAL FEEDBACK
 const CORNER_THRESHOLD = 120;
@@ -73,8 +77,60 @@ function SecretCornerListener() {
   return null;
 }
 
+function AppShell() {
+  const { user, currentView } = useStore();
+
+  // Global keyboard shortcuts: ? help, m dark mode, n next lesson, etc.
+  useKeyboardShortcuts();
+
+  if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
+  if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
+
+  // Force song selection after onboarding
+  if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
+
+  let page: React.ReactNode;
+  switch (currentView) {
+    case 'lesson':
+      page = <LessonView />; break;
+    case 'settings':
+      page = <Settings />; break;
+    case 'songs':
+      page = <Songs />; break;
+    case 'leaderboard':
+      page = <Leaderboard />; break;
+    case 'banner':
+      page = <Banner />; break;
+    case 'analytics':
+      page = <Analytics />; break;
+    case 'animations':
+      page = <AnimationDemo />; break;
+    case 'privacy':
+      page = <PrivacyPolicy />; break;
+    case 'terms':
+      page = <TermsOfService />; break;
+    case 'cookies':
+      page = <CookiePolicy />; break;
+    case 'tone-coach':
+      page = <ToneCoachView />; break;
+    default:
+      page = <Dashboard />;
+  }
+
+  return (
+    <>
+      {page}
+      <KonamiListener />
+      <SecretCornerListener />
+      {/* Command palette (Cmd/Ctrl+K) + shortcut help overlay (?) */}
+      <CommandPalette />
+      <ShortcutsHelp />
+    </>
+  );
+}
+
 function App() {
-  const { user, currentView, darkMode, adminUnlocked } = useStore();
+  const { darkMode, adminUnlocked, currentView } = useStore();
 
   useEffect(() => {
     if (darkMode) {
@@ -88,38 +144,7 @@ function App() {
     return <><AdminPanel /><SecretCornerListener /></>;
   }
 
-  if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
-  if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
-  
-  // Force song selection after onboarding
-  if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
-  
-  switch (currentView) {
-    case 'lesson':
-      return <><LessonView /><KonamiListener /><SecretCornerListener /></>;
-    case 'settings':
-      return <><Settings /><KonamiListener /><SecretCornerListener /></>;
-    case 'songs':
-      return <><Songs /><KonamiListener /><SecretCornerListener /></>;
-    case 'leaderboard':
-      return <><Leaderboard /><KonamiListener /><SecretCornerListener /></>;
-    case 'banner':
-      return <><Banner /><KonamiListener /><SecretCornerListener /></>;
-    case 'analytics':
-      return <><Analytics /><KonamiListener /><SecretCornerListener /></>;
-    case 'animations':
-      return <><AnimationDemo /><KonamiListener /><SecretCornerListener /></>;
-    case 'privacy':
-      return <><PrivacyPolicy /><KonamiListener /><SecretCornerListener /></>;
-    case 'terms':
-      return <><TermsOfService /><KonamiListener /><SecretCornerListener /></>;
-    case 'cookies':
-      return <><CookiePolicy /><KonamiListener /><SecretCornerListener /></>;
-    case 'tone-coach':
-      return <><ToneCoachView /><KonamiListener /><SecretCornerListener /></>;
-    default:
-      return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
-  }
+  return <AppShell />;
 }
 
 export default App;
