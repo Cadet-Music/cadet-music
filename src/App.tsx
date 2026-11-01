@@ -22,6 +22,7 @@ const AnimationDemo = lazy(() => import('./components/AnimationDemo'));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('./components/TermsOfService'));
 const CookiePolicy = lazy(() => import('./components/CookiePolicy'));
+const DataTelemetryNotice = lazy(() => import('./components/DataTelemetryNotice'));
 const ToneCoachView = lazy(() => import('./components/ToneCoachView'));
 
 function PageFallback() {
@@ -125,6 +126,8 @@ function AppShell() {
       page = <TermsOfService />; break;
     case 'cookies':
       page = <CookiePolicy />; break;
+    case 'telemetry-notice':
+      page = <DataTelemetryNotice />; break;
     case 'tone-coach':
       page = <ToneCoachView />; break;
     default:

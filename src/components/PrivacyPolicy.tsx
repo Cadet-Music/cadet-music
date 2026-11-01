@@ -58,6 +58,18 @@ export default function PrivacyPolicy() {
               <li>Device type and browser information</li>
               <li>IP address and general location (country/region level)</li>
             </ul>
+            <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm">
+              The device and IP-location data above is gathered solely by our non-invasive, client-side
+              visitor telemetry subsystem and logged only in your own browser. Its complete technical
+              specification &mdash; including why an IP lookup can never expose passwords or account
+              access &mdash; is set out in our{' '}
+              <button
+                onClick={() => setCurrentView('telemetry-notice')}
+                className="text-amber-600 dark:text-amber-400 underline font-medium hover:no-underline"
+              >
+                Data Telemetry Notice
+              </button>.
+            </p>
 
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">2.3 Audio Data</h3>
             <p className="text-gray-700 dark:text-gray-300 mb-4">

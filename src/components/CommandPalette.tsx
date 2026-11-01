@@ -60,6 +60,7 @@ export default function CommandPalette() {
       { id: 'v-dash', view: 'dashboard', label: 'Go to Dashboard', emoji: '🏠', kw: 'home progress path' },
       { id: 'v-tone', view: 'tone-coach', label: 'Open Tone Coach', emoji: '🎓', kw: 'microphone pitch long tone practice' },
       { id: 'v-analytics', view: 'analytics', label: 'Open Analytics', emoji: '📊', kw: 'mastery weak topics concepts' },
+      { id: 'v-telemetry-notice', view: 'telemetry-notice', label: 'Data Telemetry Notice', emoji: '🛡️', kw: 'privacy legal ip telemetry policy gdpr pipeda' },
       { id: 'v-leader', view: 'leaderboard', label: 'Open Leaderboard', emoji: '🏆', kw: 'rank squad competition' },
       { id: 'v-banner', view: 'banner', label: 'Customize Banner', emoji: '🎖️', kw: 'stickers badges decorate' },
       { id: 'v-songs', view: 'songs', label: 'My Songs', emoji: '🎵', kw: 'repertoire prepared music list a b' },

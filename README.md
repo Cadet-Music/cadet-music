@@ -53,7 +53,8 @@ The platform takes a cadet from zero experience through six progressive levels (
 - ✅ **Shareable progress cards** — client-side 1200×630 PNG rasterization (html-to-image) + Web Share API with clipboard/download fallbacks; mounted on Dashboard and Leaderboard
 - ✅ **Admin visitor telemetry** — geolocation (ipapi.co → ip-api.com fallback), device/UA breakdown, session table capped at 100 rows in localStorage
 - ✅ **Mobile-first global pass** — `overflow-x: clip`, `100dvh`, safe-area insets, ≥48 px touch targets, `touch-action: manipulation`, exercise-surface text-selection guards
-- ✅ Legal pages (Privacy Policy, Terms of Service, Cookie Policy) + 841 Squadron copyright footer
+- ✅ Legal pages (Privacy Policy, Terms of Service, Cookie Policy, Data Telemetry Notice) + 841 Squadron copyright footer
+- ✅ Data Telemetry Notice: formal PIPEDA/Law-25-style addendum (linked from every footer & ⌘K) documenting the client-side visitor telemetry — closed data schema, IP-routing handshake mechanics, credential non-extractability warranty, 100-record ring buffer, and opt-out paths
 - ✅ Secret corner-click admin panel (password protected)
 - ✅ Onboarding quiz, dark mode, fully responsive design
 - ✅ Session persistence via `localStorage` (Zustand `persist`)
