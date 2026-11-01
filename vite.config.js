@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  // GitHub Pages serves the site from the repository subfolder, e.g.
+  // https://<user>.github.io/cadet-music/ — without this base path the
+  // built assets resolve to / and the page renders blank.
+  base: '/cadet-music/',
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
