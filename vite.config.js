@@ -3,11 +3,12 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  // Relative base so the built index.html references assets like
-  // "./assets/index-xxx.js". This works on Vercel (served from root) and
-  // also keeps working under any subfolder, avoiding white-screen asset
-  // 404s when the deployment URL changes.
-  base: './',
+  // Absolute root base for Vercel: the app is served from the domain root
+  // (https://cadet-music.vercel.app/), so all built asset paths resolve as
+  // "/assets/index-xxx.js". Using './' previously caused relative-path
+  // resolution issues on client-side-routed URLs (e.g. /dashboard/ loading
+  // assets from /dashboard/assets/... -> 404 -> white screen).
+  base: '/',
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
