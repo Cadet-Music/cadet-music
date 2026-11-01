@@ -36,6 +36,10 @@ interface IpApiResponse {
   country_name?: string | null;
   country?: string | null;
   countryCode?: string | null;
+  // ip-api.com fallback fields
+  status?: string;
+  message?: string;
+  query?: string;
 }
 
 async function fetchJsonWithTimeout(url: string, timeoutMs = 4000): Promise<IpApiResponse | null> {

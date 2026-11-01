@@ -9,6 +9,7 @@ import KonamiListener from './components/KonamiListener';
 import CommandPalette from './components/CommandPalette';
 import ShortcutsHelp from './components/ShortcutsHelp';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { collectVisitorTelemetry } from './utils/telemetry';
 
 // Route-level code splitting: heavy / rarely-visited views load on demand
 const Settings = lazy(() => import('./components/Settings'));
@@ -143,7 +144,14 @@ function AppShell() {
 }
 
 function App() {
-  const { darkMode, adminUnlocked, currentView } = useStore();
+  const { darkMode, adminUnlocked, currentView, logVisitorSession } = useStore();
+
+  // Client-side visitor telemetry (geolocation + device metadata) for the
+  // Admin panel. Non-blocking, runs once per page load, never throws.
+  useEffect(() => {
+    void collectVisitorTelemetry(logVisitorSession);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
