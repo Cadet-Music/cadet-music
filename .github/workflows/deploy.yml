@@ -6,6 +6,12 @@ on:
   # Allow manual runs from the Actions tab
   workflow_dispatch:
 
+# Vercel now handles production deployment (frontend + /api serverless
+# functions) via its native Git integration on every push to main. This
+# GitHub Pages workflow is kept only for the legacy github.io URL; it does
+# NOT include the api/ functions, so admin login and leaderboard sync will
+# not work there — use the Vercel URL instead.
+
 # Permissions required for GitHub Pages deployment
 permissions:
   contents: read

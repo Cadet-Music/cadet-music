@@ -6,6 +6,7 @@ import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
 import { generateEnhancedAdminAnalytics, EnhancedConceptAnalytics } from '../adaptive';
 import { getInstrument, getTranspositionDescription, concertToWritten, writtenToConcert } from '../instruments';
 import { parseUserAgent } from '../utils/telemetry';
+import { verifyAdminPassword } from '../utils/api';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,11 +48,26 @@ export default function AdminPanel() {
   const [authed, setAuthed] = useState(false);
   const [gatePassword, setGatePassword] = useState('');
   const [gateError, setGateError] = useState(false);
+  const [gateChecking, setGateChecking] = useState(false);
 
-  const ADMIN_PASSWORD = 'password';
+  // Admin password is now verified SERVER-SIDE via /api/admin-login against
+  // the ADMIN_PASSWORD environment variable (Vercel). No secret in the bundle.
+  // The client-side 'password' string remains ONLY as a fallback for local
+  // `npm run dev` where there is no serverless runtime; it disappears from
+  // the production bundle because import.meta.env.DEV is statically false
+  // after minification.
+  const CLIENT_DEV_FALLBACK = 'password';
 
-  const handleGateSubmit = () => {
-    if (gatePassword === ADMIN_PASSWORD) {
+  const handleGateSubmit = async () => {
+    if (!gatePassword || gateChecking) return;
+    setGateChecking(true);
+    let ok = await verifyAdminPassword(gatePassword);
+    if (!ok && import.meta.env.DEV) {
+      // Local dev convenience only — never active in production builds.
+      ok = gatePassword === CLIENT_DEV_FALLBACK;
+    }
+    setGateChecking(false);
+    if (ok) {
       setAuthed(true);
       setGateError(false);
     } else {
@@ -65,8 +81,12 @@ export default function AdminPanel() {
     setPasswordError('');
   };
 
-  const handleResetConfirm = () => {
-    if (resetPassword === ADMIN_PASSWORD) {
+  const handleResetConfirm = async () => {
+    let ok = await verifyAdminPassword(resetPassword);
+    if (!ok && import.meta.env.DEV) {
+      ok = resetPassword === CLIENT_DEV_FALLBACK; // local dev only
+    }
+    if (ok) {
       resetAll();
       setShowResetModal(false);
     } else {
@@ -115,11 +135,11 @@ export default function AdminPanel() {
             <p className="text-sm text-[#c44536] mb-3 font-medium">Incorrect password</p>
           )}
           <div className="flex gap-3">
-            <button onClick={() => lockAdmin()} className="flex-1 btn-secondary">
+            <button onClick={() => lockAdmin()} className="flex-1 btn-secondary" disabled={gateChecking}>
               Exit
             </button>
-            <button onClick={handleGateSubmit} className="flex-1 btn-primary">
-              Unlock
+            <button onClick={handleGateSubmit} className="flex-1 btn-primary" disabled={gateChecking}>
+              {gateChecking ? 'Checking…' : 'Unlock'}
             </button>
           </div>
         </motion.div>

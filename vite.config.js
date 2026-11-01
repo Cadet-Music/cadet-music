@@ -3,10 +3,11 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  // GitHub Pages serves the site from the repository subfolder, e.g.
-  // https://<user>.github.io/cadet-music/ — without this base path the
-  // built assets resolve to / and the page renders blank.
-  base: '/cadet-music/',
+  // Relative base so the built index.html references assets like
+  // "./assets/index-xxx.js". This works on Vercel (served from root) and
+  // also keeps working under any subfolder, avoiding white-screen asset
+  // 404s when the deployment URL changes.
+  base: './',
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {

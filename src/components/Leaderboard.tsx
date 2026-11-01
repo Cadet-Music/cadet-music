@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { useStore, STICKER_DEFS } from '../store';
 import { stickerIcon } from './Banner';
 import Footer from './Footer';
 import ShareCardTemplate from './ShareCardTemplate';
+import { fetchLeaderboard, submitScore, ServerLeaderboardEntry } from '../utils/api';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,8 +29,10 @@ const FireIcon = () => (
   </svg>
 );
 
-// Mock leaderboard entries (would come from backend)
-const MOCK_LEADERBOARD = [
+// Offline fallback used when /api/leaderboard is unreachable (e.g. plain
+// `vite preview` with no serverless runtime). The live data now comes from
+// the server via fetchLeaderboard()/submitScore() below.
+const FALLBACK_LEADERBOARD: ServerLeaderboardEntry[] = [
   { rank: 1, name: 'Cpl Thompson', xp: 2450, streak: 21, lessons: 48, bannerBg: 'linear-gradient(135deg, #c9a84c 0%, #a68a3a 100%)', stickers: ['⭐', '🏅', '💫'] },
   { rank: 2, name: 'L/Cpl Martinez', xp: 1890, streak: 14, lessons: 35, bannerBg: 'linear-gradient(135deg, #3a8a5c 0%, #2d6d48 100%)', stickers: ['⭐', '🔥'] },
   { rank: 3, name: 'Cdt Williams', xp: 1650, streak: 10, lessons: 30, bannerBg: 'linear-gradient(135deg, #4a7c8a 0%, #2d5a66 100%)', stickers: ['⭐', '💎'] },
@@ -40,11 +44,34 @@ const MOCK_LEADERBOARD = [
 export default function Leaderboard() {
   const { user, setCurrentView } = useStore();
 
+  // Live standings fetched from /api/leaderboard (GET). Falls back to the
+  // seed list if the endpoint is unavailable so the page never blanks out.
+  const [serverEntries, setServerEntries] = useState<ServerLeaderboardEntry[]>(FALLBACK_LEADERBOARD);
+  const [, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const entries = await fetchLeaderboard();
+        if (!cancelled && entries.length > 0) setServerEntries(entries);
+      } catch (err) {
+        console.warn('Leaderboard: using offline fallback data', err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   if (!user) return null;
 
-  // Insert current user into leaderboard
-  const allEntries = [...MOCK_LEADERBOARD];
-  const userEntry = {
+  // Build the visible list: server standings minus any entry that shares the
+  // current cadet's name, then insert the cadet's live local progress (the
+  // authoritative source for their own XP on this device).
+  const myNameLower = user.username.toLowerCase();
+  const allEntries: ServerLeaderboardEntry[] = serverEntries.filter(e => e.name.toLowerCase() !== myNameLower);
+  const userEntry: ServerLeaderboardEntry = {
     rank: 0,
     name: user.username,
     xp: user.progress.xp,
@@ -57,6 +84,27 @@ export default function Leaderboard() {
   let userRank = allEntries.filter(e => e.xp > user.progress.xp).length + 1;
   allEntries.splice(userRank - 1, 0, userEntry);
   allEntries.forEach((e, i) => e.rank = i + 1);
+
+  // Sync this cadet's real-time XP to the server so their rank is shared
+  // across devices. Best-effort: refresh the list with returned standings.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    submitScore({
+      name: user.username,
+      xp: user.progress.xp,
+      streak: user.progress.streak,
+      lessons: user.progress.completedLessons.length,
+      bannerBg: user.bannerBg,
+      stickers: user.progress.stickers.map(s => STICKER_DEFS[s]?.icon || '⭐'),
+    })
+      .then((entries) => {
+        if (!cancelled && entries.length > 0) setServerEntries(entries);
+      })
+      .catch((err) => console.warn('Leaderboard: score sync failed', err));
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.progress.xp]);
 
   const isUser = (name: string) => name === user.username;
 
