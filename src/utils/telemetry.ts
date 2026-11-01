@@ -103,6 +103,44 @@ export function parseUserAgent(ua: string): { os: string; browser: string } {
   return { os, browser };
 }
 
+/**
+ * Heuristic scraper/bot detection. Client-side checks are trivially
+ * spoofable, so this is a noise filter for the admin telemetry panel — not
+ * a security boundary. It never blocks rendering of the app itself.
+ */
+export function isLikelyBot(): boolean {
+  try {
+    const ua = navigator.userAgent || '';
+    if (/bot|crawler|spider|slurp|curl|wget|python-requests|headless/i.test(ua)) return true;
+    // Headless browsers / automation frameworks leak these properties
+    const doc = document as Document & { $cdc_aswtoken?: unknown; callWebdriver?: unknown };
+    const nav = navigator as Navigator & { webdriver?: boolean };
+    if (nav.webdriver === true) return true;
+    if ('$cdc_aswtoken' in doc || 'callWebdriver' in doc) return true;
+    // Real browsers have plugins length >= 0 but headless shells often report 0 cores
+    if ((navigator.hardwareConcurrency ?? 1) === 0) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Scraper hygiene: when a known bot/headless browser visits, wipe this app's
+ * own localStorage keys so junk sessions don't accumulate on shared origins.
+ * Only touches keys prefixed with 'cadet-music'.
+ */
+export function purgeStorageForBots(): void {
+  if (!isLikelyBot()) return;
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('cadet-music'))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch {
+    /* storage disabled (private mode) — nothing to purge */
+  }
+}
+
 export function hasTouchSupport(): boolean {
   return typeof window !== 'undefined' &&
     ('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -149,6 +187,13 @@ export async function collectVisitorTelemetry(log: (entry: VisitorLogEntry) => v
   if (telemetryStarted) return;
   telemetryStarted = true;
   try {
+    // Scraper/bot hygiene: wipe this app's localStorage keys and skip logging
+    // so bot sessions don't pollute the admin telemetry panel. The app itself
+    // keeps rendering normally — we never block the UI for suspected bots.
+    if (isLikelyBot()) {
+      purgeStorageForBots();
+      return;
+    }
     const geo = await fetchGeo();
     log({ id: crypto.randomUUID(), ...buildTelemetryPayload(geo) });
   } catch {

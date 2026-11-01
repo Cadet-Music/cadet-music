@@ -557,8 +557,20 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'cadet-music-storage',
-      version: 2,
+      version: 3,
+      // Do not persist the secret admin unlock across reloads — it must be
+      // re-entered via the 4-corner sequence every session (see migrate v3).
+      partialize: (state) => ({ ...state, adminUnlocked: false }),
       migrate: (persistedState: any, version: number) => {
+        // Migration from version 2 to 3: adminUnlocked is a session-scoped
+        // secret — never restore it from persisted storage. Requiring the
+        // 4-corner sequence again on each page load prevents bots/scrapers
+        // (or anyone who shares the device) from keeping the panel open, and
+        // fixes the case where a stale persisted flag hides the login screen
+        // behind an empty admin view (white screen).
+        if (version < 3 && persistedState) {
+          persistedState.adminUnlocked = false;
+        }
         // Migration from version 0 to 1: Add conceptMastery
         if (version < 1 && persistedState.user?.progress) {
           persistedState.user.progress.conceptMastery = initializeConceptMastery(
