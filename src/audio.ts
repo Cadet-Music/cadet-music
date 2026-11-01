@@ -89,8 +89,11 @@ export function detectPitchAutocorrelation(
     }
   }
 
-  // Guard: need enough samples after `start` to compare a full lag window.
-  if (start + 2 * MAX_SAMPLES >= SIZE) return null;
+  // Guard: need at least one usable correlation window after `start`.
+  // (Previously required start + 2*MAX_SAMPLES < SIZE, which rejected any
+  // buffer shorter than ~0.5 s even when a full period was present.)
+  const MIN_WINDOW = 64;
+  if (start + MIN_WINDOW >= SIZE) return null;
 
   // Autocorrelation via mean-normalized absolute difference (the classic
   // ACF algorithm): correlation = 1 - (sum |x[i] - x[i+lag]| / N) / amp,
@@ -108,23 +111,28 @@ export function detectPitchAutocorrelation(
   const MIN_LAG = Math.max(2, Math.round(sampleRate / 4000)); // cap ~ 4 kHz
   const MAX_LAG = Math.min(MAX_SAMPLES, Math.round(sampleRate / 55)); // ~55 Hz floor
 
+  // Correlation window: as long as possible while still fitting in the
+  // buffer for every candidate lag (window + maxLag must fit past `start`).
+  const available = SIZE - start - MAX_LAG;
+  const WINDOW = Math.max(MIN_WINDOW, Math.min(MAX_LAG, available));
+
   // Mean absolute amplitude — normalizes correlation for any gain level.
   let ampSum = 0;
-  for (let i = start; i < start + MAX_LAG; i++) {
+  for (let i = start; i < start + WINDOW; i++) {
     ampSum += Math.abs(buffer[i]);
   }
-  const amplitude = ampSum / MAX_LAG;
+  const amplitude = ampSum / WINDOW;
   if (amplitude <= 0) return null; // pure silence — no pitch to report
 
   // Calculate autocorrelation over plausible lags only
   for (let offset = MIN_LAG; offset < MAX_LAG; offset++) {
     let diffSum = 0;
 
-    for (let i = 0; i < MAX_LAG; i++) {
+    for (let i = 0; i < WINDOW; i++) {
       diffSum += Math.abs(buffer[start + i] - buffer[start + i + offset]);
     }
 
-    const correlation = 1 - diffSum / MAX_LAG / amplitude;
+    const correlation = 1 - diffSum / WINDOW / amplitude;
 
     if (correlation > 0.8 && correlation > bestCorrelation) {
       bestCorrelation = correlation;

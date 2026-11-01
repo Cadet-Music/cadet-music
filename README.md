@@ -176,11 +176,27 @@ All historical implementation reports have been consolidated under [`docs/`](doc
 - [x] `npm run build` succeeds; heavy/rare views lazy-loaded; vendor chunks split
 - [x] Unused dependencies removed
 - [x] Docs consolidated into this README + `docs/` archive
+- [x] Favicon, web manifest & Open Graph / social meta tags in `index.html`
+- [x] Standalone logic tests pass (`adaptiveSelection`, `techniqueCoach`, `techniqueTips`, `functionality`)
 - [ ] Set production values for `name` / version in `package.json` (currently `sandbox-workspace`)
-- [ ] Add favicon & Open Graph / social meta tags in `index.html`
 - [ ] Smoke-test the golden path (onboard → lesson → quest → streak) in the built `dist/`
-- [ ] Add automated tests (vitest + React Testing Library) before further feature work
+- [ ] Add automated component tests (vitest + React Testing Library) before further feature work
 - [ ] Plan localStorage → backend persistence migration (see Master Documentation § Backend Migration Guide)
+
+## Testing
+
+Four dependency-free logic test suites live in [`src/tests/`](src/tests/) and guard the
+learning loop end-to-end (answer → mastery stats → adaptive selection → coach tips):
+
+```bash
+npx tsx src/tests/adaptiveSelection.test.ts   # weak concepts dominate exercise order
+npx tsx src/tests/techniqueCoach.test.ts      # real DSP: pitch detector + articulation analyzer
+npx tsx src/tests/techniqueTips.test.ts       # every audio-backed tip has a working detector
+npx tsx src/tests/functionality.test.ts       # curriculum / data integrity checks
+```
+
+All four exit 0 as of Nov 2026. A full vitest + React Testing Library harness is still
+recommended once component-level coverage is needed.
 
 ## License & Credits
 

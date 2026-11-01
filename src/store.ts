@@ -495,7 +495,11 @@ export const useStore = create<AppState>()(
       },
       
       resetAll: () => {
-        localStorage.clear();
+        // Only clear this app's own keys — never clobber unrelated
+        // localStorage entries that may share the origin.
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith('cadet-music'))
+          .forEach((k) => localStorage.removeItem(k));
         set({ user: null, currentView: 'login', darkMode: false });
         document.documentElement.classList.remove('dark');
       },
