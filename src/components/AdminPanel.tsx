@@ -29,15 +29,14 @@ const CheckIcon = () => (
 const allLessons = getAllLessons();
 
 export default function AdminPanel() {
+  // ---------------------------------------------------------------------------
+  // ALL hooks are declared here, at the very top of the component, BEFORE any
+  // conditional returns or logic branches. (React error #310 — "Rendered more
+  // hooks than during the previous render" — is thrown when a hook runs after
+  // an early return on some renders; keeping every hook above the `if (!authed)`
+  // gate guarantees a stable hook order.)
+  // ---------------------------------------------------------------------------
   const { user, lockAdmin, resetAll, visitorLogs, clearVisitorLogs } = useStore();
-
-  // Safety net: if the store ever loses the admin-unlock flag (e.g. a
-  // persisted-state migration) while we are on the admin view, exit cleanly
-  // to the dashboard instead of rendering nothing (blank screen).
-  useEffect(() => {
-    if (!useStore.getState().adminUnlocked) lockAdmin();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetPassword, setResetPassword] = useState('');
@@ -50,6 +49,39 @@ export default function AdminPanel() {
   const [gateError, setGateError] = useState(false);
   const [gateChecking, setGateChecking] = useState(false);
 
+  // Visitor telemetry aggregates (client-side only, capped in store at 100 entries)
+  const visitorStats = useMemo(() => {
+    const byCountry = new Map<string, number>();
+    const byOS = new Map<string, number>();
+    const byBrowser = new Map<string, number>();
+    let touchCount = 0;
+    for (const log of visitorLogs) {
+      const country = log.country || 'Unknown';
+      byCountry.set(country, (byCountry.get(country) ?? 0) + 1);
+      const { os, browser } = parseUserAgent(log.userAgent);
+      byOS.set(os, (byOS.get(os) ?? 0) + 1);
+      byBrowser.set(browser, (byBrowser.get(browser) ?? 0) + 1);
+      if (log.touch) touchCount++;
+    }
+    const topEntries = (m: Map<string, number>) =>
+      [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
+    return {
+      sessions: visitorLogs.length,
+      touchSessions: touchCount,
+      countries: topEntries(byCountry),
+      oses: topEntries(byOS),
+      browsers: topEntries(byBrowser),
+    };
+  }, [visitorLogs]);
+
+  // Safety net: if the store ever loses the admin-unlock flag (e.g. a
+  // persisted-state migration) while we are on the admin view, exit cleanly
+  // to the dashboard instead of rendering nothing (blank screen).
+  useEffect(() => {
+    if (!useStore.getState().adminUnlocked) lockAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Admin password is now verified SERVER-SIDE via /api/admin-login against
   // the ADMIN_PASSWORD environment variable (Vercel). No secret in the bundle.
   // The client-side 'password' string remains ONLY as a fallback for local
@@ -61,12 +93,21 @@ export default function AdminPanel() {
   const handleGateSubmit = async () => {
     if (!gatePassword || gateChecking) return;
     setGateChecking(true);
-    let ok = await verifyAdminPassword(gatePassword);
-    if (!ok && import.meta.env.DEV) {
-      // Local dev convenience only — never active in production builds.
-      ok = gatePassword === CLIENT_DEV_FALLBACK;
+    let ok = false;
+    try {
+      // verifyAdminPassword never throws, but guard anyway so a 401/500 or
+      // any unexpected error can never surface as an uncaught rejection.
+      ok = await verifyAdminPassword(gatePassword);
+      if (!ok && import.meta.env.DEV) {
+        // Local dev convenience only — never active in production builds.
+        ok = gatePassword === CLIENT_DEV_FALLBACK;
+      }
+    } catch (err) {
+      console.error('admin gate check failed:', err);
+      ok = false;
+    } finally {
+      setGateChecking(false);
     }
-    setGateChecking(false);
     if (ok) {
       setAuthed(true);
       setGateError(false);
@@ -82,9 +123,15 @@ export default function AdminPanel() {
   };
 
   const handleResetConfirm = async () => {
-    let ok = await verifyAdminPassword(resetPassword);
-    if (!ok && import.meta.env.DEV) {
-      ok = resetPassword === CLIENT_DEV_FALLBACK; // local dev only
+    let ok = false;
+    try {
+      ok = await verifyAdminPassword(resetPassword);
+      if (!ok && import.meta.env.DEV) {
+        ok = resetPassword === CLIENT_DEV_FALLBACK; // local dev only
+      }
+    } catch (err) {
+      console.error('reset password check failed:', err);
+      ok = false;
     }
     if (ok) {
       resetAll();
@@ -200,30 +247,9 @@ export default function AdminPanel() {
 
   const completionPercent = Math.round((currentUserData.completedLessons.length / currentUserData.totalLessons) * 100);
 
-  // Visitor telemetry aggregates (client-side only, capped in store at 100 entries)
-  const visitorStats = useMemo(() => {
-    const byCountry = new Map<string, number>();
-    const byOS = new Map<string, number>();
-    const byBrowser = new Map<string, number>();
-    let touchCount = 0;
-    for (const log of visitorLogs) {
-      const country = log.country || 'Unknown';
-      byCountry.set(country, (byCountry.get(country) ?? 0) + 1);
-      const { os, browser } = parseUserAgent(log.userAgent);
-      byOS.set(os, (byOS.get(os) ?? 0) + 1);
-      byBrowser.set(browser, (byBrowser.get(browser) ?? 0) + 1);
-      if (log.touch) touchCount++;
-    }
-    const topEntries = (m: Map<string, number>) =>
-      [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
-    return {
-      sessions: visitorLogs.length,
-      touchSessions: touchCount,
-      countries: topEntries(byCountry),
-      oses: topEntries(byOS),
-      browsers: topEntries(byBrowser),
-    };
-  }, [visitorLogs]);
+  // NOTE: no hooks may appear below this point — the password-gate early
+  // return above means any hook declared here would run conditionally and
+  // trigger React error #310. All hooks live at the top of the component.
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720]">

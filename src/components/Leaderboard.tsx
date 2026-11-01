@@ -42,6 +42,13 @@ const FALLBACK_LEADERBOARD: ServerLeaderboardEntry[] = [
 ];
 
 export default function Leaderboard() {
+  // ---------------------------------------------------------------------------
+  // ALL hooks are declared here, at the very top of the component, BEFORE any
+  // conditional returns or logic branches. (React error #310 — "Rendered more
+  // hooks than during the previous render" — is thrown whenever a hook runs
+  // after an early return on some renders; keeping every hook above the
+  // `if (!user) return null` gate guarantees a stable hook order.)
+  // ---------------------------------------------------------------------------
   const { user, setCurrentView } = useStore();
 
   // Live standings fetched from /api/leaderboard (GET). Falls back to the
@@ -64,29 +71,10 @@ export default function Leaderboard() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!user) return null;
-
-  // Build the visible list: server standings minus any entry that shares the
-  // current cadet's name, then insert the cadet's live local progress (the
-  // authoritative source for their own XP on this device).
-  const myNameLower = user.username.toLowerCase();
-  const allEntries: ServerLeaderboardEntry[] = serverEntries.filter(e => e.name.toLowerCase() !== myNameLower);
-  const userEntry: ServerLeaderboardEntry = {
-    rank: 0,
-    name: user.username,
-    xp: user.progress.xp,
-    streak: user.progress.streak,
-    lessons: user.progress.completedLessons.length,
-    bannerBg: user.bannerBg,
-    stickers: user.progress.stickers.map(s => STICKER_DEFS[s]?.icon || '⭐'),
-  };
-
-  let userRank = allEntries.filter(e => e.xp > user.progress.xp).length + 1;
-  allEntries.splice(userRank - 1, 0, userEntry);
-  allEntries.forEach((e, i) => e.rank = i + 1);
-
   // Sync this cadet's real-time XP to the server so their rank is shared
   // across devices. Best-effort: refresh the list with returned standings.
+  // The 401/network failure case is swallowed by .catch() — it must never
+  // surface as an uncaught rejection.
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -105,6 +93,29 @@ export default function Leaderboard() {
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.progress.xp]);
+
+  if (!user) return null;
+
+  // Build the visible list: server standings minus any entry that shares the
+  // current cadet's name, then insert the cadet's live local progress (the
+  // authoritative source for their own XP on this device).
+  const myNameLower = user.username.toLowerCase();
+  const allEntries: ServerLeaderboardEntry[] = serverEntries.filter(e => e.name.toLowerCase() !== myNameLower);
+  const userEntry: ServerLeaderboardEntry = {
+    rank: 0,
+    name: user.username,
+    xp: user.progress.xp,
+    streak: user.progress.streak,
+    lessons: user.progress.completedLessons.length,
+    bannerBg: user.bannerBg,
+    stickers: user.progress.stickers.map(s => STICKER_DEFS[s]?.icon || '⭐'),
+  };
+
+  const userRank = allEntries.filter(e => e.xp > user.progress.xp).length + 1;
+  allEntries.splice(userRank - 1, 0, userEntry);
+  allEntries.forEach((e, i) => e.rank = i + 1);
+
+  // NOTE: no hooks may appear below this point — see the comment at the top.
 
   const isUser = (name: string) => name === user.username;
 
