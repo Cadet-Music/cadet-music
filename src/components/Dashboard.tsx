@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CURRICULUM, getAllLessons, getLessonStatus } from '../data';
 import Footer from './Footer';
+import QuestsAndPractice from './QuestsAndPractice';
+import ShareCardTemplate from './ShareCardTemplate';
 
 export default function Dashboard() {
   const { user, setCurrentView, setCurrentLesson, updateStreak } = useStore();
@@ -102,6 +104,14 @@ export default function Dashboard() {
           </motion.div>
           <div className="flex gap-2">
             <motion.button
+              onClick={() => setCurrentView('tone-coach')}
+              className="btn-primary"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              🎓 Tone Coach
+            </motion.button>
+            <motion.button
               onClick={() => setCurrentView('animations')}
               className="btn-secondary"
               whileHover={{ scale: 1.05 }}
@@ -163,6 +173,14 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </div>
+
+        {/* Share progress card (Web Share API → clipboard → download fallback) */}
+        <div className="mb-8 flex justify-end">
+          <ShareCardTemplate />
+        </div>
+
+        {/* Daily Quests + Practice Log */}
+        <QuestsAndPractice />
 
         {/* Next Lesson with Impressive Animation */}
         {nextLesson && (

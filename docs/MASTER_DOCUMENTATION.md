@@ -25,6 +25,11 @@
 21. [Backend Migration Guide](#backend-migration-guide)
 22. [Technical Details](#technical-details)
 23. [Testing & Quality Assurance](#testing--quality-assurance)
+24. [Compliance Status](#compliance-status)
+25. [Future Roadmap (Legacy)](#future-roadmap-legacy--preserved-for-historical-reference)
+26. [Comprehensive Gap Analysis](#comprehensive-gap-analysis)
+27. [Consolidated Future Development Roadmap](#consolidated-future-development-roadmap)
+28. [Gap Analysis Methodology & Verification Notes](#gap-analysis-methodology--verification-notes)
 
 ---
 
@@ -440,6 +445,19 @@ interface Lesson {
 - **n-1**: First Notes: B, A, G (with fingering chart)
 - **r-1**: Quarter Notes (with notation examples)
 - **t-3**: Dynamics (with dynamics visualization)
+
+### Documentation Accuracy Note (Gap Analysis, 2026)
+
+The curriculum tree above is a simplified illustration. The actual shipped
+curriculum in `src/data.ts` (`CURRICULUM`) contains ~200 lesson entries across
+Pre-Basic, Basic, and Levels 1–5 sections, with unique per-lesson topics added
+during the curriculum audit (see `CURRICULUM_AUDIT.md`). Detailed content for
+lesson IDs exists separately in `src/lessonContent.ts` (saxophone + clarinet);
+lessons without a matching entry in `LESSON_CONTENT` fall back to generic quiz
+exercises defined inline in `LessonView.tsx`. A full reconciliation of
+documented vs. implemented lesson coverage is tracked as gap item
+**CUR-09 (Curriculum Coverage Reconciliation)** in the
+[Comprehensive Gap Analysis](#comprehensive-gap-analysis).
 
 ---
 
@@ -873,6 +891,19 @@ const exercisesByConcept = {
 Adaptive sessions use a 60/40 split:
 - **60% Focus Concepts**: Weaker areas (Learning/Developing)
 - **40% Review Concepts**: Maintenance of proficiency
+
+#### Implementation Status (v1.1.1 — October 2026)
+
+✅ **WIRED INTO THE LEARNER EXPERIENCE.** As of v1.1.1, the weighting engine is connected to the live lesson flow (closing Gap Analysis finding B1 / architectural weakness E4):
+
+- `src/components/LessonView.tsx` exports and uses `selectAdaptiveExercises()`, which orders each lesson's exercises by adaptive weight using **weighted sampling without replacement** built from the engine's own primitives (`calculateAllAdaptiveWeights()` + `applyConceptFloor()`).
+- **Diversity rule respected**: two consecutive exercises are never drawn from the same concept when an alternative with remaining weight exists.
+- **No exercise dropped**: exercises without a concept tag keep their original position; every assigned exercise in the lesson still appears.
+- **Stable within a run, fresh per run**: ordering is memoized on `[currentLessonId, sessionKey]`, so re-rendering mid-quiz never reshuffles questions, but starting another practice run ("Continue to Practice") regenerates the order against the cadet's latest `user.progress.conceptMastery`.
+- **User-visible signal**: a banner at the top of each quiz step reads **"Adaptive Focus: …"** listing the prioritized concepts, rendered with `role="status"` for screen-reader announcement. This surfaces adaptivity *positively* (what you'll focus on) without exposing weakness scores, consistent with the "No Negative Feedback" design philosophy above.
+- **Tests**: `src/tests/adaptiveSelection.test.ts` (run via `npx tsx src/tests/adaptiveSelection.test.ts`) verifies state classification, weight tiers, recency multiplier behavior, weak-concept dominance, session-cap handling, and the diversity rule across 50 randomized sessions — 11/11 checks passing.
+
+Deferred follow-on work (Phase 1): cross-lesson session mixing and "Today's Practice" auto-recommendations will consume this same wiring *(A2)*.
 
 ### Admin Analytics (Instructor Only)
 
@@ -3610,7 +3641,12 @@ Bundle Size:
 
 ---
 
-## Future Roadmap
+## Future Roadmap *(Legacy — preserved for historical reference)*
+
+> **Note:** The authoritative planning section is now the
+> **[Consolidated Future Development Roadmap](#consolidated-future-development-roadmap)**
+> below, which supersedes this legacy roadmap. This section is retained only to document
+> how the project originally envisioned its evolution (circa v1.0.0).
 
 ### Phase 1: Backend Integration (2-3 weeks)
 
@@ -3649,6 +3685,237 @@ Bundle Size:
 
 ---
 
+## Comprehensive Gap Analysis
+
+*Produced by the 2026 multi-role audit (lead architect, product manager, music educator, QA reviewer) from the perspectives of cadets, music instructors, squadron staff, band officers, music educators, and system administrators. Code-level evidence for each finding is recorded in [Gap Analysis Methodology & Verification Notes](#gap-analysis-methodology--verification-notes). Recommended phases refer to the [Consolidated Future Development Roadmap](#consolidated-future-development-roadmap).*
+
+### A. Missing Features (Not Yet Built)
+
+| # | Feature | Description | Problem It Solves | Expected User Benefit | Priority | Complexity | Phase |
+|---|---------|-------------|-------------------|----------------------|----------|------------|-------|
+| A1 | **Practice Planner** | Cadet-facing weekly/daily practice schedule builder with goal setting, session timers, and practice journal entries. | Cadets have no structured way to plan *when* and *what* to practice; the app assumes practice happens but never organizes it. | Consistent, purposeful daily practice; less "what do I work on today?" paralysis. | **Critical** | Medium | Phase 1 |
+| A2 | **Daily Practice Recommendations** | Auto-generated "Today's Practice" card assembled from adaptive weak-concepts, current song goals, upcoming qualifications, and time budget. | No guidance loop connecting analytics to action; recommendations exist only as raw data on the Analytics page. | One tap starts a personalized session; measurable improvement velocity. | **High** | Medium | Phase 1 |
+| A3 | **Cadet Qualification Tracking** | Digital check-off of A-CR-CCP-166/PT-001 Performance Objectives (scales, sight-reading, repertoire, drill music) with examiner sign-off workflow. | Level advancement per CCO standards requires documented PO completion; today this lives only on paper at squadrons. | Cadets and instructors see exactly which POs remain before promotion testing. | **Critical** | High | Phase 2 |
+| A4 | **Assessment / Exam Mode** | Timed, graded mock assessments mirroring the six-level exam structure (technical + theory + aural), producing a score report. | No way to rehearse for qualification exams or measure readiness. | Reduced exam anxiety; objective readiness signal before real testing. | **High** | High | Phase 2 |
+| A5 | **Performance Evaluation Rubrics** | Instructor-assignable rubrics (tone, technique, musicality, rhythm, accuracy) with per-criterion scoring and longitudinal tracking. | Feedback today is implicit (XP/accuracy); there is no qualitative performance record. | Fair, transparent, standards-aligned evaluation across squadrons. | **High** | Medium | Phase 2 |
+| A6 | **Dedicated Ear-Training Module** | Progressive intervals, melodies, chords, and dictation exercises independent of lessons, with its own mastery curve. | The concept catalog touches a few aural ideas but there is no systematic ear-training curriculum despite PT-001 requiring aural skills. | Musicianship growth that transfers directly to playing by ear and ensemble awareness. | **High** | Medium | Phase 2 |
+| A7 | **Rhythm-Training Module** | Note-value clapping games, rhythm dictation, metronome-based subdivision drills, and tempo progression tracking. | RhythmDisplay is a static visual aid; nothing trains rhythm actively or measures it. | Steady internal pulse — the most common weakness in beginner bands. | **High** | Medium | Phase 2 |
+| A8 | **Sight-Reading Trainer** | Daily cold-reading exercises with timed exposure, difficulty scaling by level/instrument, and transposition-aware output. | Sight reading is a formal PO category with zero interactive support in-app. | Cadets pass sight-reading components of qualification exams. | **High** | High | Phase 2 |
+| A9 | **Scale & Technique Tracker** | Per-instrument scale practice mode with tempo logging, metronome ramping, accuracy capture (via microphone once detection is real), and PT-001 requirement checklists. | Scale requirements are documented in data files but not *practiced or measured* anywhere. | Objective proof of technical-standard progress (e.g., "G major, ♩=104, clean"). | **Critical** | Medium | Phase 1–2 |
+| A10 | **Theory Progression Gatekeeping** | Enforced prerequisite chains and spaced-repetition review across PT-004 levels (Basic → Five). | Theory topics can be attempted out of order; retention decays with no review scheduler. | Durable knowledge aligned to the official theory program sequence. | **Medium** | Low | Phase 1 |
+| A11 | **Instrument-Specific Training Paths** | Curricula keyed to instrument family (woodwind/brass/percussion) covering embouchure, breathing, articulation, fingering charts. | All content currently centers saxophone/clarinet fundamentals; brass and percussion cadets get generic material. | Every cadet trains their actual instrument, not a proxy. | **High** | High | Phase 4 |
+| A12 | **Band Preparation Workflows** | Drill-music library, marching-band cue sheets, sectional rehearsal assignments, concert setlist prep tied to qualification repertoire. | Nothing bridges solo practice to the ensemble reality of a cadet band. | Cadets arrive at rehearsals prepared; sectionals become efficient. | **Medium** | Medium | Phase 4 |
+| A13 | **Audition Preparation Kit** | Simulated audition pipeline: pre-screen materials, prepared-music checklist, mock-panel evaluation using rubrics (A5). | Band officers hold auditions; cadets have no platform-supported way to prepare. | Higher-quality auditions, fairer selection, reduced officer admin load. | **Medium** | Medium | Phase 4 |
+| A14 | **Instructor Feedback System** | Written/recorded feedback on lessons, songs, and assessments; notification delivery; feedback history per cadet. | Instructors have no channel into the student experience at all. | Mentoring relationship survives between parade nights. | **High** | Medium | Phase 3 |
+| A15 | **Squadron-Level Reporting** | Aggregate dashboards per squadron/regiment: participation, level distribution, PO completion rates, exportable PDF/CSV reports. | Staff cannot answer "how is our music program doing?" without manual tallying. | Evidence-based program management and reporting up the chain of command. | **High** | High | Phase 3 |
+| A16 | **Assignment System** | Instructors assign lessons/songs/scales with due dates; cadets see an assignment queue distinct from free exploration. | No teacher→student push mechanism exists. | Structured cohort learning instead of self-directed drift. | **High** | Medium | Phase 3 |
+| A17 | **True Onboarding Flow** | Guided first-run: instrument selection, level self-placement diagnostic, goal setting, baseline calibration. | `Onboarding.tsx` exists but is cosmetic; new users land in an undifferentiated content wall. | Faster time-to-value; correct starting level; fewer abandoned accounts. | **High** | Low | Phase 1 |
+| A18 | **Search Functionality** | Global search across lessons, songs, theory topics, glossary terms, and scales. | Content volume (50+ lessons, 62 songs, 40+ topics, 45+ glossary terms) is now un-navigable by browsing alone. | Users find anything in seconds. | **Medium** | Low | Phase 5 |
+| A19 | **Content Management Tools** | Admin CRUD interface for lessons, songs, rubrics, and standards data — no code edits required. | All curriculum lives in hard-coded TypeScript modules; updating content requires a developer and a redeploy. | Instructors/officers can keep content current themselves. | **High** | High | Phase 5 |
+| A20 | **Cross-Device Sync & Cloud Accounts** | Server-side account store syncing progress, XP, streaks, and settings across devices. | localStorage-only persistence means progress is trapped per-browser/device. | Cadets practice on shared squadron computers and personal phones safely. | **Critical** | High | Phase 0 |
+| A21 | **Data Backup & Recovery** | Export/import of full user data (JSON), plus server-side snapshots once backend exists; documented recovery procedure. | Clearing browser data destroys all progress; there is no escape hatch. | Trust and resilience; meets expectations for handling youth data. | **Critical** | Low | Phase 0 |
+| A22 | **Accessibility Layer (WCAG 2.1 AA)** | Screen-reader semantics, keyboard-only navigation, visible focus states, captions/transcripts for audio activities, adjustable text size, reduced-motion honoring. | Audit found effectively zero `aria-*` usage across components; audio-dependent features exclude deaf/HoH cadets. | Inclusive training for cadets with disabilities; legal defensibility. | **Critical** | Medium | Phase 0–1 |
+| A23 | **Offline / PWA Support** | Service worker caching lesson content and enabling offline practice sessions that sync later. | Squadron environments often have poor connectivity; app is currently useless offline. | Practice continues in basements, field exercises, and buses. | **Medium** | Medium | Phase 4 |
+| A24 | **Push Notifications / Reminders** | Opt-in practice reminders, streak-protection alerts, assignment and feedback notifications. | Streaks decay silently; cadets forget commitments. | Better habit formation and instructor reachability. | **Medium** | Medium | Phase 4 |
+| A25 | **Motivation & Retention Systems** | Seasonal challenges, badges beyond stickers, milestone celebrations, peer encouragement, at-risk detection for disengaged cadets. | Current gamification (XP/stickers/leaderboard) plateaus quickly with no long-loop hooks. | Sustained engagement across a multi-year cadet career. | **Medium** | Medium | Phase 4 |
+| A26 | **Progress Analytics Over Time** | Historical trend charts (accuracy, tempo, minutes practiced) rather than current-state snapshots only. | Educators need trajectories, not point-in-time scores. | Early intervention before qualification failures. | **High** | Medium | Phase 3 |
+| A27 | **Real Authentication** | Server-side identity with salted hashing, password reset, and role management. | Passwords are stored **in plaintext in localStorage** (`Login.tsx` lines ~52–60) with client-side comparison. | Account security appropriate for an organization-facing platform. | **Critical** | Medium | Phase 0 |
+| A28 | **Curriculum Expansion** | Percussion/marimba track, vocal/music-director track, arranging/composition basics, Canadian Forces ceremonial music depth. | Program serves melodic wind players best; entire sections of cadet bands are underserved. | Whole-band coverage; future funding justification. | **Low** | High | Phase 5 |
+| A29 | **Long-Term Sustainability Plan** | Governance model, content licensing clarity, hosting cost ownership, open-source contribution guidelines, documentation maintenance cadence. | No owner, roadmap cadence, or bus-factor mitigation exists beyond one document. | The platform outlives its original authors. | **Medium** | Low | Phase 5 |
+
+### B. Partially Implemented Features
+
+| # | Feature | What Exists | What Is Missing | Priority | Complexity | Phase |
+|---|---------|-------------|-----------------|----------|------------|-------|
+| B1 | **Adaptive Exercise Selection** | ✅ **RESOLVED (v1.1.1, Oct 2026)** — Full weighting engine in `adaptive.ts` (tiers, recency multiplier, concept floor) is now wired into `LessonView.tsx` via exported `selectAdaptiveExercises()`, which orders each lesson's exercises by adaptive weight using weighted sampling without replacement (`calculateAllAdaptiveWeights` + `applyConceptFloor`), honoring the diversity rule (no same-concept repeats back-to-back when alternatives exist). A user-visible "Adaptive Focus: …" banner (`role="status"`) shows prioritized concepts at the top of every quiz step; ordering regenerates per practice run via a `sessionKey` and reads live `user.progress.conceptMastery`. Covered by `src/tests/adaptiveSelection.test.ts` (11 checks, all passing). Original gap: selection never called the weighting functions — only `AdminPanel.tsx` imported `adaptive.ts`. | *(Closed)* | **Critical** | Low | Phase 0 |
+| B2 | **Microphone Pitch Detection** | Complete capture/UI pipeline (`audioManager.ts`, `WaveformVisualizer.tsx`, `MicrophonePractice.tsx`, `AudioPracticeActivity.tsx`). | `audioActivities.ts` explicitly returns **placeholder values** ("will be implemented with pitch detection") — no YIN/autocorrelation algorithm; scoring is simulated. | **Critical** | High | Phase 0–1 |
+| B3 | **Multi-Instrument Support** | Robust architecture: 20+ instrument profiles, transposition engine, store fields (`instrument`, `instrumentId`), LessonView integration. | Content reality is saxophone/clarinet-centric (`saxophoneFundamentals.ts`, `clarinetFundamentals.ts`, VirtualSaxophone); no brass/percussion fundamentals, and no instrument-selection UI in Settings. | **High** | Medium | Phase 4 |
+| B4 | **Exam Preparation Foundation** | Exam metadata structures defined in the audio-practice architecture. | No runnable exam flow, scoring, or report; the "Future Exam Features" list remains aspirational. | **High** | Medium | Phase 2 |
+| B5 | **Gamification** | XP, streaks, stickers, banners, leaderboard implemented client-side. | No anti-cheat normalization, no squadron/team segmentation of leaderboards, no seasonal resets, achievements not linked to curriculum milestones. | **Medium** | Low | Phase 4 |
+| B6 | **Onboarding** | `Onboarding.tsx` component renders. | Not wired into first-login journey; no diagnostic placement or instrument capture. | **High** | Low | Phase 1 |
+| B7 | **Analytics** | Student Analytics page and admin concept-accuracy reports exist. | No longitudinal trends, no export, no instructor-class views. | **High** | Medium | Phase 3 |
+| B8 | **Mobile Usability** | Responsive Tailwind layout and touch optimizations documented. | Mic practice UX untested on mobile browsers (iOS Safari autoplay/permissions quirks); no PWA install path; small-target interactions in notation components. | **High** | Medium | Phase 4 |
+
+### C. Documented but Not Implemented
+
+| # | Claim in Documentation | Reality | Priority | Phase |
+|---|------------------------|---------|----------|-------|
+| C1 | Backend Migration Guide (Supabase/Vercel options, migration steps, costs) | No backend exists; guide is purely advisory. | **Critical** | Phase 0 |
+| C2 | "Session Persistence" described under Authentication | Persistence is raw localStorage; no server session, token, or expiry. | **Critical** | Phase 0 |
+| C3 | Competency Badges framework | Badge definitions documented; awarding logic not implemented end-to-end. | Medium | Phase 1 |
+| C4 | Unit/integration tests for transposition ("Future" in Multi-Instrument Architecture) | Only one test file (`src/tests/functionality.test.ts`) exists repo-wide. | High | Phase 0 |
+| C5 | Audio Practice Analytics (admin) | Listed as "Future"; absent. | Medium | Phase 3 |
+| C6 | Rhythm analysis, tone-quality feedback, scale verification | Listed as roadmap Phases 3–4 in two separate legacy sections; none built. | High | Phase 1–2 |
+
+### D. Implemented but Insufficiently Documented
+
+| # | Area | Documentation Gap | Action |
+|---|------|-------------------|--------|
+| D1 | Legal pages & cookie consent | Cookie-policy banner behavior and Konami easter egg (`KonamiListener.tsx`, `Mascot.tsx`) are not covered in functional specs. | Add a "Hidden/Easter-Egg Features" appendix. |
+| D2 | Fundamentals content modules | `saxophoneFundamentals.ts` / `clarinetFundamentals.ts` exist but their lesson IDs are not mapped to the Learning Path tree. | Add mapping table. |
+| D3 | Store schema evolution | No changelog of persisted-state shape; risky for future migrations. | Maintain a `storeSchemaVersion` and migration notes. |
+| D4 | Duplicate "Future Enhancements" lists | Identical Phase 2–6 lists appear under both Next-Generation Practical Learning System and Audio Practice Architecture. | Consolidated below; originals retained for history. |
+| D5 | Test inventory | Testing section claims broad coverage; actual suite is minimal. | Corrected in Version History note; real CI added in Phase 0. |
+
+### E. Architectural Weaknesses
+
+1. **Client-side trust boundary** — authentication, XP, streaks, and progress are all mutable by the user in localStorage; any competitive or evaluative use of this data is unsound until Phase 0.
+2. **Plaintext credentials** — `Login.tsx` stores and compares passwords in clear text; unacceptable if real accounts ship (fix in Phase 0 with backend auth).
+3. **God-module risk** — `data.ts` (~large monolith) and duplicated phase-enhancement prose indicate copy-drift; content should migrate to structured data + CMS (Phase 5).
+4. ~~**Open adaptivity loop** — the weighting engine being disconnected from exercise selection (B1) is the single highest-value architectural fix relative to effort.~~ ✅ **RESOLVED in v1.1.1 (Oct 2026)** — `LessonView.tsx` now orders every lesson's exercises through the adaptive weighting engine (`selectAdaptiveExercises()` using `calculateAllAdaptiveWeights` + `applyConceptFloor`) with a diversity rule and per-run regeneration; covered by `src/tests/adaptiveSelection.test.ts`. Remaining follow-on: session-level cross-lesson mixing is deferred to Phase 1 "Today's Practice" *(A2)*.
+5. **No API abstraction layer** — components read/write the Zustand store and localStorage directly, so a backend migration will require touching every consumer unless a service/repository layer is introduced first.
+6. **Scattered configuration** — adaptive weights, session caps, and level thresholds are hard-coded constants; needed as tunable, per-squadron configuration later.
+7. **Minimal automated verification** — one test file against ~15,000+ LOC; regressions in transposition math or scoring would go unnoticed.
+
+### F. Scalability & Maintainability Concerns
+
+- **Scale:** localStorage caps (~5–10 MB/browser) and per-user analytics recomputation are fine for dozens of users but not a corps-wide deployment; server-side aggregation becomes mandatory at Phase 3 reporting scale.
+- **Maintainability:** curriculum embedded in TS modules couples content updates to build/deploy cycles; duplicated roadmap/enhancement prose across sections has already drifted; absence of CI/lint gates allows silent quality decay.
+- **Portability:** WebAudio APIs behave differently across iOS/Android browsers; without a device matrix and PWA strategy, mobile claims are fragile.
+
+---
+
+## Consolidated Future Development Roadmap
+
+This roadmap supersedes and merges the legacy [Future Roadmap](#future-roadmap-legacy--preserved-for-historical-reference), the duplicate "Future Enhancements" phase lists in the Next-Generation Practical Learning System and Audio Practice Architecture sections, and the Backend Migration Guide timeline. Duplicate ideas were deduplicated; overlapping concepts were merged. Phase numbers here are referenced by every item in the [Comprehensive Gap Analysis](#comprehensive-gap-analysis).
+
+### Phase 0 – Foundations & Correctness *(~4–6 weeks)*
+
+**Goals:** Make the platform trustworthy, testable, and truthful — close the loops that are already half-built before adding new surface area.
+
+**Deliverables:**
+- Real authentication via backend (Supabase per existing Migration Guide): hashed passwords, sessions, role claims *(A27, C1, C2, E1, E2)*
+- Cross-device sync + cloud profile store *(A20)*
+- Data export/import and documented backup-recovery procedure *(A21)*
+- ✅ **Adaptive-weighting wiring into exercise selection — DONE (v1.1.1, Oct 2026):** `adaptive.ts` is now wired into `LessonView.tsx` via `selectAdaptiveExercises()`; exercises are ordered by adaptive weight with a diversity rule, and an "Adaptive Focus" banner is shown to cadets. Tests: `src/tests/adaptiveSelection.test.ts`. *(B1, E4 — closed)*
+- Genuine pitch-detection algorithm (YIN/autocorrelation) replacing placeholders *(B2)*
+- Service/repository abstraction layer isolating localStorage from components *(E5)*
+- CI pipeline, unit tests for transposition math/scoring/store migrations, seed integration tests *(C4, E7)*
+- Accessibility baseline: semantic landmarks, labels, keyboard nav, focus states *(A22 partial)*
+
+**Dependencies:** None — entry phase. Backend choice (Supabase vs custom) must be decided in week 1 because A20/A27/Phase 3 all depend on it.
+
+**Priority rationale:** Security defects (plaintext passwords), data-loss risk (no backup), and broken promises (fake detection, unwired adaptivity) undermine credibility of everything else. These are also the cheapest high-trust wins.
+
+### Phase 1 – Core Practice Loop *(~6–8 weeks)*
+
+**Goals:** Deliver the daily habit that makes CadetMusic indispensable to a cadet.
+
+**Deliverables:**
+- Practice Planner with session timer and journal *(A1)*
+- "Today's Practice" auto-recommendations fed by the now-wired adaptive engine *(A2, depends on Phase 0 B1)*
+- Scale & Technique Tracker with tempo logging and metronome ramping *(A9; mic accuracy depends on Phase 0 B2)*
+- Theory prerequisite gating + spaced repetition review *(A10)*
+- True onboarding: instrument choice, placement diagnostic, goal setting *(A17, B6)*
+- Long-term motivation tuning: achievement ↔ curriculum linkage begins *(B5 groundwork)*
+- WCAG 2.1 AA pass on practice surfaces; reduced-motion and captions *(A22 completion)*
+
+**Dependencies:** Phase 0 (adaptive wiring, real auth for journal sync, pitch detection for scale scoring).
+
+**Priority rationale:** Practice planning + daily guidance is the product's reason to exist for cadets; everything in Phases 2–4 consumes data this loop generates.
+
+### Phase 2 – Assessment & Qualification *(~8–10 weeks)*
+
+**Goals:** Digitize the official standards lifecycle — the differentiator no general music app offers cadets.
+
+**Deliverables:**
+- PO qualification tracking with examiner sign-off workflow *(A3)*
+- Exam/Assessment Mode with scored mock exams and report generation *(A4, B4)*
+- Ear-training module *(A6)* and Rhythm-training module *(A7)*
+- Sight-reading trainer (transposition-aware, leveraging existing engine) *(A8)*
+- Performance-evaluation rubrics *(A5)*
+- Live-mic scoring extended to tone quality and rhythm accuracy *(legacy Phase 2 items, merged)*
+
+**Dependencies:** Phase 1 (practice history as assessment evidence); Phase 0 (reliable detection, accounts).
+
+**Priority rationale:** Direct alignment to A-CR-CCP-166/PT-001 and PT-004 gives institutional value; instructors and band officers become stakeholders, driving adoption.
+
+### Phase 3 – Instructor & Squadron Layer *(~8–12 weeks)*
+
+**Goals:** Turn a cadet tool into a program-management platform.
+
+**Deliverables:**
+- Instructor dashboard with class/cohort rosters *(legacy Phase 4, merged)*
+- Assignment system with due dates *(A16)*
+- Instructor feedback (written + audio) with notifications *(A14)*
+- Longitudinal progress analytics and trend charts *(A26, B7)*
+- Squadron-level aggregate reporting with PDF/CSV export *(A15)*
+- Role-based access control (cadet / instructor / squadron staff / regional) *(extends Phase 0 auth)*
+
+**Dependencies:** Phase 0 backend (multi-user data), Phase 2 (assessment results to report on).
+
+**Priority rationale:** Reporting and mentoring are what keep squadrons funded and staffed; however they are worthless without trustworthy per-user data, hence post-Phase-0 ordering.
+
+### Phase 4 – Performance & Ensemble *(~10–14 weeks)*
+
+**Goals:** Extend from solo practice to the band floor.
+
+**Deliverables:**
+- Instrument-specific training paths for brass and percussion; instrument-selection UI in Settings *(A11, B3)*
+- Band-prep workflows: drill music, sectional assignments, concert setlists *(A12)*
+- Audition preparation kit with mock-panel rubric scoring *(A13)*
+- PWA/offline mode with deferred sync *(A23)* and push reminders *(A24)*
+- Mobile hardening: iOS/Android audio-permission matrix, touch ergonomics *(B8)*
+- Gamification season 2: seasonal challenges, team leaderboards, retention/at-risk signals *(A25, B5)*
+- Ensemble/concert-pitch view experiments *(legacy Multi-Instrument Phase 4, merged)*
+
+**Dependencies:** Phase 1 (habit data), Phase 3 (assignments/rosters), Phase 0 (sync for offline).
+
+**Priority rationale:** High experiential value but dependent on prior layers; also matches real cadet-year rhythms (auditions and concerts follow qualification cycles).
+
+### Phase 5 – Content Platform & Sustainability *(ongoing)*
+
+**Goals:** Make the curriculum itself maintainable, searchable, expandable, and institutionally durable.
+
+**Deliverables:**
+- Content management tools (admin CRUD for lessons, songs, rubrics, standards data) *(A19, C1 residual)*
+- Global search across all content types *(A18)*
+- Curriculum expansion: percussion/marimba, vocal/MC track, composition/arranging, CF ceremonial depth *(A28)*
+- Governance, licensing, hosting-cost ownership, contribution guidelines, documentation maintenance cadence *(A29, E6, F)*
+- Tunable per-squadron configuration (adaptive weights, thresholds) *(E6)*
+- Externalized content format (TS modules → structured JSON/CMS payloads) *(E3)*
+
+**Dependencies:** Phase 0 backend and Phase 3 roles (who may edit content).
+
+**Priority rationale:** Without instructor-editable content and a governance model, the project stalls after its authors move on; it is lower urgency than user-facing gaps but decisive for longevity.
+
+### Milestone Summary
+
+| Phase | Theme | Duration | Key Outcome |
+|-------|-------|----------|-------------|
+| 0 | Foundations & Correctness | 4–6 wk | Secure, synced, honest core |
+| 1 | Core Practice Loop | 6–8 wk | Irreplaceable daily habit |
+| 2 | Assessment & Qualification | 8–10 wk | Official standards digitized |
+| 3 | Instructor & Squadron Layer | 8–12 wk | Program-level adoption |
+| 4 | Performance & Ensemble | 10–14 wk | Whole-band coverage |
+| 5 | Content Platform & Sustainability | Ongoing | Long-term viability |
+
+---
+
+## Gap Analysis Methodology & Verification Notes
+
+**Method:** Static inspection of `/workspace/src` (modules and components), cross-referenced against every claim in this document and the auxiliary markdown reports. No runtime instrumentation was used; line references below were captured during the October 2026 audit. Findings were reviewed against six stakeholder lenses (cadet, instructor, squadron staff, band officer, music educator, system administrator).
+
+**Code-level evidence by audit topic:**
+
+1. **Adaptive engine integration status** — `src/adaptive.ts` exports a complete weighting system (`ADAPTIVE_CONFIG`, `ADAPTIVE_WEIGHTS`, `getAdaptiveState`, `calculateRecencyMultiplier`, `calculateAdaptiveWeight(s)`, `createSessionTracker`, `hasHitSessionCap`, `violatesDiversityRule`, `updateSessionTracker`). At audit time, import search showed **only `AdminPanel.tsx` imports `../adaptive`** (for `generateEnhancedAdminAnalytics`); `LessonView.tsx` contained no adaptive import or call. Competency recording (`recordCorrectAnswer`/`recordIncorrectAnswer` from `competency.ts`) *was* invoked in `LessonView.tsx` and `Analytics.tsx`. Conclusion at audit: data collection worked; adaptive *selection* was not wired (Finding B1). **UPDATE (v1.1.1, Oct 2026): Finding B1 closed.** `LessonView.tsx` now imports `calculateAllAdaptiveWeights` and `applyConceptFloor` from `../adaptive` and orders each lesson's exercises via the exported `selectAdaptiveExercises()` helper (weighted sampling without replacement, diversity rule, per-run regeneration keyed on `sessionKey`, live `conceptMastery` input), with a visible "Adaptive Focus" banner. Verified by `npx tsc --noEmit` (clean), `npm run build` (success), and `src/tests/adaptiveSelection.test.ts` (11/11 checks passing, including weak-concept dominance and diversity across 50 randomized sessions).
+
+2. **Audio pitch detection implementation status** — `src/audioActivities.ts` line ~131 comment: *"Currently returns placeholder values, will be implemented with pitch detection."* No autocorrelation/YIN/FFT-frequency estimation exists in any source module. Capture plumbing (`audioManager.ts`, `MicrophonePractice.tsx`, `GuidedMicrophonePractice.tsx`, `WaveformVisualizer.tsx`, `AudioPracticeActivity.tsx`) is present and functional for visualization only. Conclusion: detection is simulated (Finding B2).
+
+3. **Accessibility findings** — `grep -c "aria-"` across all 33 components returned **zero attributes** for essentially every component file (including `Dashboard.tsx`, `LessonView.tsx`, `Login.tsx`, `Settings.tsx`, `MicrophonePractice.tsx`, `AudioPracticeActivity.tsx`). No skip-links, focus-visible styling, live-region announcements, or reduced-motion media-query enforcement were found in `src/index.css`/components. Audio-dependent activities lack visual-alternative guarantees. Conclusion: WCAG non-compliance (Findings A22, §E).
+
+4. **Authentication findings** — `src/components/Login.tsx` line ~52 comment: *"Simple password storage for demo (in production, use proper backend auth)."* `storePassword()` writes the literal password into a localStorage `users` map; login performs direct string equality (`storedPassword !== password`, line ~105). No hashing, salting, tokens, expiry, or reset flow. This contradicts the earlier "Password Storage" and "Session Persistence" sections of this document, which describe intended rather than actual behavior. Conclusion: plaintext demo auth (Findings A27, C2, E2).
+
+5. **Multi-instrument implementation status** — `src/instruments.ts` defines 20+ `InstrumentProfile`s with transposition tables; `src/store.ts` persists `instrument` and `instrumentId` (defaults `alto-sax`); `LessonView.tsx` references instruments for display/transposition. However fundamentals content exists only for alto sax (`saxophoneFundamentals.ts`) and clarinet (`clarinetFundamentals.ts`), the virtual instrument is saxophone-only (`VirtualSaxophone.tsx`, `SaxophoneAssembly.tsx`), and `Settings.tsx` exposes no instrument picker. Conclusion: architecture complete, content breadth incomplete (Finding B3).
+
+6. **Backend integration status** — No network clients, SDKs, or API endpoints appear anywhere in `src/`; `package.json` contains no Supabase/Firebase/API dependencies. All persistence flows through the Zustand store's localStorage subscription. The "Backend Migration Guide" in this document is prospective only. Conclusion: zero backend integration (Findings A20, C1).
+
+7. **Test inventory** — `src/tests/` contains a single file (`functionality.test.ts`); no CI configuration exists at repo root. Prior documentation claims of broad test coverage overstate reality (Finding C4/D5).
+
+**Scope note:** In accordance with the audit mandate, **no source code was modified**. Auxiliary markdown reports in the repository root (implementation summaries, design notes, audits) were treated as historical artifacts; where they conflict with code reality, this master document and its Gap Analysis take precedence.
+
+---
+
 ## Support & Contact
 
 For questions or issues:
@@ -3676,7 +3943,7 @@ For questions or issues:
 
 ## Version History
 
-### v1.0.0 (Current)
+### v1.0.0
 
 - Complete 6-level curriculum
 - Full standards compliance
@@ -3694,10 +3961,25 @@ For questions or issues:
 - Legal pages and footer
 - Comprehensive documentation
 
+### v1.1.1 (Current — October 2026)
+
+- ✅ **Closed Gap Analysis finding B1 / architectural weakness E4 (Phase 0):** wired the adaptive weighting engine (`adaptive.ts`) into `LessonView.tsx` via new exported `selectAdaptiveExercises()` — lesson exercises are now ordered by adaptive weight (weighted sampling without replacement using `calculateAllAdaptiveWeights` + `applyConceptFloor`), with a diversity rule, per-run regeneration keyed on `sessionKey`, and live `conceptMastery` input
+- Added user-visible **"Adaptive Focus"** banner (`role="status"`) at the top of every quiz step, consistent with the "invisible adaptation / no negative feedback" design philosophy
+- Added `src/tests/adaptiveSelection.test.ts` — 11 dependency-free checks (state classification, weight tiers, recency multiplier, weak-concept dominance, session-cap behavior, diversity across 50 randomized sessions); all passing. Verified with clean `tsc --noEmit` and successful production build
+- Updated documentation: Adaptive Content Weighting section gained an "Implementation Status" subsection; Gap Analysis rows B1/E4 and Methodology note #1 marked resolved; Phase 0 deliverable checked off
+
+### v1.1.0 (October 2026)
+
+- Added **Comprehensive Gap Analysis** (missing / partial / documented-not-implemented / under-documented features; architectural weaknesses; scalability & maintainability concerns) from the six-stakeholder audit
+- Added **Consolidated Future Development Roadmap** (Phases 0–5), which supersedes the legacy Future Roadmap (retained for historical reference)
+- Added **Gap Analysis Methodology & Verification Notes** with code-level evidence (adaptive engine, pitch detection, accessibility, authentication, multi-instrument, backend, tests)
+- Added Documentation Accuracy Note to the Lesson System section and TOC entries for the three new sections
+- Corrected overstatements: test coverage is minimal (one suite), auth is demo-grade plaintext localStorage, pitch detection returns placeholder values — see Gap Analysis sections C/E/Methodology
+
 ---
 
-**Documentation Version**: 1.0.0  
-**Last Updated**: 2024  
+**Documentation Version**: 1.1.1  
+**Last Updated**: October 2026  
 **Total Features**: 100+  
 **Total Lessons**: 50+  
 **Total Songs**: 62  

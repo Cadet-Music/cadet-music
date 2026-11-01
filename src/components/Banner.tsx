@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useStore, STICKER_DEFS, BANNER_BGS } from '../store';
+import { useRef, useState } from 'react';
+import { motion, useMotionValue, type PanInfo } from 'framer-motion';
+import { useStore, STICKER_DEFS, BANNER_BGS, type BannerSticker } from '../store';
 import Footer from './Footer';
 
 const ChevronLeftIcon = () => (
@@ -9,37 +9,82 @@ const ChevronLeftIcon = () => (
   </svg>
 );
 
+/** Resolve the emoji for a placed sticker, with legacy fallback:
+ *  pre-migration placements stored only a timestamp id and were rendered by
+ *  indexing into progress.stickers — keep those looking stable. */
+export function stickerIcon(s: BannerSticker, earnedStickers: string[]): string {
+  if (s.stickerId && STICKER_DEFS[s.stickerId]) return STICKER_DEFS[s.stickerId].icon;
+  const idx = parseInt(s.id, 10);
+  if (!Number.isNaN(idx)) {
+    const legacyKey = earnedStickers[idx];
+    if (legacyKey && STICKER_DEFS[legacyKey]) return STICKER_DEFS[legacyKey].icon;
+  }
+  return '⭐';
+}
+
+const MAX_PLACED_STICKERS = 24;
+const clampPercent = (v: number) => Math.min(97, Math.max(3, v));
+
 export default function Banner() {
   const { user, setCurrentView, setBannerBg, addBannerSticker, removeBannerSticker, updateBannerSticker } = useStore();
   const [selectedSticker, setSelectedSticker] = useState<string | null>(null);
+  const bannerRef = useRef<HTMLDivElement>(null);
+  /** Set true on drag so the synthetic click after pointerup doesn't remove the sticker. */
+  const didDragRef = useRef(false);
 
   if (!user) return null;
 
   const handleBannerClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!selectedSticker) return;
-    
+    if (!selectedSticker || didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+    const x = clampPercent(((e.clientX - rect.left) / rect.width) * 100);
+    const y = clampPercent(((e.clientY - rect.top) / rect.height) * 100);
+
+    if (user.bannerStickers.length >= MAX_PLACED_STICKERS) {
+      setSelectedSticker(null);
+      return;
+    }
+
     addBannerSticker({
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
+      stickerId: selectedSticker,
       x,
       y,
       rotation: Math.random() * 30 - 15,
+      scale: 1,
+      zIndex: user.bannerStickers.length + 1,
     });
     setSelectedSticker(null);
   };
 
-  const handleStickerDrag = (id: string, e: React.MouseEvent<HTMLDivElement>) => {
-    const banner = e.currentTarget.closest('[data-banner]');
+  /** Drag ended → commit final position as banner-relative percent, reset offsets. */
+  const handleDragEnd = (s: BannerSticker, _e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    didDragRef.current = true;
+    const banner = bannerRef.current;
     if (!banner) return;
-    
-    const rect = banner.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
-    updateBannerSticker(id, { x, y });
+
+    // Momentum is disabled, so info.offset is the exact final delta.
+    const x = clampPercent(s.x + (info.offset.x / banner.clientWidth) * 100);
+    const y = clampPercent(s.y + (info.offset.y / banner.clientHeight) * 100);
+
+    updateBannerSticker(s.id, { x, y });
+    s.x = x;
+    s.y = y;
+  };
+
+  const handleStickerTap = (s: BannerSticker) => {
+    // A tap (no preceding drag) removes; drags are handled in handleDragEnd.
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+    if (confirm('Remove this sticker?')) {
+      removeBannerSticker(s.id);
+    }
   };
 
   return (
@@ -48,8 +93,9 @@ export default function Banner() {
       <div className="bg-white dark:bg-[#1a2332] border-b border-[#c8c8c8] dark:border-[#2a3545] px-4 py-4 sticky top-0 z-50">
         <div className="max-w-xl mx-auto flex items-center gap-4">
           <button
-            onClick={() => setCurrentView('leaderboard')}
-            className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors flex items-center gap-2"
+            onClick={() => setCurrentView('dashboard')}
+            className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors flex items-center gap-2 min-h-[48px] px-2 -ml-2 rounded-lg"
+            aria-label="Back to dashboard"
           >
             <ChevronLeftIcon />
             <span className="text-sm font-medium">Back</span>
@@ -69,55 +115,46 @@ export default function Banner() {
             Preview
           </p>
           <div
+            ref={bannerRef}
             data-banner
             onClick={handleBannerClick}
-            className={`rounded-xl h-40 relative overflow-hidden cursor-${selectedSticker ? 'crosshair' : 'default'} border-2 ${
-              selectedSticker ? 'border-[#c9a84c] border-dashed' : 'border-transparent'
+            className={`rounded-xl h-40 sm:h-48 relative overflow-hidden touch-none select-none ${
+              selectedSticker ? 'cursor-crosshair border-2 border-[#c9a84c] border-dashed' : ''
             }`}
             style={{ background: user.bannerBg }}
           >
-            {user.bannerStickers.map((s) => {
-              const stickerIdx = parseInt(s.id);
-              const stickerKey = user.progress.stickers[stickerIdx];
-              const stickerDef = STICKER_DEFS[stickerKey];
-              
-              return (
-                <motion.div
-                  key={s.id}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute text-3xl cursor-move select-none"
-                  style={{
-                    left: `${s.x}%`,
-                    top: `${s.y}%`,
-                    transform: `translate(-50%, -50%) rotate(${s.rotation}deg)`,
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm('Remove this sticker?')) {
-                      removeBannerSticker(s.id);
-                    }
-                  }}
-                >
-                  {stickerDef?.icon || '⭐'}
-                </motion.div>
-              );
-            })}
-            
+            {user.bannerStickers.map((s) => (
+              <DraggableSticker
+                key={s.id}
+                sticker={s}
+                icon={stickerIcon(s, user.progress.stickers)}
+                containerRef={bannerRef}
+                onDragEnd={handleDragEnd}
+                onTap={handleStickerTap}
+              />
+            ))}
+
             {selectedSticker && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/80 text-sm font-medium bg-black/30 px-3 py-1.5 rounded-lg">
-                  Click to place sticker
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <p className="text-white/90 text-sm font-medium bg-black/40 px-3 py-1.5 rounded-lg">
+                  Tap to place “{STICKER_DEFS[selectedSticker]?.name}”
                 </p>
               </div>
             )}
 
             {user.bannerStickers.length === 0 && !selectedSticker && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <p className="text-white/60 text-sm">Select a sticker below, then click here to place it</p>
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <p className="text-white/70 text-sm px-4 text-center">
+                  Pick a sticker below, tap the banner to place it, then drag to arrange
+                </p>
               </div>
             )}
           </div>
+          {user.bannerStickers.length >= MAX_PLACED_STICKERS && (
+            <p className="text-xs text-[#c44536] mt-2">
+              Banner is full ({MAX_PLACED_STICKERS} stickers max) — remove one to place another.
+            </p>
+          )}
         </motion.div>
 
         {/* Background Selection */}
@@ -131,13 +168,14 @@ export default function Banner() {
             Background
           </p>
           <div className="grid grid-cols-3 gap-2">
-            {BANNER_BGS.map((bg, i) => (
+            {BANNER_BGS.map((bg) => (
               <motion.button
                 key={bg}
                 onClick={() => setBannerBg(bg)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`h-16 rounded-lg border-2 transition-all ${
+                aria-label="Choose this background"
+                className={`h-16 min-h-[48px] rounded-lg border-2 transition-all ${
                   user.bannerBg === bg ? 'border-[#c9a84c] ring-2 ring-[#c9a84c]/30' : 'border-transparent'
                 }`}
                 style={{ background: bg }}
@@ -163,19 +201,20 @@ export default function Banner() {
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-2">
-              {user.progress.stickers.map((stickerKey, i) => {
+              {user.progress.stickers.map((stickerKey) => {
                 const sticker = STICKER_DEFS[stickerKey];
                 const isSelected = selectedSticker === stickerKey;
-                
+
                 return (
                   <motion.button
                     key={stickerKey}
                     onClick={() => setSelectedSticker(isSelected ? null : stickerKey)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`aspect-square rounded-lg flex flex-col items-center justify-center gap-1 border-2 transition-all ${
-                      isSelected 
-                        ? 'border-[#c9a84c] bg-[#c9a84c]/10' 
+                    aria-pressed={isSelected}
+                    className={`aspect-square min-h-[48px] rounded-lg flex flex-col items-center justify-center gap-1 border-2 transition-all ${
+                      isSelected
+                        ? 'border-[#c9a84c] bg-[#c9a84c]/10'
                         : 'border-[#c8c8c8] dark:border-[#2a3545] bg-white dark:bg-[#1a2332]'
                     }`}
                   >
@@ -199,11 +238,72 @@ export default function Banner() {
         >
           <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">
             <span className="font-semibold text-[#1a2332] dark:text-white">How to use: </span>
-            1. Select a sticker below, 2. Click on the banner to place it, 3. Click a placed sticker to remove it
+            1. Tap a sticker below, 2. Tap the banner to place it, 3. Drag placed stickers to
+            rearrange, 4. Tap a placed sticker (without dragging) to remove it. Works with touch
+            and mouse — dragging never scrolls the page.
           </p>
         </motion.div>
       </div>
       <Footer />
     </div>
+  );
+}
+
+interface DraggableStickerProps {
+  sticker: BannerSticker;
+  icon: string;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  onDragEnd: (s: BannerSticker, e: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => void;
+  onTap: (s: BannerSticker) => void;
+}
+
+/**
+ * A single placed sticker. Framer Motion drag with explicit pixel bounds
+ * computed from the live banner element, `touch-action: none` so touch
+ * drags never scroll the window, and no momentum so the committed position
+ * exactly matches where the finger/mouse lifted (no state race).
+ */
+function DraggableSticker({ sticker, icon, containerRef, onDragEnd, onTap }: DraggableStickerProps) {
+  const elRef = useRef<HTMLDivElement>(null);
+  const mvX = useMotionValue(0);
+  const mvY = useMotionValue(0);
+
+
+  return (
+    <motion.div
+      ref={elRef}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      drag
+      dragMomentum={false}
+      dragElastic={0.06}
+      dragConstraints={containerRef}
+      style={{
+        x: mvX,
+        y: mvY,
+        left: `${sticker.x}%`,
+        top: `${sticker.y}%`,
+        rotate: sticker.rotation,
+        scale: sticker.scale ?? 1,
+        zIndex: sticker.zIndex ?? 1,
+        touchAction: 'none',
+      }}
+      className="absolute cursor-move select-none text-3xl sm:text-4xl p-1"
+      whileDrag={{ scale: (sticker.scale ?? 1) * 1.15 }}
+      onDragEnd={(e, info) => {
+        // Reset offsets BEFORE committing so the re-render at the new
+        // stored % lands exactly under the pointer.
+        mvX.set(0);
+        mvY.set(0);
+        onDragEnd(sticker, e, info);
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onTap(sticker);
+      }}
+      aria-label={`Placed sticker ${icon}. Drag to move, tap to remove.`}
+    >
+      {icon}
+    </motion.div>
   );
 }

@@ -62,6 +62,14 @@ export default function Footer() {
               </li>
               <li>
                 <button 
+                  onClick={() => setCurrentView('telemetry-notice')}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Data Telemetry Notice
+                </button>
+              </li>
+              <li>
+                <button 
                   onClick={() => setCurrentView('terms')}
                   className="text-gray-400 hover:text-white transition-colors"
                 >

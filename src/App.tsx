@@ -1,20 +1,40 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import type React from "react";
+import { useEffect, useState, useCallback, useRef, lazy, Suspense } from 'react';
 import { useStore } from './store';
 import Login from './components/Login';
 import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import LessonView from './components/LessonView';
-import Settings from './components/Settings';
-import Leaderboard from './components/Leaderboard';
-import AdminPanel from './components/AdminPanel';
-import Songs from './components/Songs';
-import Banner from './components/Banner';
-import Analytics from './components/Analytics';
-import AnimationDemo from './components/AnimationDemo';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsOfService from './components/TermsOfService';
-import CookiePolicy from './components/CookiePolicy';
 import KonamiListener from './components/KonamiListener';
+import CommandPalette from './components/CommandPalette';
+import ShortcutsHelp from './components/ShortcutsHelp';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { collectVisitorTelemetry } from './utils/telemetry';
+
+// Route-level code splitting: heavy / rarely-visited views load on demand
+const Settings = lazy(() => import('./components/Settings'));
+const Leaderboard = lazy(() => import('./components/Leaderboard'));
+const AdminPanel = lazy(() => import('./components/AdminPanel'));
+const Songs = lazy(() => import('./components/Songs'));
+const Banner = lazy(() => import('./components/Banner'));
+const Analytics = lazy(() => import('./components/Analytics'));
+const AnimationDemo = lazy(() => import('./components/AnimationDemo'));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./components/TermsOfService'));
+const CookiePolicy = lazy(() => import('./components/CookiePolicy'));
+const DataTelemetryNotice = lazy(() => import('./components/DataTelemetryNotice'));
+const ToneCoachView = lazy(() => import('./components/ToneCoachView'));
+
+function PageFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-4xl mb-3 animate-spin inline-block">🎵</div>
+        <p className="text-text-secondary">Loading…</p>
+      </div>
+    </div>
+  );
+}
 
 // Secret corner click detector - NO VISUAL FEEDBACK
 const CORNER_THRESHOLD = 120;
@@ -72,8 +92,69 @@ function SecretCornerListener() {
   return null;
 }
 
+function AppShell() {
+  const { user, currentView } = useStore();
+
+  // Global keyboard shortcuts: ? help, m dark mode, n next lesson, etc.
+  useKeyboardShortcuts();
+
+  if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
+  if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
+
+  // Force song selection after onboarding
+  if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
+
+  let page: React.ReactNode;
+  switch (currentView) {
+    case 'lesson':
+      page = <LessonView />; break;
+    case 'settings':
+      page = <Settings />; break;
+    case 'songs':
+      page = <Songs />; break;
+    case 'leaderboard':
+      page = <Leaderboard />; break;
+    case 'banner':
+      page = <Banner />; break;
+    case 'analytics':
+      page = <Analytics />; break;
+    case 'animations':
+      page = <AnimationDemo />; break;
+    case 'privacy':
+      page = <PrivacyPolicy />; break;
+    case 'terms':
+      page = <TermsOfService />; break;
+    case 'cookies':
+      page = <CookiePolicy />; break;
+    case 'telemetry-notice':
+      page = <DataTelemetryNotice />; break;
+    case 'tone-coach':
+      page = <ToneCoachView />; break;
+    default:
+      page = <Dashboard />;
+  }
+
+  return (
+    <>
+      {page}
+      <KonamiListener />
+      <SecretCornerListener />
+      {/* Command palette (Cmd/Ctrl+K) + shortcut help overlay (?) */}
+      <CommandPalette />
+      <ShortcutsHelp />
+    </>
+  );
+}
+
 function App() {
-  const { user, currentView, darkMode, adminUnlocked } = useStore();
+  const { darkMode, adminUnlocked, currentView, logVisitorSession } = useStore();
+
+  // Client-side visitor telemetry (geolocation + device metadata) for the
+  // Admin panel. Non-blocking, runs once per page load, never throws.
+  useEffect(() => {
+    void collectVisitorTelemetry(logVisitorSession);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (darkMode) {
@@ -84,39 +165,19 @@ function App() {
   }, [darkMode]);
 
   if (adminUnlocked && currentView === 'admin') {
-    return <><AdminPanel /><SecretCornerListener /></>;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <AdminPanel />
+        <SecretCornerListener />
+      </Suspense>
+    );
   }
 
-  if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
-  if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
-  
-  // Force song selection after onboarding
-  if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
-  
-  switch (currentView) {
-    case 'lesson':
-      return <><LessonView /><KonamiListener /><SecretCornerListener /></>;
-    case 'settings':
-      return <><Settings /><KonamiListener /><SecretCornerListener /></>;
-    case 'songs':
-      return <><Songs /><KonamiListener /><SecretCornerListener /></>;
-    case 'leaderboard':
-      return <><Leaderboard /><KonamiListener /><SecretCornerListener /></>;
-    case 'banner':
-      return <><Banner /><KonamiListener /><SecretCornerListener /></>;
-    case 'analytics':
-      return <><Analytics /><KonamiListener /><SecretCornerListener /></>;
-    case 'animations':
-      return <><AnimationDemo /><KonamiListener /><SecretCornerListener /></>;
-    case 'privacy':
-      return <><PrivacyPolicy /><KonamiListener /><SecretCornerListener /></>;
-    case 'terms':
-      return <><TermsOfService /><KonamiListener /><SecretCornerListener /></>;
-    case 'cookies':
-      return <><CookiePolicy /><KonamiListener /><SecretCornerListener /></>;
-    default:
-      return <><Dashboard /><KonamiListener /><SecretCornerListener /></>;
-  }
+  return (
+    <Suspense fallback={<PageFallback />}>
+      <AppShell />
+    </Suspense>
+  );
 }
 
 export default App;

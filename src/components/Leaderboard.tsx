@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { useStore, STICKER_DEFS } from '../store';
+import { stickerIcon } from './Banner';
 import Footer from './Footer';
+import ShareCardTemplate from './ShareCardTemplate';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -203,26 +205,40 @@ export default function Leaderboard() {
               Customize
             </button>
           </div>
-          <div 
-            className="rounded-lg h-20 relative overflow-hidden"
+          <div
+            className="rounded-lg h-24 sm:h-28 relative overflow-hidden"
             style={{ background: user.bannerBg }}
           >
-            <div className="absolute inset-0 flex items-center justify-center gap-2 flex-wrap p-3">
-              {user.bannerStickers.length > 0 ? (
-                user.bannerStickers.map((s) => (
-                  <span key={s.id} className="text-2xl" style={{ transform: `rotate(${s.rotation}deg)` }}>
-                    {STICKER_DEFS[user.progress.stickers[parseInt(s.id)] || '']?.icon || '⭐'}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-white/60">Add stickers to your banner</span>
-              )}
-            </div>
+            {user.bannerStickers.length > 0 ? (
+              user.bannerStickers.map((s) => (
+                <span
+                  key={s.id}
+                  className="absolute text-2xl select-none pointer-events-none"
+                  style={{
+                    left: `${s.x}%`,
+                    top: `${s.y}%`,
+                    transform: `translate(-50%, -50%) rotate(${s.rotation}deg) scale(${s.scale ?? 1})`,
+                    zIndex: s.zIndex ?? 1,
+                  }}
+                >
+                  {stickerIcon(s, user.progress.stickers)}
+                </span>
+              ))
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xs text-white/70">Add stickers to your banner</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2 mt-3">
             <span className="text-xs text-[#5a6577] dark:text-[#9aa3b0]">
               {user.progress.stickers.length} sticker{user.progress.stickers.length !== 1 ? 's' : ''} earned
             </span>
+          </div>
+
+          {/* Share progress card (Web Share API → clipboard → download fallback) */}
+          <div className="mt-4 flex justify-end">
+            <ShareCardTemplate />
           </div>
         </motion.div>
       </div>

@@ -75,33 +75,66 @@ export function detectPitchAutocorrelation(
 ): PitchResult | null {
   const SIZE = buffer.length;
   const MAX_SAMPLES = Math.floor(SIZE / 2);
-  
+
   let bestOffset = -1;
   let bestCorrelation = 0;
   let foundGoodCorrelation = false;
-  const correlations = new Array(MAX_SAMPLES);
 
   // Find the first point where the signal crosses zero going up
   let start = 0;
-  for (let i = 0; i < SIZE; i++) {
-    if (buffer[i] > 0 && buffer[i + 1] <= 0) {
+  for (let i = 0; i < SIZE - 1; i++) {
+    if (buffer[i] <= 0 && buffer[i + 1] > 0) {
       start = i;
       break;
     }
   }
 
-  // Calculate autocorrelation
-  for (let offset = 0; offset < MAX_SAMPLES; offset++) {
-    let correlation = 0;
-    
-    for (let i = 0; i < MAX_SAMPLES; i++) {
-      correlation += Math.abs((buffer[start + i]) - (buffer[start + i + offset]));
+  // Guard: need at least one usable correlation window after `start`.
+  // (Previously required start + 2*MAX_SAMPLES < SIZE, which rejected any
+  // buffer shorter than ~0.5 s even when a full period was present.)
+  const MIN_WINDOW = 64;
+  if (start + MIN_WINDOW >= SIZE) return null;
+
+  // Autocorrelation via mean-normalized absolute difference (the classic
+  // ACF algorithm): correlation = 1 - (sum |x[i] - x[i+lag]| / N) / amp,
+  // where amp is the signal's average peak amplitude. For a periodic
+  // waveform this peaks at r ≈ 1 when lag equals one period.
+  //
+  // DEFECT FIX (Oct 2026, documented by src/tests/techniqueCoach.test.ts
+  // TEST 1): the lag search previously started at offset 0, where the
+  // difference is identically zero, so correlation = 1.0 always won and
+  // frequency = sampleRate / 0 = Infinity. The search now starts at
+  // MIN_LAG. It also stops at MAX_LAG (≈ 55 Hz) instead of SIZE/2: for
+  // buffers shorter than two periods of the target pitch, comparing half
+  // the buffer against a shifted copy of itself would compare mostly
+  // out-of-window samples and never cross the threshold.
+  const MIN_LAG = Math.max(2, Math.round(sampleRate / 4000)); // cap ~ 4 kHz
+  const MAX_LAG = Math.min(MAX_SAMPLES, Math.round(sampleRate / 55)); // ~55 Hz floor
+
+  // Correlation window: as long as possible while still fitting in the
+  // buffer for every candidate lag (window + maxLag must fit past `start`).
+  const available = SIZE - start - MAX_LAG;
+  const WINDOW = Math.max(MIN_WINDOW, Math.min(MAX_LAG, available));
+
+  // Mean absolute amplitude — normalizes correlation for any gain level.
+  let ampSum = 0;
+  for (let i = start; i < start + WINDOW; i++) {
+    ampSum += Math.abs(buffer[i]);
+  }
+  const amplitude = ampSum / WINDOW;
+  if (amplitude <= 0) return null; // pure silence — no pitch to report
+
+  // Calculate autocorrelation over plausible lags only
+  for (let offset = MIN_LAG; offset < MAX_LAG; offset++) {
+    let diffSum = 0;
+
+    for (let i = 0; i < WINDOW; i++) {
+      diffSum += Math.abs(buffer[start + i] - buffer[start + i + offset]);
     }
-    
-    correlation = 1 - (correlation / MAX_SAMPLES);
-    correlations[offset] = correlation;
-    
-    if (correlation > 0.9 && correlation > bestCorrelation) {
+
+    const correlation = 1 - diffSum / WINDOW / amplitude;
+
+    if (correlation > 0.8 && correlation > bestCorrelation) {
       bestCorrelation = correlation;
       bestOffset = offset;
       foundGoodCorrelation = true;
@@ -113,10 +146,10 @@ export function detectPitchAutocorrelation(
   if (!foundGoodCorrelation) return null;
 
   const frequency = sampleRate / bestOffset;
-  
+
   // Convert frequency to note
   const noteInfo = frequencyToNote(frequency);
-  
+
   return {
     frequency,
     note: noteInfo.note,

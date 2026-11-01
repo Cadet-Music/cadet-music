@@ -2,8 +2,10 @@
  * Audio Manager - Core audio infrastructure for instrument practice
  * 
  * Handles microphone permissions, audio stream lifecycle, recording state,
- * and provides hooks for future pitch/rhythm analysis.
+ * and provides real-time pitch analysis (autocorrelation from audio.ts).
  */
+
+import { detectPitchAutocorrelation } from './audio';
 
 // ============================================================
 // AUDIO STATE MACHINE
@@ -80,6 +82,12 @@ export class AudioManager {
   
   // Animation frame for continuous analysis
   private animationFrameId: number | null = null;
+
+  // Take recording (timestamped samples for coach.ts analysis)
+  private takeSamples: Array<{ rms: number; frequency?: number; cents?: number; tMs: number }> = [];
+  private takeStartTs: number | null = null;
+  private takeMaxMs: number = 15000;
+  private recordingActive: boolean = false;
   
   constructor(config: AudioManagerConfig = DEFAULT_CONFIG) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -193,12 +201,49 @@ export class AudioManager {
     this.startAnalysisLoop();
   }
 
+  // ============================================================
+  // TAKE RECORDING (for the tone & articulation coach)
+  // ============================================================
+
+  /**
+   * Begin collecting timestamped samples for analysis by src/coach.ts.
+   * Recording stops automatically after maxMs (default 15s safety cap).
+   */
+  startRecordingTake(maxMs: number = 15000): void {
+    this.takeSamples = [];
+    this.takeStartTs = performance.now();
+    this.takeMaxMs = maxMs;
+    this.recordingActive = true;
+  }
+
+  stopRecordingTake(): void {
+    this.recordingActive = false;
+  }
+
+  /** Returns collected samples and clears the buffer. */
+  collectTake(): Array<{ rms: number; frequency?: number; cents?: number; tMs: number }> {
+    this.recordingActive = false;
+    const samples = this.takeSamples;
+    this.takeSamples = [];
+    return samples;
+  }
+
+  getTakeElapsedMs(): number {
+    if (!this.recordingActive || this.takeStartTs === null) return 0;
+    return performance.now() - this.takeStartTs;
+  }
+
+  isRecordingTake(): boolean {
+    return this.recordingActive;
+  }
+
   stopListening(): void {
     if (this.state !== 'listening') {
       return;
     }
     
     this.stopAnalysisLoop();
+    this.recordingActive = false;
     this.setState('ready', 'Stopped audio capture');
   }
 
@@ -210,6 +255,19 @@ export class AudioManager {
       
       const metrics = this.captureAudioMetrics();
       if (metrics) {
+        // Collect timestamped samples while a take is being recorded
+        if (this.recordingActive && this.takeStartTs !== null) {
+          const tMs = performance.now() - this.takeStartTs;
+          this.takeSamples.push({
+            rms: metrics.rms,
+            frequency: metrics.frequency,
+            cents: metrics.cents,
+            tMs,
+          });
+          if (tMs >= this.takeMaxMs) {
+            this.recordingActive = false;
+          }
+        }
         this.onMetrics?.(metrics);
       }
       
@@ -231,12 +289,12 @@ export class AudioManager {
   // ============================================================
 
   private captureAudioMetrics(): AudioMetrics | null {
-    if (!this.analyser) return null;
-    
+    if (!this.analyser || !this.audioContext) return null;
+
     const bufferLength = this.analyser.frequencyBinCount;
     const dataArray = new Float32Array(bufferLength);
     this.analyser.getFloatTimeDomainData(dataArray);
-    
+
     // Calculate RMS (volume level)
     let sum = 0;
     let peak = 0;
@@ -246,24 +304,31 @@ export class AudioManager {
       peak = Math.max(peak, value);
     }
     const rms = Math.sqrt(sum / bufferLength);
-    
+
     // Only process if there's actual sound
     if (rms < 0.01) {
       return { rms, peak };
     }
-    
-    // Future: Add pitch detection here
-    // For now, return basic metrics
-    return {
-      rms,
-      peak,
-      // Placeholder for future pitch detection
-      // frequency: detectedFrequency,
-      // note: detectedNote,
-      // octave: detectedOctave,
-      // confidence: detectionConfidence,
-      // cents: centsDeviation,
-    };
+
+    // Real-time pitch detection (autocorrelation from audio.ts).
+    // This replaces the former placeholder — cadet practice components
+    // (GuidedMicrophonePractice, MicrophonePractice, AudioPracticeActivity)
+    // receive live frequency/note/cents/confidence in every metrics frame,
+    // which powers tone coaching and articulation (tonguing) analysis.
+    const pitch = detectPitchAutocorrelation(dataArray, this.audioContext.sampleRate);
+    if (pitch) {
+      return {
+        rms,
+        peak,
+        frequency: pitch.frequency,
+        note: pitch.note,
+        octave: pitch.octave,
+        confidence: pitch.confidence,
+        cents: pitch.cents,
+      };
+    }
+
+    return { rms, peak };
   }
 
   getWaveformData(): Uint8Array | null {

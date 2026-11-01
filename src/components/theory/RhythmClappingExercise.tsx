@@ -27,7 +27,7 @@ export default function RhythmClappingExercise({ onComplete }: RhythmClappingExe
 
     const beatDuration = 60000 / tempo; // ms per beat
     let totalDuration = 0;
-    const timeouts: number[] = [];
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
 
     currentPattern.pattern.forEach((beat, index) => {
       const timeout = setTimeout(() => {
