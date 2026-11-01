@@ -273,6 +273,17 @@ export default function Login() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Honeypot anti-bot field: visually hidden, never filled by real
+                  users. Any value here (in a form submit or an API payload) is
+                  treated as automated traffic and rejected server-side. */}
+              <input
+                type="text"
+                name="website_url"
+                style={{ display: 'none' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
               {loginMethod === 'name' ? (
                 <>
                   <div className="grid grid-cols-2 gap-3">

@@ -41,6 +41,20 @@ function sanitizeString(value, max) {
   return value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, max);
 }
 
+// ---- Honeypot anti-bot field -------------------------------------------------
+// The client renders a visually hidden input named `website_url` in every form
+// that submits to this endpoint (leaderboard submit + login/onboarding). Real
+// users never see or fill it; naive scrapers/bots auto-populate every text
+// field they find. If the field is present AND non-empty we treat the request
+// as automated and reject it SILENTLY — returning a fake success response with
+// the current standings so bots can't tell they were blocked (and never store
+// their payload).
+const HONEYPOT_FIELD = 'website_url';
+function isBotSubmission(body) {
+  const hp = body?.[HONEYPOT_FIELD];
+  return typeof hp === 'string' && hp.trim().length > 0;
+}
+
 function sanitizeNumber(value, max) {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
@@ -76,6 +90,14 @@ export default async function handler(req, res) {
 
   if (req.method === 'POST') {
     const body = await parseBody(req);
+
+    // Honeypot check FIRST: silently drop bot submissions — respond exactly
+    // like a successful submit so automated scrapers can't detect the block,
+    // but never touch the store with their payload.
+    if (isBotSubmission(body)) {
+      return res.status(200).json({ ok: true, entry: null, entries: ranked(load()) });
+    }
+
     const name = sanitizeString(body.name, 40);
     if (!name) {
       return res.status(400).json({ ok: false, error: 'name is required' });

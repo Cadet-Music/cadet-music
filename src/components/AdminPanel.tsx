@@ -6,7 +6,7 @@ import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
 import { generateEnhancedAdminAnalytics, EnhancedConceptAnalytics } from '../adaptive';
 import { getInstrument, getTranspositionDescription, concertToWritten, writtenToConcert } from '../instruments';
 import { parseUserAgent } from '../utils/telemetry';
-import { verifyAdminPassword } from '../utils/api';
+import { verifyAdminPassword, fetchAdminAnalytics, adminAnalyticsCsvUrl, AdminAnalyticsReport } from '../utils/api';
 
 const ChevronLeftIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,6 +48,27 @@ export default function AdminPanel() {
   const [gatePassword, setGatePassword] = useState('');
   const [gateError, setGateError] = useState(false);
   const [gateChecking, setGateChecking] = useState(false);
+  // Server-backed analytics: bearer token from /api/admin-login + live report.
+  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<AdminAnalyticsReport | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+
+  // Fetch live cadet analytics once authenticated (and whenever the tab is on
+  // "Cadet Progress"). fetchAdminAnalytics never throws — a 401/network error
+  // resolves to null and we fall back to the local profile view gracefully.
+  useEffect(() => {
+    if (!authed || !adminToken) return;
+    let cancelled = false;
+    setAnalyticsLoading(true);
+    fetchAdminAnalytics(adminToken)
+      .then((report) => {
+        if (!cancelled && report) setAnalytics(report);
+      })
+      .finally(() => {
+        if (!cancelled) setAnalyticsLoading(false);
+      });
+    return () => { cancelled = true; };
+  }, [authed, adminToken]);
 
   // Visitor telemetry aggregates (client-side only, capped in store at 100 entries)
   const visitorStats = useMemo(() => {
@@ -94,12 +115,16 @@ export default function AdminPanel() {
     if (!gatePassword || gateChecking) return;
     setGateChecking(true);
     let ok = false;
+    let token: string | null = null;
     try {
       // verifyAdminPassword never throws, but guard anyway so a 401/500 or
       // any unexpected error can never surface as an uncaught rejection.
-      ok = await verifyAdminPassword(gatePassword);
+      const result = await verifyAdminPassword(gatePassword);
+      ok = result.ok;
+      token = result.token;
       if (!ok && import.meta.env.DEV) {
         // Local dev convenience only — never active in production builds.
+        // No server means no bearer token; analytics fall back to local data.
         ok = gatePassword === CLIENT_DEV_FALLBACK;
       }
     } catch (err) {
@@ -109,6 +134,7 @@ export default function AdminPanel() {
       setGateChecking(false);
     }
     if (ok) {
+      setAdminToken(token);
       setAuthed(true);
       setGateError(false);
     } else {
@@ -125,7 +151,8 @@ export default function AdminPanel() {
   const handleResetConfirm = async () => {
     let ok = false;
     try {
-      ok = await verifyAdminPassword(resetPassword);
+      const result = await verifyAdminPassword(resetPassword);
+      ok = result.ok;
       if (!ok && import.meta.env.DEV) {
         ok = resetPassword === CLIENT_DEV_FALLBACK; // local dev only
       }
@@ -277,7 +304,7 @@ export default function AdminPanel() {
               Reset All Data
             </button>
             <span className="text-xs text-[#9aa3b0] font-medium uppercase tracking-wide bg-[#2a3545] px-2 py-1 rounded">
-              Demo Mode
+              {analytics ? 'Live Data' : adminToken ? (analyticsLoading ? 'Syncing…' : 'Local Mode') : 'Local Mode'}
             </span>
           </div>
         </div>
@@ -517,18 +544,129 @@ export default function AdminPanel() {
         )}
 
         {activeTab === 'progress' && (<>
-        {/* Info Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-lg p-4 mb-6"
-        >
-          <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-            <span className="font-semibold text-[#1a2332] dark:text-white">Note: </span>
-            This is demo mode showing your own data. With a backend, you'd see all cadets' progress, 
-            who's struggling, completion rates, and detailed analytics.
-          </p>
-        </motion.div>
+        {/* Live server-backed analytics (fetched from /api/admin/analytics) */}
+        {analytics ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-[#3a8a5c]/10 border border-[#3a8a5c]/30 rounded-lg p-4 mb-6"
+            >
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                  <span className="font-semibold text-[#1a2332] dark:text-white">Live data: </span>
+                  Aggregated across all cadets from the server — {analytics.totals.cadets} registered,
+                  updated {new Date(analytics.generatedAt).toLocaleString()}.
+                </p>
+                {adminToken && (
+                  <a
+                    href={adminAnalyticsCsvUrl(adminToken)}
+                    className="text-xs font-semibold uppercase tracking-wide bg-[#1a2332] text-white dark:bg-[#c9a84c] dark:text-[#1a2332] px-3 py-1.5 rounded hover:opacity-90 transition-opacity"
+                  >
+                    Export CSV
+                  </a>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Global totals */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+              {[
+                { label: 'Cadets', value: analytics.totals.cadets, color: 'text-[#1a2332] dark:text-white' },
+                { label: 'Total XP', value: analytics.totals.totalXP, color: 'text-[#c9a84c]' },
+                { label: 'Avg XP', value: analytics.totals.avgXP, color: 'text-[#1a2332] dark:text-white' },
+                { label: 'Active Streaks', value: analytics.totals.activeStreaks, color: 'text-[#3a8a5c]' },
+                { label: 'Avg Completion', value: `${analytics.totals.avgCompletionRate}%`, color: 'text-[#1a2332] dark:text-white' },
+                { label: 'Flagged for Help', value: analytics.totals.strugglingCount, color: analytics.totals.strugglingCount > 0 ? 'text-[#c44536]' : 'text-[#3a8a5c]' },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="card text-center"
+                >
+                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Per-cadet table */}
+            <div className="card mb-6">
+              <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide mb-4">
+                All Cadets — Progress & Struggle Metrics
+              </h3>
+              <div className="overflow-x-auto -mx-4 px-4">
+                <table className="w-full text-xs sm:text-sm border-collapse min-w-[640px]">
+                  <thead>
+                    <tr className="text-left text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide text-[10px] sm:text-xs border-b border-[#e2e4e8] dark:border-[#2a3545]">
+                      <th className="py-2 pr-3 font-semibold">Cadet</th>
+                      <th className="py-2 pr-3 font-semibold">XP</th>
+                      <th className="py-2 pr-3 font-semibold">Streak</th>
+                      <th className="py-2 pr-3 font-semibold">Lessons</th>
+                      <th className="py-2 pr-3 font-semibold">Completion</th>
+                      <th className="py-2 pr-3 font-semibold">Accuracy</th>
+                      <th className="py-2 font-semibold">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {analytics.cadets.map((row) => (
+                      <tr
+                        key={row.name}
+                        className="border-b border-[#e8e8e8] dark:border-[#2a3545] last:border-b-0 text-[#1a2332] dark:text-white"
+                      >
+                        <td className="py-2 pr-3 font-medium whitespace-nowrap">{row.name}</td>
+                        <td className="py-2 pr-3">{row.xp}</td>
+                        <td className="py-2 pr-3">{row.streak}d</td>
+                        <td className="py-2 pr-3">{row.lessonsCompleted}</td>
+                        <td className="py-2 pr-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden">
+                              <div
+                                className="h-full rounded-full bg-[#c9a84c]"
+                                style={{ width: `${row.completionRate}%` }}
+                              />
+                            </div>
+                            <span className="text-xs">{row.completionRate}%</span>
+                          </div>
+                        </td>
+                        <td className="py-2 pr-3">{row.conceptAccuracy === null ? '—' : `${row.conceptAccuracy}%`}</td>
+                        <td className="py-2">
+                          <span
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                              row.flaggedForHelp ? 'bg-[#c44536]/15 text-[#c44536]' : 'bg-[#3a8a5c]/15 text-[#3a8a5c]'
+                            }`}
+                          >
+                            {row.flaggedForHelp ? 'NEEDS HELP' : 'ON TRACK'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-[10px] text-[#9aa3b0] mt-4">
+                {analyticsLoading ? 'Refreshing…' : `Snapshot generated ${new Date(analytics.generatedAt).toLocaleTimeString()} · CSV export includes struggling-concept details.`}
+              </p>
+            </div>
+          </>
+        ) : (
+          /* Fallback when the analytics endpoint is unreachable (local dev or
+             expired token): show this device's own profile instead of demo copy. */
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-lg p-4 mb-6"
+          >
+            <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+              <span className="font-semibold text-[#1a2332] dark:text-white">Note: </span>
+              Server analytics are unavailable right now, so this shows only your local profile.
+              Check that ADMIN_PASSWORD/ANALYTICS_SECRET are set in Vercel and re-unlock if your
+              session token expired.
+            </p>
+          </motion.div>
+        )}
 
         {/* Current User Overview */}
         <motion.div

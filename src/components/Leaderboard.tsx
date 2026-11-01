@@ -55,6 +55,11 @@ export default function Leaderboard() {
   // seed list if the endpoint is unavailable so the page never blanks out.
   const [serverEntries, setServerEntries] = useState<ServerLeaderboardEntry[]>(FALLBACK_LEADERBOARD);
   const [, setLoading] = useState(true);
+  // Honeypot anti-bot field value. Real users never touch this (the hidden
+  // input below is invisible and unfilled), so it stays ''. If a scraper/bot
+  // autofills every text input on the page, its value flows into the POST
+  // payload and /api/leaderboard silently drops the submission server-side.
+  const [honeypot, setHoneypot] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -85,6 +90,7 @@ export default function Leaderboard() {
       lessons: user.progress.completedLessons.length,
       bannerBg: user.bannerBg,
       stickers: user.progress.stickers.map(s => STICKER_DEFS[s]?.icon || '⭐'),
+      honeypot,
     })
       .then((entries) => {
         if (!cancelled && entries.length > 0) setServerEntries(entries);

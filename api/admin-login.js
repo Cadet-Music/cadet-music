@@ -5,7 +5,9 @@
 // Configure ADMIN_PASSWORD in Vercel: Project Settings -> Environment Variables.
 //
 // Request body:  { "password": "<attempt>" }
-// Responses:     200 { ok: true }        on success
+// Responses:     200 { ok: true, token } on success — `token` is a short-lived
+//                                        (2h) HMAC-signed bearer token used by
+//                                        /api/admin/analytics for auth'd data
 //                401 { ok: false }       wrong password
 //                405                     non-POST method
 //                500 { ok: false }       server misconfiguration (no env var)
@@ -21,6 +23,28 @@ function safeEqual(a, b) {
     diff |= (ab[i] || 0) ^ (bb[i] || 0);
   }
   return diff === 0;
+}
+
+// ---- Admin bearer token (shared secret scheme with /api/admin/analytics) --
+// Issued on successful password verification; the client sends it as
+// `Authorization: Bearer <token>` to /api/admin/analytics. HMAC-signed with a
+// key derived from ANALYTICS_SECRET (or ADMIN_PASSWORD as fallback), so no
+// server-side session storage is needed in this stateless setup.
+function adminTokenKey() {
+  const crypto = require('crypto');
+  const secret = process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSWORD;
+  if (!secret) return null;
+  return crypto.createHash('sha256').update(`cadet-music-admin:${secret}`).digest();
+}
+
+function createAdminToken(ttlMs = 2 * 60 * 60 * 1000) {
+  const key = adminTokenKey();
+  if (!key) return null;
+  const crypto = require('crypto');
+  const exp = Date.now() + ttlMs;
+  const payload = String(exp);
+  const sig = crypto.createHmac('sha256', key).update(payload).digest('hex');
+  return `${payload}.${sig}`;
 }
 
 export default async function handler(req, res) {
@@ -60,5 +84,8 @@ export default async function handler(req, res) {
   const ok = attempt.length > 0 && safeEqual(attempt, expected);
 
   res.setHeader('Cache-Control', 'no-store');
-  return res.status(ok ? 200 : 401).json({ ok });
+  if (!ok) return res.status(401).json({ ok: false });
+  // Issue a short-lived signed bearer token for /api/admin/analytics.
+  const token = createAdminToken();
+  return res.status(200).json({ ok: true, token });
 }
