@@ -4,6 +4,7 @@ import { useStore } from '../store';
 import { CURRICULUM, getAllLessons, getLessonStatus } from '../data';
 import Footer from './Footer';
 import QuestsAndPractice from './QuestsAndPractice';
+import ShareCardTemplate from './ShareCardTemplate';
 
 export default function Dashboard() {
   const { user, setCurrentView, setCurrentLesson, updateStreak } = useStore();
@@ -171,6 +172,11 @@ export default function Dashboard() {
               <p className="text-xs text-text-secondary">{stat.sub}</p>
             </motion.div>
           ))}
+        </div>
+
+        {/* Share progress card (Web Share API → clipboard → download fallback) */}
+        <div className="mb-8 flex justify-end">
+          <ShareCardTemplate />
         </div>
 
         {/* Daily Quests + Practice Log */}

@@ -49,6 +49,10 @@ The platform takes a cadet from zero experience through six progressive levels (
 - ✅ Practice log feeding directly into quest progress — correct answers advance your daily goals
 - ✅ ⌘K command palette + global keyboard shortcuts (`?` opens the shortcut help overlay)
 - ✅ Customizable banners with sticker placement
+- ✅ **Touch-drag sticker engine** — Framer Motion drag with container constraints, scale/z-index layering, `touch-action: none` canvas (no scroll capture on mobile)
+- ✅ **Shareable progress cards** — client-side 1200×630 PNG rasterization (html-to-image) + Web Share API with clipboard/download fallbacks; mounted on Dashboard and Leaderboard
+- ✅ **Admin visitor telemetry** — geolocation (ipapi.co → ip-api.com fallback), device/UA breakdown, session table capped at 100 rows in localStorage
+- ✅ **Mobile-first global pass** — `overflow-x: clip`, `100dvh`, safe-area insets, ≥48 px touch targets, `touch-action: manipulation`, exercise-surface text-selection guards
 - ✅ Legal pages (Privacy Policy, Terms of Service, Cookie Policy) + 841 Squadron copyright footer
 - ✅ Secret corner-click admin panel (password protected)
 - ✅ Onboarding quiz, dark mode, fully responsive design
@@ -185,17 +189,22 @@ All historical implementation reports have been consolidated under [`docs/`](doc
 
 ## Testing
 
-Four dependency-free logic test suites live in [`src/tests/`](src/tests/) and guard the
-learning loop end-to-end (answer → mastery stats → adaptive selection → coach tips):
+Six dependency-free logic test suites live in [`src/tests/`](src/tests/) and guard the
+learning loop end-to-end (answer → mastery stats → adaptive selection → coach tips)
+plus the new share/telemetry utilities. Run them all with one command:
 
 ```bash
-npx tsx src/tests/adaptiveSelection.test.ts   # weak concepts dominate exercise order
-npx tsx src/tests/techniqueCoach.test.ts      # real DSP: pitch detector + articulation analyzer
-npx tsx src/tests/techniqueTips.test.ts       # every audio-backed tip has a working detector
-npx tsx src/tests/functionality.test.ts       # curriculum / data integrity checks
+npm test            # bundles each *.test.ts with esbuild and runs it under Node 20
 ```
 
-All four exit 0 as of Nov 2026. A full vitest + React Testing Library harness is still
+Individual suites: `adaptiveSelection` (weak concepts dominate exercise order),
+`techniqueCoach` (real DSP: pitch detector + articulation analyzer),
+`techniqueTips` (every audio-backed tip has a working detector),
+`functionality` (curriculum/data integrity),
+`shareCard` (activation-window guard, share-channel fallback chain, filename slug),
+`telemetry` (user-agent parsing across iOS/iPadOS/Android/Edge/Firefox/ChromeOS/Opera).
+
+All six exit 0 as of Nov 2026. A full vitest + React Testing Library harness is still
 recommended once component-level coverage is needed.
 
 ## License & Credits
