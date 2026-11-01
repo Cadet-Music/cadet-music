@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useStore } from '../store';
-import { CURRICULUM, getAllLessons } from '../data';
+import { useStore, User } from '../store';
+import { CURRICULUM, getAllLessons, CadetLevel } from '../data';
 import { CONCEPTS, CONCEPT_NAMES, Concept } from '../competency';
 import { generateEnhancedAdminAnalytics, EnhancedConceptAnalytics } from '../adaptive';
 import { getInstrument, getTranspositionDescription, concertToWritten, writtenToConcert } from '../instruments';
@@ -29,13 +29,35 @@ const allLessons = getAllLessons();
 
 export default function AdminPanel() {
   const { user, lockAdmin, resetAll, visitorLogs, clearVisitorLogs } = useStore();
+
+  // Safety net: if the store ever loses the admin-unlock flag (e.g. a
+  // persisted-state migration) while we are on the admin view, exit cleanly
+  // to the dashboard instead of rendering nothing (blank screen).
+  useEffect(() => {
+    if (!useStore.getState().adminUnlocked) lockAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetPassword, setResetPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [activeTab, setActiveTab] = useState<'progress' | 'visitors'>('progress');
+  // Gate the panel itself: the 4-corner gesture only sets `adminUnlocked`;
+  // a real admin must also enter the admin password before any data renders.
+  const [authed, setAuthed] = useState(false);
+  const [gatePassword, setGatePassword] = useState('');
+  const [gateError, setGateError] = useState(false);
 
   const ADMIN_PASSWORD = 'password';
+
+  const handleGateSubmit = () => {
+    if (gatePassword === ADMIN_PASSWORD) {
+      setAuthed(true);
+      setGateError(false);
+    } else {
+      setGateError(true);
+    }
+  };
 
   const handleResetClick = () => {
     setShowResetModal(true);
@@ -58,23 +80,102 @@ export default function AdminPanel() {
     setPasswordError('');
   };
 
-  if (!user) return null;
+  // --- Password gate -------------------------------------------------------
+  // Previously this component returned `null` when no user was logged in,
+  // which rendered a completely blank (white) screen after the corner
+  // gesture. Now the panel always renders something: a password gate first,
+  // then the full admin UI. If there is no local profile yet we build a
+  // read-only demo profile so every section still works.
+  if (!authed) {
+    return (
+      <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card w-full max-w-sm"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-[#c9a84c]"><ShieldIcon /></span>
+            <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Admin Panel</h1>
+          </div>
+          <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-4">
+            Enter the admin password to continue.
+          </p>
+          <input
+            type="password"
+            value={gatePassword}
+            onChange={(e) => { setGatePassword(e.target.value); setGateError(false); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') handleGateSubmit(); }}
+            placeholder="Admin password"
+            className="input-field mb-3"
+            autoFocus
+            aria-label="Admin password"
+          />
+          {gateError && (
+            <p className="text-sm text-[#c44536] mb-3 font-medium">Incorrect password</p>
+          )}
+          <div className="flex gap-3">
+            <button onClick={() => lockAdmin()} className="flex-1 btn-secondary">
+              Exit
+            </button>
+            <button onClick={handleGateSubmit} className="flex-1 btn-primary">
+              Unlock
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Demo profile used only when the unlock gesture is performed before any
+  // login exists — keeps the panel functional instead of showing nothing.
+  const effectiveUser: User = (user as unknown as User) ?? {
+    id: 'demo-admin',
+    username: 'Demo',
+    rank: 'Cadet',
+    lastName: '',
+    email: 'N/A',
+    avatar: '🎵',
+    instrument: 'alto',
+    instrumentId: 'alto-sax',
+    progress: {
+      completedLessons: [],
+      xp: 0,
+      streak: 0,
+      lastActiveDate: new Date().toISOString().slice(0, 10),
+      level: 1,
+      accuracy: 0,
+      stickers: [],
+      goalsCompleted: 0,
+      conceptMastery: {},
+      dailyGoalMinutes: 15,
+      streakFreezes: 0,
+      longestStreak: 0,
+    },
+    activeSongs: [],
+    theoryLevel: 'BASIC',
+    instrumentLevel: 'BASIC',
+    onboarded: true,
+    songsSelected: true,
+    bannerBg: '',
+    bannerStickers: [],
+  };
 
   // In production, this would fetch all users from backend
   // For now, we show the current user's data as a demo
   const currentUserData = {
-    name: user.username,
-    email: user.email || 'N/A',
-    instrument: user.instrument,
-    xp: user.progress.xp,
-    streak: user.progress.streak,
-    level: user.progress.level,
-    theoryLevel: user.theoryLevel,
-    instrumentLevel: user.instrumentLevel,
-    completedLessons: user.progress.completedLessons,
+    name: effectiveUser.username,
+    email: effectiveUser.email || 'N/A',
+    instrument: effectiveUser.instrument,
+    xp: effectiveUser.progress.xp,
+    streak: effectiveUser.progress.streak,
+    level: effectiveUser.progress.level,
+    theoryLevel: effectiveUser.theoryLevel,
+    instrumentLevel: effectiveUser.instrumentLevel,
+    completedLessons: effectiveUser.progress.completedLessons,
     totalLessons: allLessons.length,
-    lastActive: user.progress.lastActiveDate,
-    stickers: user.progress.stickers,
+    lastActive: effectiveUser.progress.lastActiveDate,
+    stickers: effectiveUser.progress.stickers,
   };
 
   const completionPercent = Math.round((currentUserData.completedLessons.length / currentUserData.totalLessons) * 100);
@@ -432,7 +533,7 @@ export default function AdminPanel() {
         {/* Admin Analytics - Instructor Only */}
         {(() => {
           const allConcepts = Object.values(CONCEPTS) as Concept[];
-          const analytics = generateEnhancedAdminAnalytics(user.progress.conceptMastery, allConcepts);
+          const analytics = generateEnhancedAdminAnalytics(effectiveUser.progress.conceptMastery, allConcepts);
           
           // Filter to only show concepts with data
           const conceptsWithData = analytics.filter(a => a.attempts > 0);
@@ -589,19 +690,19 @@ export default function AdminPanel() {
             <div className="space-y-3">
               <div>
                 <span className="text-[#9aa3b0]">Selected Instrument: </span>
-                <span className="text-[#c9a84c] font-semibold">{user.instrumentId}</span>
+                <span className="text-[#c9a84c] font-semibold">{effectiveUser.instrumentId}</span>
               </div>
               <div>
                 <span className="text-[#9aa3b0]">Instrument Name: </span>
-                <span className="text-white">{getInstrument(user.instrumentId)?.name || 'Unknown'}</span>
+                <span className="text-white">{getInstrument(effectiveUser.instrumentId)?.name || 'Unknown'}</span>
               </div>
               <div>
                 <span className="text-[#9aa3b0]">Transposition: </span>
-                <span className="text-white">{getTranspositionDescription(user.instrumentId)}</span>
+                <span className="text-white">{getTranspositionDescription(effectiveUser.instrumentId)}</span>
               </div>
               <div>
                 <span className="text-[#9aa3b0]">Semitones: </span>
-                <span className="text-white">{getInstrument(user.instrumentId)?.transpositionSemitones || 0}</span>
+                <span className="text-white">{getInstrument(effectiveUser.instrumentId)?.transpositionSemitones || 0}</span>
               </div>
               
               <div className="border-t border-[#2a3545] pt-3 mt-3">
@@ -609,15 +710,15 @@ export default function AdminPanel() {
                 <div className="space-y-1">
                   <div>
                     <span className="text-[#9aa3b0]">Concert Bb4 → Written: </span>
-                    <span className="text-[#3a8a5c]">{concertToWritten('Bb4', user.instrumentId) || 'N/A'}</span>
+                    <span className="text-[#3a8a5c]">{concertToWritten('Bb4', effectiveUser.instrumentId) || 'N/A'}</span>
                   </div>
                   <div>
                     <span className="text-[#9aa3b0]">Concert C5 → Written: </span>
-                    <span className="text-[#3a8a5c]">{concertToWritten('C5', user.instrumentId) || 'N/A'}</span>
+                    <span className="text-[#3a8a5c]">{concertToWritten('C5', effectiveUser.instrumentId) || 'N/A'}</span>
                   </div>
                   <div>
                     <span className="text-[#9aa3b0]">Written C5 → Concert: </span>
-                    <span className="text-[#c9a84c]">{writtenToConcert('C5', user.instrumentId) || 'N/A'}</span>
+                    <span className="text-[#c9a84c]">{writtenToConcert('C5', effectiveUser.instrumentId) || 'N/A'}</span>
                   </div>
                 </div>
               </div>
