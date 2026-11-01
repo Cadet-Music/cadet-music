@@ -46,10 +46,39 @@ export type ActivityHistory = Record<string, DayRecord>;
 
 export interface BannerSticker {
   id: string;
+  /** Sticker key from STICKER_DEFS. Optional on legacy placements (pre-migration data). */
+  stickerId?: string;
   x: number;
   y: number;
   rotation: number;
+  /** Relative scale multiplier (1 = default size) */
+  scale?: number;
+  zIndex?: number;
 }
+
+/** One anonymized-enough client telemetry record for the admin panel. */
+export interface VisitorLogEntry {
+  id: string;
+  timestamp: string; // ISO datetime
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+  countryCode: string;
+  userAgent: string;
+  screen: string; // "WIDTHxHEIGHT" CSS px
+  viewport: string; // innerWidth x innerHeight
+  touch: boolean;
+  platform: string;
+  cores: number;
+  memoryGB?: number;
+  language: string;
+  referrer: string;
+  sessionStart: string;
+}
+
+/** Hard cap to stay well within the ~5 MB localStorage budget. */
+export const MAX_VISITOR_LOGS = 100;
 
 export interface User {
   id: string;
@@ -83,6 +112,8 @@ interface AppState {
   activity: ActivityHistory;
   /** Self-reported real-world practice sessions */
   practiceLog: PracticeLogEntry[];
+  /** Client-side visitor telemetry (admin panel only) */
+  visitorLogs: VisitorLogEntry[];
 
   // Actions
   setUser: (user: User | null) => void;
@@ -107,6 +138,9 @@ interface AppState {
   addBannerSticker: (sticker: BannerSticker) => void;
   removeBannerSticker: (id: string) => void;
   updateBannerSticker: (id: string, updates: Partial<BannerSticker>) => void;
+  /** Append a visitor telemetry record (capped at MAX_VISITOR_LOGS entries) */
+  logVisitorSession: (entry: VisitorLogEntry) => void;
+  clearVisitorLogs: () => void;
   resetAll: () => void;
 
   // Daily goals & quests
@@ -182,6 +216,7 @@ export const useStore = create<AppState>()(
       adminUnlocked: false,
       activity: {},
       practiceLog: [],
+      visitorLogs: [],
 
       setUser: (user) => set({ user }),
       
@@ -448,6 +483,22 @@ export const useStore = create<AppState>()(
         if (!user) return;
         set({ user: { ...user, bannerStickers: user.bannerStickers.map(s => s.id === id ? { ...s, ...updates } : s) } });
       },
+
+      // Visitor telemetry (admin panel). Newest-first, hard-capped to protect the localStorage quota.
+      logVisitorSession: (entry) => {
+        const logs = get().visitorLogs;
+        // De-dupe: refresh an existing record with the same session start instead of appending
+        const existingIdx = logs.findIndex(l => l.sessionStart === entry.sessionStart);
+        let next: VisitorLogEntry[];
+        if (existingIdx >= 0) {
+          next = [entry, ...logs.filter((_, i) => i !== existingIdx)];
+        } else {
+          next = [entry, ...logs];
+        }
+        set({ visitorLogs: next.slice(0, MAX_VISITOR_LOGS) });
+      },
+
+      clearVisitorLogs: () => set({ visitorLogs: [] }),
       
       // Competency tracking actions
       recordCorrectAnswer: (concept) => {
@@ -500,19 +551,30 @@ export const useStore = create<AppState>()(
         Object.keys(localStorage)
           .filter((k) => k.startsWith('cadet-music'))
           .forEach((k) => localStorage.removeItem(k));
-        set({ user: null, currentView: 'login', darkMode: false });
+        set({ user: null, currentView: 'login', darkMode: false, visitorLogs: [], activity: {}, practiceLog: [] });
         document.documentElement.classList.remove('dark');
       },
     }),
     {
       name: 'cadet-music-storage',
-      version: 1,
+      version: 2,
       migrate: (persistedState: any, version: number) => {
         // Migration from version 0 to 1: Add conceptMastery
         if (version < 1 && persistedState.user?.progress) {
           persistedState.user.progress.conceptMastery = initializeConceptMastery(
             persistedState.user.progress.conceptMastery
           );
+        }
+        // Migration from version 1 to 2: banner stickers carry their own stickerId/scale/zIndex.
+        // Legacy placements encoded the sticker via parseInt(s.id) as an index into progress.stickers.
+        if (version < 2 && Array.isArray(persistedState.user?.bannerStickers)) {
+          const stickerList: string[] = persistedState.user.progress?.stickers ?? [];
+          persistedState.user.bannerStickers = persistedState.user.bannerStickers.map((s: any) => ({
+            ...s,
+            stickerId: s.stickerId ?? stickerList[parseInt(s.id)] ?? undefined,
+            scale: s.scale ?? 1,
+            zIndex: s.zIndex ?? 1,
+          }));
         }
         return persistedState;
       },
