@@ -28,7 +28,9 @@ export interface AdminLoginResult {
   token: string | null;
 }
 
-export async function verifyAdminPassword(password: string): Promise<AdminLoginResult> {
+export async function verifyAdminPassword(
+  password: string,
+): Promise<AdminLoginResult & { error?: string }> {
   try {
     const res = await fetch('/api/admin-login', {
       method: 'POST',
@@ -37,10 +39,17 @@ export async function verifyAdminPassword(password: string): Promise<AdminLoginR
     });
     if (res.status === 500) {
       console.error('admin-login endpoint misconfigured (is ADMIN_PASSWORD set in Vercel?)');
+      return { ok: false, token: null, error: 'Server misconfigured: ADMIN_PASSWORD is not set in Vercel environment variables.' };
     }
     // 401 Unauthorized simply means "wrong password" — handle it smoothly
     // by returning ok:false instead of throwing on the non-ok response.
-    if (!res.ok) return { ok: false, token: null };
+    if (!res.ok) {
+      return {
+        ok: false,
+        token: null,
+        error: res.status === 401 ? 'Incorrect admin password.' : `Server returned ${res.status}.`,
+      };
+    }
     const data = await res.json();
     return {
       ok: data?.ok === true,
@@ -49,7 +58,7 @@ export async function verifyAdminPassword(password: string): Promise<AdminLoginR
   } catch (err) {
     // Network failure / invalid JSON — treat as unauthenticated, don't throw.
     console.error('admin-login request failed:', err);
-    return { ok: false, token: null };
+    return { ok: false, token: null, error: 'Network error contacting /api/admin-login.' };
   }
 }
 
@@ -85,22 +94,31 @@ export interface AdminAnalyticsReport {
  * Requires the bearer token returned by verifyAdminPassword(). A 401 (expired
  * or missing token) and any network failure resolve to `null` — never throws.
  */
-export async function fetchAdminAnalytics(token: string | null): Promise<AdminAnalyticsReport | null> {
-  if (!token) return null;
+export interface AdminAnalyticsResult {
+  report: AdminAnalyticsReport | null;
+  error?: string;
+}
+
+export async function fetchAdminAnalytics(token: string | null): Promise<AdminAnalyticsResult> {
+  if (!token) return { report: null, error: 'No server session token — the admin login endpoint did not return one (check ADMIN_PASSWORD in Vercel).' };
   try {
     const res = await fetch('/api/admin/analytics', {
       headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
     });
     if (!res.ok) {
       // 401 = expired/invalid session token; handle smoothly, no throw.
+      const reason = res.status === 401
+        ? 'Authentication rejected by /api/admin/analytics (HTTP 401) — your admin session token is missing, expired, or ANALYTICS_SECRET/ADMIN_PASSWORD changed. Re-enter the admin password.'
+        : `/api/admin/analytics returned HTTP ${res.status}.`;
       console.warn(`admin analytics unavailable (HTTP ${res.status})`);
-      return null;
+      return { report: null, error: reason };
     }
     const data = await res.json();
-    return data?.ok === true && Array.isArray(data.cadets) ? data : null;
+    if (data?.ok === true && Array.isArray(data.cadets)) return { report: data };
+    return { report: null, error: 'Unexpected response shape from /api/admin/analytics.' };
   } catch (err) {
     console.warn('admin analytics request failed:', err);
-    return null;
+    return { report: null, error: 'Network error contacting /api/admin/analytics.' };
   }
 }
 

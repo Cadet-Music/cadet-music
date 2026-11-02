@@ -52,17 +52,22 @@ export default function AdminPanel() {
   const [adminToken, setAdminToken] = useState<string | null>(null);
   const [analytics, setAnalytics] = useState<AdminAnalyticsReport | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  // Explicit, visible errors from /api/admin-login or /api/admin/analytics so
+  // failures surface in the UI instead of silently falling back to other views.
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  // Fetch live cadet analytics once authenticated (and whenever the tab is on
-  // "Cadet Progress"). fetchAdminAnalytics never throws — a 401/network error
-  // resolves to null and we fall back to the local profile view gracefully.
+  // Fetch live cadet analytics once authenticated. fetchAdminAnalytics never
+  // throws — a 401/network error resolves to { report: null, error } and we
+  // surface the error banner while still rendering the live-UI shell below.
   useEffect(() => {
-    if (!authed || !adminToken) return;
+    if (!authed) return;
     let cancelled = false;
     setAnalyticsLoading(true);
     fetchAdminAnalytics(adminToken)
-      .then((report) => {
-        if (!cancelled && report) setAnalytics(report);
+      .then((result) => {
+        if (cancelled) return;
+        setAnalytics(result.report);
+        setApiError(result.report ? null : result.error ?? null);
       })
       .finally(() => {
         if (!cancelled) setAnalyticsLoading(false);
@@ -116,12 +121,14 @@ export default function AdminPanel() {
     setGateChecking(true);
     let ok = false;
     let token: string | null = null;
+    let loginError: string | undefined;
     try {
       // verifyAdminPassword never throws, but guard anyway so a 401/500 or
       // any unexpected error can never surface as an uncaught rejection.
       const result = await verifyAdminPassword(gatePassword);
       ok = result.ok;
       token = result.token;
+      loginError = result.error;
       if (!ok && import.meta.env.DEV) {
         // Local dev convenience only — never active in production builds.
         // No server means no bearer token; analytics fall back to local data.
@@ -130,6 +137,7 @@ export default function AdminPanel() {
     } catch (err) {
       console.error('admin gate check failed:', err);
       ok = false;
+      loginError = 'Unexpected error verifying the admin password.';
     } finally {
       setGateChecking(false);
     }
@@ -137,8 +145,12 @@ export default function AdminPanel() {
       setAdminToken(token);
       setAuthed(true);
       setGateError(false);
+      setApiError(null);
     } else {
       setGateError(true);
+      // Surface the real reason (e.g. ADMIN_PASSWORD not set → HTTP 500)
+      // instead of a generic "wrong password" guess.
+      if (loginError) setApiError(loginError);
     }
   };
 
@@ -304,7 +316,7 @@ export default function AdminPanel() {
               Reset All Data
             </button>
             <span className="text-xs text-[#9aa3b0] font-medium uppercase tracking-wide bg-[#2a3545] px-2 py-1 rounded">
-              {analytics ? 'Live Data' : adminToken ? (analyticsLoading ? 'Syncing…' : 'Local Mode') : 'Local Mode'}
+              {analytics ? 'Live Data' : adminToken ? (analyticsLoading ? 'Syncing…' : 'Server Error') : import.meta.env.DEV ? 'Local Mode' : 'Connecting…'}
             </span>
           </div>
         </div>
@@ -381,6 +393,36 @@ export default function AdminPanel() {
       )}
 
       <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Explicit API errors surface here so failures are visible instead of
+            silently degrading to fallback views. */}
+        {apiError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#c44536]/10 border border-[#c44536]/40 rounded-lg p-4 mb-6 flex items-start gap-3"
+            role="alert"
+          >
+            <span className="text-[#c44536] mt-0.5 flex-shrink-0">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-[#c44536]">Server / API error</p>
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] break-words">{apiError}</p>
+            </div>
+            <button
+              onClick={() => setApiError(null)}
+              aria-label="Dismiss error"
+              className="text-[#5a6577] dark:text-[#9aa3b0] hover:text-[#1a2332] dark:hover:text-white transition-colors flex-shrink-0"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+
         {/* Tab bar */}
         <div className="flex items-center gap-2 mb-6" role="tablist" aria-label="Admin sections">
           {([
@@ -544,8 +586,10 @@ export default function AdminPanel() {
         )}
 
         {activeTab === 'progress' && (<>
-        {/* Live server-backed analytics (fetched from /api/admin/analytics) */}
-        {analytics ? (
+        {/* Live server-backed analytics (fetched from /api/admin/analytics).
+            Once authenticated we ALWAYS render the live UI shell below — no
+            demo-mode fallback. Empty results show an empty state instead. */}
+        {analytics && (
           <>
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -611,7 +655,15 @@ export default function AdminPanel() {
                     </tr>
                   </thead>
                   <tbody>
-                    {analytics.cadets.map((row) => (
+                    {analytics.cadets.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                          <p className="font-semibold text-[#1a2332] dark:text-white mb-1">No Cadet Data Recorded Yet</p>
+                          <p>Once cadets start lessons or submit scores via /api/leaderboard, their progress will appear here.</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      analytics.cadets.map((row) => (
                       <tr
                         key={row.name}
                         className="border-b border-[#e8e8e8] dark:border-[#2a3545] last:border-b-0 text-[#1a2332] dark:text-white"
@@ -642,7 +694,8 @@ export default function AdminPanel() {
                           </span>
                         </td>
                       </tr>
-                    ))}
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -651,21 +704,6 @@ export default function AdminPanel() {
               </p>
             </div>
           </>
-        ) : (
-          /* Fallback when the analytics endpoint is unreachable (local dev or
-             expired token): show this device's own profile instead of demo copy. */
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[#c9a84c]/10 border border-[#c9a84c]/30 rounded-lg p-4 mb-6"
-          >
-            <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-              <span className="font-semibold text-[#1a2332] dark:text-white">Note: </span>
-              Server analytics are unavailable right now, so this shows only your local profile.
-              Check that ADMIN_PASSWORD/ANALYTICS_SECRET are set in Vercel and re-unlock if your
-              session token expired.
-            </p>
-          </motion.div>
         )}
 
         {/* Current User Overview */}
