@@ -259,7 +259,9 @@ export async function collectVisitorTelemetry(log: (entry: VisitorLogEntry) => v
     const geo = await fetchGeo();
     const entry: VisitorLogEntry = { id: crypto.randomUUID(), ...buildTelemetryPayload(geo) };
     log(entry); // local fallback copy (this browser only)
-    void pingServer(entry); // authoritative server-side record (all devices)
+    // authoritative server-side record (all devices) — spread into a plain
+    // object so the VisitorLogEntry shape satisfies Record<string, unknown>
+    void pingServer({ ...entry });
     // If a cadet profile already exists (returning session), also record the
     // login/event ping with their identity + progress snapshot.
     void sendLoginPing();
