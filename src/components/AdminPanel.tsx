@@ -43,8 +43,10 @@ export default function AdminPanel() {
   const [passwordError, setPasswordError] = useState('');
   const [activeTab, setActiveTab] = useState<'progress' | 'visitors'>('progress');
   // Gate the panel itself: the 4-corner gesture only sets `adminUnlocked`;
-  // a real admin must also enter the admin password before any data renders.
+  // a real admin must also enter a cadet email + admin password before any
+  // data renders.
   const [authed, setAuthed] = useState(false);
+  const [gateEmail, setGateEmail] = useState('');
   const [gatePassword, setGatePassword] = useState('');
   const [gateError, setGateError] = useState(false);
   const [gateChecking, setGateChecking] = useState(false);
@@ -139,8 +141,8 @@ export default function AdminPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Admin password is now verified SERVER-SIDE via /api/admin-login against
-  // the ADMIN_PASSWORD environment variable (Vercel). No secret in the bundle.
+  // Admin login is verified SERVER-SIDE via /api/admin-login against the
+  // ADMIN_PASSWORD environment variable (Vercel). No secret in the bundle.
   // The client-side 'password' string remains ONLY as a fallback for local
   // `npm run dev` where there is no serverless runtime; it disappears from
   // the production bundle because import.meta.env.DEV is statically false
@@ -154,9 +156,9 @@ export default function AdminPanel() {
     let token: string | null = null;
     let loginError: string | undefined;
     try {
-      // verifyAdminPassword never throws, but guard anyway so a 401/500 or
+      // verifyAdminPassword never throws, but guard anyway so a 400/401/500 or
       // any unexpected error can never surface as an uncaught rejection.
-      const result = await verifyAdminPassword(gatePassword);
+      const result = await verifyAdminPassword(gateEmail.trim(), gatePassword);
       ok = result.ok;
       token = result.token;
       loginError = result.error;
@@ -168,9 +170,14 @@ export default function AdminPanel() {
     } catch (err) {
       console.error('admin gate check failed:', err);
       ok = false;
-      loginError = 'Unexpected error verifying the admin password.';
+      loginError = 'Unexpected error verifying the admin login.';
     } finally {
       setGateChecking(false);
+    }
+    // Production must receive a real bearer token before any data is shown.
+    if (ok && !token && !import.meta.env.DEV) {
+      ok = false;
+      loginError = 'Login did not return a session token. Check ADMIN_PASSWORD in Vercel.';
     }
     if (ok) {
       setAdminToken(token);
@@ -179,8 +186,8 @@ export default function AdminPanel() {
       setApiError(null);
     } else {
       setGateError(true);
-      // Surface the real reason (e.g. ADMIN_PASSWORD not set → HTTP 500)
-      // instead of a generic "wrong password" guess.
+      // Surface the real reason (e.g. ADMIN_PASSWORD not set → HTTP 500,
+      // invalid cadet email → HTTP 400) instead of a generic "wrong password".
       if (loginError) setApiError(loginError);
     }
   };
@@ -194,7 +201,9 @@ export default function AdminPanel() {
   const handleResetConfirm = async () => {
     let ok = false;
     try {
-      const result = await verifyAdminPassword(resetPassword);
+      // Reuses the cadet email entered at the gate; the panel is only reachable
+      // after a successful login, so gateEmail is already validated.
+      const result = await verifyAdminPassword(gateEmail.trim(), resetPassword);
       ok = result.ok;
       if (!ok && import.meta.env.DEV) {
         ok = resetPassword === CLIENT_DEV_FALLBACK; // local dev only
@@ -217,13 +226,14 @@ export default function AdminPanel() {
     setPasswordError('');
   };
 
-  // --- Password gate -------------------------------------------------------
+  // --- Login gate ----------------------------------------------------------
   // Previously this component returned `null` when no user was logged in,
   // which rendered a completely blank (white) screen after the corner
-  // gesture. Now the panel always renders something: a password gate first,
+  // gesture. Now the panel always renders something: a login gate first,
   // then the full admin UI. If there is no local profile yet we build a
   // read-only demo profile so every section still works.
-  if (!authed) {
+  // Nothing sensitive renders until a valid bearer token is held (production).
+  if (!authed || (!adminToken && !import.meta.env.DEV)) {
     return (
       <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720] flex items-center justify-center p-4">
         <motion.div
@@ -236,8 +246,18 @@ export default function AdminPanel() {
             <h1 className="text-lg font-semibold text-[#1a2332] dark:text-white">Admin Panel</h1>
           </div>
           <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-4">
-            Enter the admin password to continue.
+            Enter your cadet email and the admin password to continue.
           </p>
+          <input
+            type="email"
+            value={gateEmail}
+            onChange={(e) => { setGateEmail(e.target.value); setGateError(false); }}
+            placeholder="Cadet email (name###@cdt.cadets.gc.ca)"
+            className="input-field mb-3"
+            autoFocus
+            autoComplete="email"
+            aria-label="Cadet email"
+          />
           <input
             type="password"
             value={gatePassword}
@@ -245,11 +265,10 @@ export default function AdminPanel() {
             onKeyDown={(e) => { if (e.key === 'Enter') handleGateSubmit(); }}
             placeholder="Admin password"
             className="input-field mb-3"
-            autoFocus
             aria-label="Admin password"
           />
           {gateError && (
-            <p className="text-sm text-[#c44536] mb-3 font-medium">Incorrect password</p>
+            <p className="text-sm text-[#c44536] mb-3 font-medium">Login failed. Check your email and password.</p>
           )}
           <div className="flex gap-3">
             <button onClick={() => lockAdmin()} className="flex-1 btn-secondary" disabled={gateChecking}>
@@ -317,7 +336,7 @@ export default function AdminPanel() {
 
   const completionPercent = Math.round((currentUserData.completedLessons.length / currentUserData.totalLessons) * 100);
 
-  // NOTE: no hooks may appear below this point — the password-gate early
+  // NOTE: no hooks may appear below this point — the login-gate early
   // return above means any hook declared here would run conditionally and
   // trigger React error #310. All hooks live at the top of the component.
 
