@@ -102,7 +102,7 @@ async function aggregateTelemetry() {
 
 // ---- Auth token (issued by /api/admin-login, verified here) ----------------
 function signingKey() {
-  const secret = process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSWORD;
+  const secret = (process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSWORD || '').trim();
   if (!secret) return null;
   return crypto.createHash('sha256').update(`cadet-music-admin:${secret}`).digest();
 }
@@ -209,11 +209,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
   }
 
-  const auth = req.headers.authorization || '';
-  let token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+  const auth = String(req.headers.authorization || '').trim();
+  let token = /^Bearer\s+/i.test(auth) ? auth.replace(/^Bearer\s+/i, '').trim() : '';
   // CSV export is opened via a plain link (no headers possible), so also
   // accept the same signed token as a `?token=` query parameter.
-  if (!token && typeof req.query.token === 'string') token = req.query.token;
+  if (!token && typeof req.query.token === 'string') token = req.query.token.trim();
   if (!verifyAdminToken(token)) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
