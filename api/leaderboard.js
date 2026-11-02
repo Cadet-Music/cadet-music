@@ -21,17 +21,23 @@ const SEED = [
   { name: 'Cdt Johnson', xp: 750, streak: 3, lessons: 14, bannerBg: 'linear-gradient(135deg, #1a2332 0%, #2d3a4a 100%)', stickers: ['⭐'] },
 ];
 
-// ---- In-memory store (replace with a DB for true persistence) -------------
-let entries = null;
+// ---- Storage: Vercel KV with in-memory fallback -----------------------------
+// See api/_lib/kv.js. With a KV store connected, entries persist across cold
+// starts and sync globally across devices; without one we fall back to the
+// per-instance in-memory store (plus SEED) so nothing breaks meanwhile.
 
-function load() {
-  if (!entries) entries = SEED.map((e) => ({ ...e }));
-  return entries;
+import { getJSON, setJSON } from './_lib/kv.js';
+
+const ENTRIES_KEY = 'leaderboard:entries';
+
+async function load() {
+  const stored = await getJSON(ENTRIES_KEY, null);
+  if (Array.isArray(stored) && stored.length > 0) return stored;
+  return SEED.map((e) => ({ ...e }));
 }
 
-function save() {
-  // No-op for the in-memory implementation. With Vercel KV this becomes e.g.:
-  //   await kv.set('leaderboard', JSON.stringify(entries));
+async function save(list) {
+  await setJSON(ENTRIES_KEY, list);
 }
 
 // ---- Helpers ---------------------------------------------------------------
@@ -85,7 +91,7 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    return res.status(200).json({ entries: ranked(load()) });
+    return res.status(200).json({ entries: ranked(await load()) });
   }
 
   if (req.method === 'POST') {
@@ -95,7 +101,7 @@ export default async function handler(req, res) {
     // like a successful submit so automated scrapers can't detect the block,
     // but never touch the store with their payload.
     if (isBotSubmission(body)) {
-      return res.status(200).json({ ok: true, entry: null, entries: ranked(load()) });
+      return res.status(200).json({ ok: true, entry: null, entries: ranked(await load()) });
     }
 
     const name = sanitizeString(body.name, 40);
@@ -103,7 +109,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'name is required' });
     }
 
-    const list = load();
+    const list = await load();
     const existing = list.find((e) => e.name.toLowerCase() === name.toLowerCase());
     const incoming = {
       name,
@@ -129,7 +135,7 @@ export default async function handler(req, res) {
       list.push(incoming);
     }
 
-    save();
+    await save(list);
     const standings = ranked(list);
     const me = standings.find((e) => e.name.toLowerCase() === name.toLowerCase());
     return res.status(200).json({ ok: true, entry: me, entries: standings });

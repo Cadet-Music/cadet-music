@@ -24,10 +24,15 @@
 
 import crypto from 'crypto';
 
+import { getJSON } from '../_lib/kv.js';
+
 // ---- Shared leaderboard store ----------------------------------------------
-// Duplicated minimal seed so this module is self-contained; when a real DB is
-// wired into api/leaderboard.js, both files should import from one shared
-// module (e.g. ../_lib/store.js).
+// Real cadet rows now come from Vercel KV (`leaderboard:entries`) — the same
+// key /api/leaderboard writes on every XP submission — so the admin panel
+// reflects actual cross-device data instead of demo placeholders. The SEED
+// list below is ONLY used as a fallback while no submissions exist yet (or
+// while KV is not connected); `meta.demo` in the response tells the client
+// which case it is.
 const SEED = [
   { name: 'Cpl Thompson', xp: 2450, streak: 21, lessons: 48, conceptMastery: {}, completedLessons: [] },
   { name: 'L/Cpl Martinez', xp: 1890, streak: 14, lessons: 35, conceptMastery: {}, completedLessons: [] },
@@ -37,10 +42,62 @@ const SEED = [
   { name: 'Cdt Johnson', xp: 750, streak: 3, lessons: 14, conceptMastery: {}, completedLessons: [] },
 ];
 
-let entries = null;
-function loadCadets() {
-  if (!entries) entries = SEED.map((e) => ({ ...e }));
-  return entries;
+async function loadCadets() {
+  const stored = await getJSON('leaderboard:entries', null);
+  if (Array.isArray(stored) && stored.length > 0) {
+    return { cadets: stored, demo: false };
+  }
+  return { cadets: SEED.map((e) => ({ ...e })), demo: true };
+}
+
+// ---- Server-side visitor telemetry aggregation ------------------------------
+// Reads the global records written by POST /api/telemetry (Vercel KV keys
+// `telemetry:visitors` and `telemetry:logins`) and aggregates them so the
+// Admin Panel shows metrics across ALL cadets worldwide rather than one
+// browser's localStorage.
+function parseBrowser(ua) {
+  const s = String(ua || '');
+  if (/Edg\//.test(s)) return 'Edge';
+  if (/OPR\/|Opera/.test(s)) return 'Opera';
+  if (/Firefox\//.test(s)) return 'Firefox';
+  if (/CriOS\//.test(s)) return 'Chrome (iOS)';
+  if (/Safari\//.test(s) && /Version\//.test(s)) return 'Safari';
+  if (/Chrome\//.test(s)) return 'Chrome';
+  return 'Unknown';
+}
+
+function topBy(list, keyFn, limit = 6) {
+  const m = new Map();
+  for (const item of list) {
+    const k = keyFn(item) || 'Unknown';
+    m.set(k, (m.get(k) ?? 0) + 1);
+  }
+  return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit);
+}
+
+async function aggregateTelemetry() {
+  const visitorsRaw = await getJSON('telemetry:visitors', []);
+  const loginsRaw = await getJSON('telemetry:logins', []);
+  const visitors = Array.isArray(visitorsRaw) ? visitorsRaw : [];
+  const logins = Array.isArray(loginsRaw) ? loginsRaw : [];
+  const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const recent = visitors.filter((v) => Date.parse(v.loggedAt ?? v.timestamp) >= weekAgo);
+  return {
+    totals: {
+      sessions: visitors.length,
+      sessionsLast7Days: recent.length,
+      uniqueIps: new Set(visitors.map((v) => v.ip).filter(Boolean)).size,
+      touchSessions: visitors.filter((v) => v.touch).length,
+      logins: logins.length,
+    },
+    countries: topBy(visitors, (v) => v.country),
+    cities: topBy(visitors, (v) => v.city),
+    oses: topBy(visitors, (v) => v.platform),
+    browsers: topBy(visitors, (v) => parseBrowser(v.userAgent)),
+    // Newest first, trimmed for the table payload.
+    recentVisitors: visitors.slice(0, 50),
+    recentLogins: logins.slice(0, 50),
+  };
 }
 
 // ---- Auth token (issued by /api/admin-login, verified here) ----------------
@@ -161,7 +218,9 @@ export default async function handler(req, res) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 
-  const { rows, totals } = buildReport(loadCadets());
+  const { cadets, demo } = await loadCadets();
+  const { rows, totals } = buildReport(cadets);
+  const telemetry = await aggregateTelemetry();
 
   if (req.query.format === 'csv') {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
@@ -172,7 +231,9 @@ export default async function handler(req, res) {
   return res.status(200).json({
     ok: true,
     generatedAt: new Date().toISOString(),
+    meta: { demo },
     totals,
     cadets: rows.sort((a, b) => b.xp - a.xp),
+    telemetry,
   });
 }

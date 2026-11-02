@@ -9,7 +9,7 @@ import KonamiListener from './components/KonamiListener';
 import CommandPalette from './components/CommandPalette';
 import ShortcutsHelp from './components/ShortcutsHelp';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
-import { collectVisitorTelemetry } from './utils/telemetry';
+import { collectVisitorTelemetry, sendLoginPing } from './utils/telemetry';
 
 // Route-level code splitting: heavy / rarely-visited views load on demand
 const Settings = lazy(() => import('./components/Settings'));
@@ -147,14 +147,21 @@ function AppShell() {
 }
 
 function App() {
-  const { darkMode, adminUnlocked, currentView, logVisitorSession } = useStore();
+  const { darkMode, adminUnlocked, currentView, logVisitorSession, user } = useStore();
 
-  // Client-side visitor telemetry (geolocation + device metadata) for the
-  // Admin panel. Non-blocking, runs once per page load, never throws.
+  // Server-side visitor telemetry (POST /api/telemetry → Vercel KV) plus a
+  // local fallback copy. Non-blocking, runs once per page load, never throws.
   useEffect(() => {
     void collectVisitorTelemetry(logVisitorSession);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Login ping: fires whenever a cadet profile becomes active (fresh login or
+  // onboarding completion), recording username/instrument/progress server-side.
+  const userId = user?.id;
+  useEffect(() => {
+    if (userId) void sendLoginPing();
+  }, [userId]);
 
   useEffect(() => {
     if (darkMode) {

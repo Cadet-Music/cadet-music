@@ -9,6 +9,7 @@
     "test": "node src/tests/run.mjs"
   },
   "dependencies": {
+    "@vercel/kv": "^3.0.0",
     "canvas-confetti": "^1.9.3",
     "framer-motion": "^11.16.1",
     "html-to-image": "^1.11.13",

@@ -75,8 +75,30 @@ export default function AdminPanel() {
     return () => { cancelled = true; };
   }, [authed, adminToken]);
 
-  // Visitor telemetry aggregates (client-side only, capped in store at 100 entries)
+  // Visitor telemetry aggregates. PRIMARY source is now SERVER-side:
+  // /api/admin/analytics returns globally aggregated records (Vercel KV,
+  // written by POST /api/telemetry from every device). The local
+  // localStorage logs remain only as an offline fallback when the server
+  // report hasn't arrived (or KV isn't connected yet).
+  const serverTelemetry = analytics?.telemetry ?? null;
   const visitorStats = useMemo(() => {
+    if (serverTelemetry) {
+      return {
+        source: 'server' as const,
+        sessions: serverTelemetry.totals.sessions,
+        sessionsLast7Days: serverTelemetry.totals.sessionsLast7Days,
+        uniqueIps: serverTelemetry.totals.uniqueIps,
+        logins: serverTelemetry.totals.logins,
+        touchSessions: serverTelemetry.totals.touchSessions,
+        countries: serverTelemetry.countries,
+        cities: serverTelemetry.cities,
+        oses: serverTelemetry.oses,
+        browsers: serverTelemetry.browsers,
+        recentVisitors: serverTelemetry.recentVisitors,
+        recentLogins: serverTelemetry.recentLogins,
+      };
+    }
+    // Fallback: this browser's localStorage logs (capped at 100 in the store)
     const byCountry = new Map<string, number>();
     const byOS = new Map<string, number>();
     const byBrowser = new Map<string, number>();
@@ -92,13 +114,22 @@ export default function AdminPanel() {
     const topEntries = (m: Map<string, number>) =>
       [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
     return {
+      source: 'local' as const,
       sessions: visitorLogs.length,
+      sessionsLast7Days: visitorLogs.filter(
+        (l) => Date.parse(l.timestamp) >= Date.now() - 7 * 24 * 60 * 60 * 1000,
+      ).length,
+      uniqueIps: new Set(visitorLogs.map((l) => l.ip)).size,
+      logins: 0,
       touchSessions: touchCount,
       countries: topEntries(byCountry),
+      cities: [] as [string, number][],
       oses: topEntries(byOS),
       browsers: topEntries(byBrowser),
+      recentVisitors: [] as import('../utils/api').ServerVisitorRecord[],
+      recentLogins: [] as import('../utils/api').ServerLoginRecord[],
     };
-  }, [visitorLogs]);
+  }, [serverTelemetry, visitorLogs]);
 
   // Safety net: if the store ever loses the admin-unlock flag (e.g. a
   // persisted-state migration) while we are on the admin view, exit cleanly
@@ -427,7 +458,7 @@ export default function AdminPanel() {
         <div className="flex items-center gap-2 mb-6" role="tablist" aria-label="Admin sections">
           {([
             { id: 'progress', label: 'Cadet Progress' },
-            { id: 'visitors', label: `Visitor Telemetry${visitorLogs.length > 0 ? ` (${visitorLogs.length})` : ''}` },
+            { id: 'visitors', label: `Visitor Telemetry${visitorStats.sessions > 0 ? ` (${visitorStats.sessions})` : ''}` },
           ] as const).map((tab) => (
             <button
               key={tab.id}
@@ -447,13 +478,30 @@ export default function AdminPanel() {
 
         {activeTab === 'visitors' && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Source badge: server-aggregated (global) vs local fallback */}
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className={`text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full ${
+                  visitorStats.source === 'server'
+                    ? 'bg-[#3a8a5c]/15 text-[#3a8a5c]'
+                    : 'bg-[#c9a84c]/15 text-[#a68a3a]'
+                }`}
+              >
+                {visitorStats.source === 'server'
+                  ? 'Server-backed · global metrics (Vercel KV)'
+                  : analyticsLoading
+                    ? 'Connecting to server telemetry…'
+                    : 'Local fallback · this browser only'}
+              </span>
+            </div>
+
             {/* Visitor summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               {[
-                { label: 'Logged Sessions', value: visitorStats.sessions, color: 'text-[#1a2332] dark:text-white' },
-                { label: 'Touch Devices', value: visitorStats.touchSessions, color: 'text-[#3a8a5c]' },
-                { label: 'Countries', value: visitorStats.countries.length, color: 'text-[#c9a84c]' },
-                { label: 'Browsers', value: visitorStats.browsers.length, color: 'text-[#1a2332] dark:text-white' },
+                { label: 'Total Sessions', value: visitorStats.sessions, color: 'text-[#1a2332] dark:text-white' },
+                { label: 'Last 7 Days', value: visitorStats.sessionsLast7Days, color: 'text-[#3a8a5c]' },
+                { label: 'Unique IPs', value: visitorStats.uniqueIps, color: 'text-[#c9a84c]' },
+                { label: 'Cadet Logins', value: visitorStats.logins, color: 'text-[#1a2332] dark:text-white' },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -504,9 +552,9 @@ export default function AdminPanel() {
             <div className="card">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-sm text-[#1a2332] dark:text-white uppercase tracking-wide">
-                  Recent Sessions
+                  Recent Sessions {visitorStats.source === 'server' ? '(Global)' : ''}
                 </h3>
-                {visitorLogs.length > 0 && (
+                {visitorStats.source !== 'server' && visitorLogs.length > 0 && (
                   <button
                     onClick={() => { if (confirm('Clear all visitor logs?')) clearVisitorLogs(); }}
                     className="text-xs font-medium uppercase tracking-wide border border-[#c44536]/40 text-[#c44536] hover:bg-[#c44536]/10 px-3 py-1.5 min-h-[40px] rounded transition-colors"
@@ -515,10 +563,71 @@ export default function AdminPanel() {
                   </button>
                 )}
               </div>
-              {visitorLogs.length === 0 ? (
+              {visitorStats.recentVisitors.length === 0 && visitorStats.source !== 'server' && visitorLogs.length === 0 ? (
                 <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
-                  No sessions logged yet. Telemetry is collected once per page load from a public
-                  IP-info endpoint; results appear here after the next visit.
+                  No sessions logged yet. Telemetry is now collected SERVER-SIDE: every visit POSTs
+                  to /api/telemetry and lands in Vercel KV, so this view shows cadets worldwide once
+                  a KV store is connected. Until then, local browser logs appear here as a fallback.
+                </p>
+              ) : visitorStats.source === 'server' ? (
+                <div className="overflow-x-auto -mx-4 px-4">
+                  <table className="w-full text-xs sm:text-sm border-collapse min-w-[640px]">
+                    <thead>
+                      <tr className="text-left text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide text-[10px] sm:text-xs border-b border-[#e2e4e8] dark:border-[#2a3545]">
+                        <th className="py-2 pr-3 font-semibold">When</th>
+                        <th className="py-2 pr-3 font-semibold">Location</th>
+                        <th className="py-2 pr-3 font-semibold">IP</th>
+                        <th className="py-2 pr-3 font-semibold">OS / Browser</th>
+                        <th className="py-2 pr-3 font-semibold">Viewport</th>
+                        <th className="py-2 font-semibold">Touch</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visitorStats.recentVisitors.map((log) => {
+                        const parsed = parseUserAgent(log.userAgent);
+                        return (
+                          <tr
+                            key={log.id}
+                            className="border-b border-[#e8e8e8] dark:border-[#2a3545] last:border-b-0 text-[#1a2332] dark:text-white"
+                          >
+                            <td className="py-2 pr-3 whitespace-nowrap">
+                              {new Date(log.loggedAt ?? log.timestamp).toLocaleString(undefined, {
+                                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+                              })}
+                            </td>
+                            <td className="py-2 pr-3">
+                              <span className="font-medium">{log.city || 'Unknown'}</span>
+                              <span className="text-[#5a6577] dark:text-[#9aa3b0]">
+                                {log.region ? `, ${log.region}` : ''}
+                                {log.countryCode ? ` (${log.countryCode})` : ''}
+                              </span>
+                            </td>
+                            <td className="py-2 pr-3 font-mono text-[10px] sm:text-xs">{log.ip}</td>
+                            <td className="py-2 pr-3 whitespace-nowrap">
+                              {log.platform || parsed.os} · {parsed.browser}
+                            </td>
+                            <td className="py-2 pr-3 font-mono text-[10px] sm:text-xs whitespace-nowrap">
+                              {log.viewport}
+                            </td>
+                            <td className="py-2">
+                              <span
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                                  log.touch ? 'bg-[#3a8a5c]/15 text-[#3a8a5c]' : 'bg-[#9aa3b0]/15 text-[#9aa3b0]'
+                                }`}
+                              >
+                                {log.touch ? 'YES' : 'NO'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : visitorLogs.length === 0 ? (
+                <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0]">
+                  No server sessions recorded yet — global metrics will appear here as cadets visit
+                  the site (stored in Vercel KV via /api/telemetry).
                 </p>
               ) : (
                 <div className="overflow-x-auto -mx-4 px-4">
@@ -577,9 +686,9 @@ export default function AdminPanel() {
                 </div>
               )}
               <p className="text-[10px] text-[#9aa3b0] mt-4">
-                Client-side only — logs are stored in this browser&apos;s localStorage (capped at 100
-                sessions) and never sent to a server. Geolocation is coarse (IP-derived) and may be
-                unavailable when rate-limited or offline.
+                {visitorStats.source === 'server'
+                  ? 'Server-backed: every visit POSTs to /api/telemetry and is stored in Vercel KV (keys telemetry:visitors / telemetry:logins, capped at 500 records each). These metrics are aggregated across ALL devices worldwide. Geolocation is client-reported (IP-derived) and may be unavailable when rate-limited or offline.'
+                  : "Local fallback: server telemetry not yet available \u2014 showing this browser's localStorage logs only (capped at 100 sessions). Connect a Vercel KV store for global metrics."}
               </p>
             </div>
           </motion.div>
@@ -601,6 +710,12 @@ export default function AdminPanel() {
                   <span className="font-semibold text-[#1a2332] dark:text-white">Live data: </span>
                   Aggregated across all cadets from the server — {analytics.totals.cadets} registered,
                   updated {new Date(analytics.generatedAt).toLocaleString()}.
+                  {analytics.meta?.demo && (
+                    <span className="ml-2 text-[#a68a3a] font-medium">
+                      (No KV submissions recorded yet — showing seed rows. Connect a Vercel KV store
+                      and submit scores to populate real data.)
+                    </span>
+                  )}
                 </p>
                 {adminToken && (
                   <a

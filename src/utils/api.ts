@@ -78,6 +78,8 @@ export interface CadetAnalyticsRow {
 export interface AdminAnalyticsReport {
   ok: boolean;
   generatedAt: string;
+  /** meta.demo = true when the server had no real KV submissions yet and fell back to seed rows. */
+  meta?: { demo?: boolean };
   totals: {
     cadets: number;
     totalXP: number;
@@ -87,6 +89,50 @@ export interface AdminAnalyticsReport {
     strugglingCount: number;
   };
   cadets: CadetAnalyticsRow[];
+  /** Server-aggregated visitor telemetry (global, from Vercel KV via /api/telemetry). */
+  telemetry?: ServerTelemetryReport;
+}
+
+export interface ServerVisitorRecord {
+  id: string;
+  timestamp: string;
+  ip: string;
+  city: string;
+  region: string;
+  country: string;
+  countryCode: string;
+  userAgent: string;
+  platform: string;
+  viewport: string;
+  touch: boolean;
+  loggedAt?: string;
+}
+
+export interface ServerLoginRecord {
+  id: string;
+  timestamp: string;
+  username: string;
+  instrument: string;
+  lessonProgress: string;
+  xp: number;
+  streak: number;
+  events: string;
+}
+
+export interface ServerTelemetryReport {
+  totals: {
+    sessions: number;
+    sessionsLast7Days: number;
+    uniqueIps: number;
+    touchSessions: number;
+    logins: number;
+  };
+  countries: [string, number][];
+  cities: [string, number][];
+  oses: [string, number][];
+  browsers: [string, number][];
+  recentVisitors: ServerVisitorRecord[];
+  recentLogins: ServerLoginRecord[];
 }
 
 /**

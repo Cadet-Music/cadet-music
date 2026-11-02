@@ -182,6 +182,68 @@ export function buildTelemetryPayload(geo: GeoInfo): Omit<VisitorLogEntry, 'id'>
 
 let telemetryStarted = false;
 
+/** Lazily read the current profile without a static import (avoids store↔telemetry cycles). */
+async function currentUser(): Promise<{
+  username: string;
+  instrumentId?: string;
+  instrument: string;
+  progress: { xp: number; streak: number; completedLessons: unknown[] };
+} | null> {
+  try {
+    const mod = await import('../store');
+    return (mod.useStore.getState().user as never) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fire-and-forget SERVER-side ping: POST /api/telemetry records the session in
+ * Vercel KV so the Admin Panel aggregates visitors across ALL devices.
+ * Never throws, never blocks the UI; a missing/offline API is silently ignored
+ * (the local localStorage log below still works as an offline fallback).
+ */
+async function pingServer(payload: Record<string, unknown>): Promise<void> {
+  try {
+    await fetch('/api/telemetry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // keepalive lets the request survive quick navigations/tab closes
+      body: JSON.stringify({ ...payload, website_url: '' }),
+      keepalive: true,
+    });
+  } catch {
+    /* server unreachable — local log remains the only record for this visit */
+  }
+}
+
+/**
+ * Silent cadet login/session ping with identity + progress context. Called on
+ * app init when a profile exists and after a fresh login. Best-effort: any
+ * failure is swallowed so analytics can never break the app.
+ */
+export async function sendLoginPing(): Promise<void> {
+  try {
+    const user = await currentUser();
+    void pingServer({
+      timestamp: new Date().toISOString(),
+      events: user ? 'login' : 'visit',
+      username: user?.username ?? '',
+      instrument: user?.instrumentId ?? user?.instrument ?? '',
+      lessonProgress: user ? `${user.progress.completedLessons.length}/${TOTAL_LESSONS}` : '',
+      xp: user?.progress.xp ?? 0,
+      streak: user?.progress.streak ?? 0,
+    });
+  } catch {
+    /* never throw */
+  }
+}
+
+// Curriculum total for the lessonProgress string above. Mirrors
+// getAllLessons().length in src/data.ts (and TOTAL_LESSONS in
+// api/admin/analytics.js) — update together if the curriculum changes.
+const TOTAL_LESSONS = 78;
+
 /** Fire-and-forget telemetry collection. Safe to call on every mount; runs once per page load. */
 export async function collectVisitorTelemetry(log: (entry: VisitorLogEntry) => void): Promise<void> {
   if (telemetryStarted) return;
@@ -195,7 +257,12 @@ export async function collectVisitorTelemetry(log: (entry: VisitorLogEntry) => v
       return;
     }
     const geo = await fetchGeo();
-    log({ id: crypto.randomUUID(), ...buildTelemetryPayload(geo) });
+    const entry: VisitorLogEntry = { id: crypto.randomUUID(), ...buildTelemetryPayload(geo) };
+    log(entry); // local fallback copy (this browser only)
+    void pingServer(entry); // authoritative server-side record (all devices)
+    // If a cadet profile already exists (returning session), also record the
+    // login/event ping with their identity + progress snapshot.
+    void sendLoginPing();
   } catch {
     // Telemetry must never break the app
   }
