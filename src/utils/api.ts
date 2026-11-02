@@ -12,16 +12,17 @@ export interface ServerLeaderboardEntry {
 }
 
 /**
- * Verify an admin password against the server (/api/admin-login).
- * The password itself is validated server-side via process.env.ADMIN_PASSWORD,
- * so no secret lives in the client bundle anymore.
+ * Verify an admin login against the server (/api/admin-login).
+ * The cadet email must match the official pattern, and the password is
+ * validated server-side via process.env.ADMIN_PASSWORD, so no secret lives in
+ * the client bundle.
  *
  * On success the server also returns a short-lived signed bearer token used
  * for authenticated endpoints like /api/admin/analytics.
  *
- * Every failure mode (401 wrong password, 405/500 misconfiguration, network
- * error, malformed JSON) resolves to `{ ok: false, token: null }` — this
- * function NEVER throws and NEVER leaves the caller in an inconsistent state.
+ * Every failure mode (400 bad email, 401 wrong password, 405/500
+ * misconfiguration, network error, malformed JSON) resolves to
+ * `{ ok: false, token: null }` — this function NEVER throws.
  */
 export interface AdminLoginResult {
   ok: boolean;
@@ -29,20 +30,27 @@ export interface AdminLoginResult {
 }
 
 export async function verifyAdminPassword(
+  email: string,
   password: string,
 ): Promise<AdminLoginResult & { error?: string }> {
   try {
     const res = await fetch('/api/admin-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ email, password }),
     });
     if (res.status === 500) {
       console.error('admin-login endpoint misconfigured (is ADMIN_PASSWORD set in Vercel?)');
       return { ok: false, token: null, error: 'Server misconfigured: ADMIN_PASSWORD is not set in Vercel environment variables.' };
     }
-    // 401 Unauthorized simply means "wrong password" — handle it smoothly
-    // by returning ok:false instead of throwing on the non-ok response.
+    if (res.status === 400) {
+      return {
+        ok: false,
+        token: null,
+        error: 'Enter a valid cadet email (first initial, last name, 3 digits, @cdt.cadets.gc.ca).',
+      };
+    }
+    // 401 = wrong password; handled as a normal result, not an exception.
     if (!res.ok) {
       return {
         ok: false,
