@@ -13,6 +13,8 @@
 //                405                     non-POST method
 //                500 { ok: false }       server misconfiguration (no env var)
 
+import crypto from 'crypto';
+
 // Cadet email: [first initial][last name][3 digits]@cdt.cadets.gc.ca
 const CADET_EMAIL_REGEX = /^[a-z][a-z]+[0-9]{3}@cdt\.cadets\.gc\.ca$/i;
 const CADET_EMAIL_ERROR =
@@ -32,13 +34,9 @@ function safeEqual(a, b) {
 }
 
 // ---- Admin bearer token (shared secret scheme with /api/admin/analytics) --
-// Issued on successful password verification; the client sends it as
-// `Authorization: Bearer <token>` to /api/admin/analytics. HMAC-signed with a
-// key derived from ANALYTICS_SECRET (or ADMIN_PASSWORD as fallback), so no
-// server-side session storage is needed in this stateless setup.
+// Must derive the key exactly as api/admin/analytics.js does (same trimming).
 function adminTokenKey() {
-  const crypto = require('crypto');
-  const secret = process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSWORD;
+  const secret = (process.env.ANALYTICS_SECRET || process.env.ADMIN_PASSWORD || '').trim();
   if (!secret) return null;
   return crypto.createHash('sha256').update(`cadet-music-admin:${secret}`).digest();
 }
@@ -46,7 +44,6 @@ function adminTokenKey() {
 function createAdminToken(ttlMs = 2 * 60 * 60 * 1000) {
   const key = adminTokenKey();
   if (!key) return null;
-  const crypto = require('crypto');
   const exp = Date.now() + ttlMs;
   const payload = String(exp);
   const sig = crypto.createHmac('sha256', key).update(payload).digest('hex');
@@ -105,5 +102,8 @@ export default async function handler(req, res) {
 
   // Issue a short-lived signed bearer token for /api/admin/analytics.
   const token = createAdminToken();
+  if (!token) {
+    return res.status(500).json({ ok: false, error: 'Server misconfigured' });
+  }
   return res.status(200).json({ ok: true, token });
 }
