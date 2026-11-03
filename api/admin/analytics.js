@@ -1,60 +1,30 @@
 // Vercel serverless function: GET /api/admin/analytics
 //
-// Returns REAL aggregated cadet data for the Admin Panel (no more demo-mode
-// placeholders): XP / streak totals, lesson completion rates, and
-// failure/struggle metrics — plus a CSV export of the same rows.
+// Returns REAL aggregated cadet data for the Admin Panel (no mock rows):
+// XP / streak totals, lesson completion, per-concept quiz results, a list of
+// what each cadet is struggling with, and class-wide trouble spots, plus a CSV
+// export of the same rows.
 //
-// SECURITY MODEL (important):
-//   Vercel serverless functions are stateless and cannot share an in-memory
-//   session with the browser, so this endpoint requires a short-lived signed
-//   token issued by /api/admin-login (HMAC via crypto). The client sends it
-//   as `Authorization: Bearer <token>`. Set ANALYTICS_SECRET in Vercel env
-//   vars; if unset we fall back to ADMIN_PASSWORD-derived signing material so
-//   the panel works out-of-the-box with only one configured variable.
+// SECURITY MODEL:
+//   Requires a short-lived signed token issued by /api/admin-login, sent as
+//   `Authorization: Bearer <token>`. Set ANALYTICS_SECRET in Vercel env vars; if
+//   unset, ADMIN_PASSWORD-derived signing material is used instead.
 //
 // DATA SOURCE:
-//   Same store as /api/leaderboard (in-memory until you attach a database).
-//   The API contract is stable — swapping load()/save() in leaderboard.js for
-//   Vercel KV / Postgres automatically makes this endpoint persistent too.
+//   Cadet rows come from api/_lib/cadets.js (the same store /api/leaderboard
+//   writes). With no submissions yet, `cadets` is simply empty.
 //
 // Responses:
-//   200 { ok: true, generatedAt, totals, cadets }      (default)
+//   200 { ok: true, generatedAt, totals, cadets, commonStruggles, telemetry }
 //   200 text/csv                                        (?format=csv)
 //   401 { ok: false, error: 'unauthorized' }            (missing/bad/expired token)
 
 import crypto from 'crypto';
 
 import { getJSON } from '../_lib/kv.js';
-
-// ---- Shared leaderboard store ----------------------------------------------
-// Real cadet rows now come from Vercel KV (`leaderboard:entries`) — the same
-// key /api/leaderboard writes on every XP submission — so the admin panel
-// reflects actual cross-device data instead of demo placeholders. The SEED
-// list below is ONLY used as a fallback while no submissions exist yet (or
-// while KV is not connected); `meta.demo` in the response tells the client
-// which case it is.
-const SEED = [
-  { name: 'Cpl Thompson', xp: 2450, streak: 21, lessons: 48, conceptMastery: {}, completedLessons: [] },
-  { name: 'L/Cpl Martinez', xp: 1890, streak: 14, lessons: 35, conceptMastery: {}, completedLessons: [] },
-  { name: 'Cdt Williams', xp: 1650, streak: 10, lessons: 30, conceptMastery: {}, completedLessons: [] },
-  { name: 'Cdt Brown', xp: 1200, streak: 7, lessons: 22, conceptMastery: {}, completedLessons: [] },
-  { name: 'Cdt Davis', xp: 980, streak: 5, lessons: 18, conceptMastery: {}, completedLessons: [] },
-  { name: 'Cdt Johnson', xp: 750, streak: 3, lessons: 14, conceptMastery: {}, completedLessons: [] },
-];
-
-async function loadCadets() {
-  const stored = await getJSON('leaderboard:entries', null);
-  if (Array.isArray(stored) && stored.length > 0) {
-    return { cadets: stored, demo: false };
-  }
-  return { cadets: SEED.map((e) => ({ ...e })), demo: true };
-}
+import { loadCadets } from '../_lib/cadets.js';
 
 // ---- Server-side visitor telemetry aggregation ------------------------------
-// Reads the global records written by POST /api/telemetry (Vercel KV keys
-// `telemetry:visitors` and `telemetry:logins`) and aggregates them so the
-// Admin Panel shows metrics across ALL cadets worldwide rather than one
-// browser's localStorage.
 function parseBrowser(ua) {
   const s = String(ua || '');
   if (/Edg\//.test(s)) return 'Edge';
@@ -133,34 +103,97 @@ function verifyAdminToken(token) {
 }
 
 // ---- Aggregation -------------------------------------------------------------
-// Total curriculum lesson count (mirrors getAllLessons().length in src/data.ts;
-// update together if the curriculum changes). Kept as a constant because TS
-// sources can't be imported from a serverless JS function.
+// Total curriculum lesson count (mirrors getAllLessons().length in src/data.ts).
+// The admin panel recomputes completion from the real curriculum, so this is
+// only used for the CSV and as a fallback.
 const TOTAL_LESSONS = 78;
 
+// Thresholds. Keep in sync with the constants at the top of AdminPanel.tsx.
+const MIN_ANSWERS = 5; // answers needed on one concept before judging it
+const STRUGGLE_BELOW = 60; // % accuracy under which a concept counts as a struggle
+const OVERALL_MIN_ANSWERS = 10; // answers overall before judging overall accuracy
+const INACTIVE_DAYS = 14;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 function aggregate(cadet) {
-  const masteryEntries = Object.values(cadet.conceptMastery || {});
-  const attempts = masteryEntries.reduce((s, m) => s + (m.attempts || 0), 0);
-  const correct = masteryEntries.reduce((s, m) => s + (m.correct || 0), 0);
+  const now = Date.now();
+
+  // conceptMastery is keyed BY concept id: { rhythm: { attempts, correct, ... } }.
+  const concepts = Object.entries(cadet.conceptMastery || {})
+    .map(([concept, m]) => {
+      const attempts = Number(m?.attempts) || 0;
+      const correct = Math.min(Number(m?.correct) || 0, attempts);
+      return {
+        concept,
+        attempts,
+        correct,
+        accuracy: attempts > 0 ? Math.round((correct / attempts) * 100) : 0,
+        lastReviewed: typeof m?.lastReviewed === 'string' && m.lastReviewed ? m.lastReviewed : null,
+      };
+    })
+    .filter((c) => c.attempts > 0)
+    .sort((a, b) => a.accuracy - b.accuracy);
+
+  const attempts = concepts.reduce((s, c) => s + c.attempts, 0);
+  const correct = concepts.reduce((s, c) => s + c.correct, 0);
   const accuracy = attempts > 0 ? Math.round((correct / attempts) * 100) : null;
-  const strugglingConcepts = masteryEntries
-    .filter((m) => (m.attempts || 0) >= 5 && ((m.correct || 0) / m.attempts) * 100 < 60)
-    .map((m) => m.concept);
+  const strugglingConcepts = concepts
+    .filter((c) => c.attempts >= MIN_ANSWERS && c.accuracy < STRUGGLE_BELOW)
+    .map((c) => c.concept);
+
+  const lastActive = typeof cadet.updatedAt === 'string' ? cadet.updatedAt : null;
+  const lastActiveMs = lastActive ? Date.parse(lastActive) : NaN;
+  const daysInactive = Number.isFinite(lastActiveMs)
+    ? Math.max(0, Math.floor((now - lastActiveMs) / DAY_MS))
+    : null;
+
+  const flagReasons = [];
+  if (attempts >= OVERALL_MIN_ANSWERS && accuracy !== null && accuracy < STRUGGLE_BELOW) {
+    flagReasons.push('low-accuracy');
+  }
+  if (strugglingConcepts.length > 0) flagReasons.push('struggling-concepts');
+  if (daysInactive !== null && daysInactive >= INACTIVE_DAYS) flagReasons.push('inactive');
+
+  // "Current" streak is the latest reported one; a streak only counts as active
+  // if the cadet synced within the last day (the stored number can be stale).
+  const reportedStreak = typeof cadet.currentStreak === 'number' ? cadet.currentStreak : cadet.streak;
+  const streak = daysInactive === null || daysInactive <= 1 ? reportedStreak : 0;
+
   return {
     name: cadet.name,
     xp: cadet.xp,
-    streak: cadet.streak,
+    streak,
+    bestStreak: cadet.streak,
     lessonsCompleted: cadet.lessons,
     completionRate: Math.min(100, Math.round((cadet.lessons / TOTAL_LESSONS) * 100)),
     conceptAttempts: attempts,
     conceptAccuracy: accuracy,
     strugglingConcepts,
-    // "Struggling" heuristic mirrors the client's adaptive thresholds
-    // (attempts >= 10, accuracy < 60) or near-zero activity.
-    flaggedForHelp:
-      (attempts >= 10 && accuracy !== null && accuracy < 60) ||
-      (cadet.xp < 500 && cadet.streak === 0),
+    concepts,
+    lastActive,
+    daysInactive,
+    flagReasons,
+    flaggedForHelp: flagReasons.length > 0,
   };
+}
+
+// Concepts that several cadets are struggling with, most widespread first.
+function commonStruggles(rows) {
+  const byConcept = new Map();
+  for (const r of rows) {
+    for (const c of r.concepts) {
+      if (c.attempts >= MIN_ANSWERS && c.accuracy < STRUGGLE_BELOW) {
+        const entry = byConcept.get(c.concept) ?? { concept: c.concept, cadets: 0, total: 0 };
+        entry.cadets += 1;
+        entry.total += c.accuracy;
+        byConcept.set(c.concept, entry);
+      }
+    }
+  }
+  return [...byConcept.values()]
+    .map((e) => ({ concept: e.concept, cadets: e.cadets, avgAccuracy: Math.round(e.total / e.cadets) }))
+    .sort((a, b) => b.cadets - a.cadets || a.avgAccuracy - b.avgAccuracy)
+    .slice(0, 5);
 }
 
 function buildReport(cadets) {
@@ -175,26 +208,32 @@ function buildReport(cadets) {
       : 0,
     strugglingCount: rows.filter((r) => r.flaggedForHelp).length,
   };
-  return { rows, totals };
+  return { rows, totals, struggles: commonStruggles(rows) };
 }
 
 // ---- CSV export ---------------------------------------------------------------
+// Cadet names are free text submitted by anyone, and this file gets opened in
+// Excel, so neutralise cells that start with a formula character.
 function csvEscape(value) {
-  const s = String(value ?? '');
+  let s = String(value ?? '');
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 function toCsv(rows) {
   const headers = [
-    'name', 'xp', 'streak_days', 'lessons_completed', 'completion_rate_pct',
-    'concept_attempts', 'concept_accuracy_pct', 'struggling_concepts', 'flagged_for_help',
+    'name', 'xp', 'streak_days', 'best_streak_days', 'lessons_completed', 'completion_rate_pct',
+    'concept_attempts', 'concept_accuracy_pct', 'struggling_concepts', 'concept_breakdown',
+    'last_synced', 'days_inactive', 'flagged_for_help', 'flag_reasons',
   ];
   const lines = [headers.join(',')];
   for (const r of rows) {
     lines.push([
-      csvEscape(r.name), r.xp, r.streak, r.lessonsCompleted, r.completionRate,
+      csvEscape(r.name), r.xp, r.streak, r.bestStreak, r.lessonsCompleted, r.completionRate,
       r.conceptAttempts, r.conceptAccuracy ?? '', csvEscape(r.strugglingConcepts.join(';')),
-      r.flaggedForHelp ? 'yes' : 'no',
+      csvEscape(r.concepts.map((c) => `${c.concept}:${c.correct}/${c.attempts}`).join(';')),
+      csvEscape(r.lastActive ?? ''), r.daysInactive ?? '',
+      r.flaggedForHelp ? 'yes' : 'no', csvEscape(r.flagReasons.join(';')),
     ].join(','));
   }
   return lines.join('\n');
@@ -211,29 +250,29 @@ export default async function handler(req, res) {
 
   const auth = String(req.headers.authorization || '').trim();
   let token = /^Bearer\s+/i.test(auth) ? auth.replace(/^Bearer\s+/i, '').trim() : '';
-  // CSV export is opened via a plain link (no headers possible), so also
-  // accept the same signed token as a `?token=` query parameter.
+  // Older clients open the CSV via a plain link, so a `?token=` query parameter
+  // is still accepted. The admin panel now sends the header instead.
   if (!token && typeof req.query.token === 'string') token = req.query.token.trim();
   if (!verifyAdminToken(token)) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 
-  const { cadets, demo } = await loadCadets();
-  const { rows, totals } = buildReport(cadets);
-  const telemetry = await aggregateTelemetry();
+  const cadets = await loadCadets();
+  const { rows, totals, struggles } = buildReport(cadets);
 
   if (req.query.format === 'csv') {
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', 'attachment; filename="cadet-analytics.csv"');
-    return res.status(200).send(toCsv(rows));
+    return res.status(200).send(toCsv([...rows].sort((a, b) => b.xp - a.xp)));
   }
 
+  const telemetry = await aggregateTelemetry();
   return res.status(200).json({
     ok: true,
     generatedAt: new Date().toISOString(),
-    meta: { demo },
     totals,
     cadets: rows.sort((a, b) => b.xp - a.xp),
+    commonStruggles: struggles,
     telemetry,
   });
 }
