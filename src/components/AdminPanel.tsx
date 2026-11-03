@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { useStore, User } from '../store';
@@ -12,6 +12,8 @@ import {
   fetchAdminAnalytics,
   AdminAnalyticsReport,
   CadetAnalyticsRow,
+  CadetConceptStat,
+  FlagReason,
   ServerLoginRecord,
 } from '../utils/api';
 
@@ -157,6 +159,77 @@ interface VisitorStats {
 }
 
 // -----------------------------------------------------------------------------
+// Struggle summaries
+// -----------------------------------------------------------------------------
+
+// A concept only counts once a cadet has answered at least this many questions
+// on it; below that, one wrong answer would look like a weakness.
+const MIN_ANSWERS = 5;
+const STRUGGLE_BELOW = 60;
+const STRONG_AT_LEAST = 85;
+
+const conceptName = (id: string): string => CONCEPT_NAMES[id as Concept] ?? id;
+
+function joinNames(items: CadetConceptStat[]): string {
+  const parts = items.map((c) => `${conceptName(c.concept)} (${c.accuracy}%)`);
+  if (parts.length <= 1) return parts[0] ?? '';
+  return `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}`;
+}
+
+interface CadetSummary {
+  sentences: string[];
+  struggling: CadetConceptStat[];
+  strong: CadetConceptStat[];
+}
+
+function summarizeCadet(row: CadetAnalyticsRow): CadetSummary {
+  const enough = row.concepts.filter((c) => c.attempts >= MIN_ANSWERS);
+  const struggling = enough.filter((c) => c.accuracy < STRUGGLE_BELOW).sort((a, b) => a.accuracy - b.accuracy);
+  const strong = enough.filter((c) => c.accuracy >= STRONG_AT_LEAST).sort((a, b) => b.accuracy - a.accuracy);
+
+  const sentences: string[] = [];
+  if (row.concepts.length === 0) {
+    sentences.push('No quiz answers have been recorded yet, so there’s nothing to assess.');
+  } else {
+    if (struggling.length > 0) {
+      sentences.push(`Struggling with ${joinNames(struggling.slice(0, 3))}.`);
+    } else if (enough.length > 0) {
+      sentences.push(`No concept is below ${STRUGGLE_BELOW}%.`);
+    } else {
+      sentences.push(`Not enough answers yet to judge any single concept (it takes ${MIN_ANSWERS} or more per concept).`);
+    }
+    if (strong.length > 0) sentences.push(`Doing well in ${joinNames(strong.slice(0, 3))}.`);
+  }
+  if (row.daysInactive !== null && row.daysInactive >= 14) {
+    sentences.push(`Hasn’t practiced in ${row.daysInactive} days.`);
+  } else if (row.daysInactive !== null && row.daysInactive >= 3) {
+    sentences.push(`Last practiced ${row.daysInactive} days ago.`);
+  }
+  sentences.push(`Has finished ${row.lessonsCompleted} of ${TOTAL_LESSONS} lessons (${completionOf(row)}%).`);
+  return { sentences, struggling, strong };
+}
+
+/** One short line for lists: why this cadet is flagged. */
+function attentionReason(row: CadetAnalyticsRow): string {
+  const parts: string[] = [];
+  const struggling = summarizeCadet(row).struggling.slice(0, 2);
+  if (struggling.length > 0) {
+    parts.push(`Struggling with ${joinNames(struggling)}`);
+  } else if (row.flagReasons.includes('low-accuracy') && row.conceptAccuracy !== null) {
+    parts.push(`${row.conceptAccuracy}% accuracy overall`);
+  }
+  if (row.flagReasons.includes('inactive') && row.daysInactive !== null) {
+    parts.push(`inactive for ${row.daysInactive} days`);
+  }
+  return parts.join(' · ') || 'Needs a check-in';
+}
+
+const FLAG_HELP =
+  `Flagged when a concept is under ${STRUGGLE_BELOW}% after ${MIN_ANSWERS}+ answers, overall accuracy is under ${STRUGGLE_BELOW}% after 10+ answers, or there’s been no practice for 14+ days.`;
+
+const accuracyColor = (pct: number) => (pct >= 80 ? '#3a8a5c' : pct >= 60 ? '#c9a84c' : '#c44536');
+
+// -----------------------------------------------------------------------------
 // Overview tab
 // -----------------------------------------------------------------------------
 
@@ -183,26 +256,26 @@ function OverviewTab({
   }
 
   const rows = report.cadets;
+  if (rows.length === 0) {
+    return (
+      <div className="card text-center py-10">
+        <p className={`font-semibold ${STRONG}`}>No cadets have synced yet</p>
+        <p className={`text-sm mt-1 ${MUTED}`}>Cadets appear here after they sign in and earn their first XP.</p>
+      </div>
+    );
+  }
+
   const flagged = rows.filter((r) => r.flaggedForHelp);
-  const avgCompletion = rows.length ? Math.round(rows.reduce((s, r) => s + completionOf(r), 0) / rows.length) : 0;
+  const avgCompletion = Math.round(rows.reduce((s, r) => s + completionOf(r), 0) / rows.length);
   const top = [...rows].sort((a, b) => b.xp - a.xp).slice(0, 5);
-  const maxXp = top.length ? Math.max(1, top[0].xp) : 1;
+  const maxXp = Math.max(1, top[0].xp);
 
   return (
     <div className="space-y-6">
-      {report.meta?.demo && (
-        <div className="rounded-lg border border-[#c9a84c]/40 bg-[#c9a84c]/10 p-4" role="status">
-          <p className={`text-sm font-semibold ${STRONG}`}>You’re looking at sample cadets</p>
-          <p className={`text-sm mt-1 ${MUTED}`}>
-            No real scores have been submitted yet, so these rows are placeholders. They’ll be replaced as soon as a cadet earns XP.
-          </p>
-        </div>
-      )}
-
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <StatCard label="Cadets" value={fmtNumber(report.totals.cadets)} />
         <StatCard label="Average XP" value={fmtNumber(report.totals.avgXP)} hint={`${fmtNumber(report.totals.totalXP)} XP in total`} valueClass="text-[#a68a3a] dark:text-[#c9a84c]" />
-        <StatCard label="On a streak" value={fmtNumber(report.totals.activeStreaks)} hint="Cadets practicing recently" valueClass="text-[#3a8a5c]" />
+        <StatCard label="On a streak" value={fmtNumber(report.totals.activeStreaks)} hint="Practiced in the last day" valueClass="text-[#3a8a5c]" />
         <StatCard label="Average completion" value={`${avgCompletion}%`} hint={`Of ${TOTAL_LESSONS} lessons`} />
         <StatCard
           label="Need attention"
@@ -218,7 +291,7 @@ function OverviewTab({
           <SectionTitle
             aside={
               <button onClick={() => onOpenTab('cadets')} className="text-sm font-semibold text-[#a68a3a] dark:text-[#c9a84c] hover:underline min-h-[40px]">
-                View all cadets
+                Open cadet details
               </button>
             }
           >
@@ -227,42 +300,60 @@ function OverviewTab({
           {flagged.length === 0 ? (
             <p className={`text-sm ${MUTED}`}>Nobody is flagged right now.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {flagged.slice(0, 6).map((c) => (
-                <li key={c.name} className={`flex items-center justify-between gap-3 border-b last:border-b-0 pb-2 last:pb-0 ${DIVIDER}`}>
-                  <span className={`font-medium truncate ${STRONG}`}>{c.name}</span>
-                  <span className={`text-xs whitespace-nowrap ${MUTED}`}>
-                    {fmtNumber(c.xp)} XP · {c.streak}-day streak · {c.conceptAccuracy === null ? 'no quiz data' : `${c.conceptAccuracy}% accuracy`}
-                  </span>
+                <li key={c.name} className={`border-b last:border-b-0 pb-3 last:pb-0 ${DIVIDER}`}>
+                  <p className={`font-medium ${STRONG}`}>{c.name}</p>
+                  <p className={`text-sm ${MUTED}`}>{attentionReason(c)}</p>
                 </li>
               ))}
               {flagged.length > 6 && <li className={`text-xs ${MUTED}`}>and {flagged.length - 6} more</li>}
             </ul>
           )}
-          <p className={`text-xs mt-4 ${MUTED}`}>
-            A cadet is flagged when quiz accuracy is under 60% across 10 or more answers, or when they have under 500 XP and no active streak.
-          </p>
+          <p className={`text-xs mt-4 ${MUTED}`}>{FLAG_HELP}</p>
         </div>
 
         <div className="card">
-          <SectionTitle>Top cadets by XP</SectionTitle>
-          {top.length === 0 ? (
-            <p className={`text-sm ${MUTED}`}>No cadets yet.</p>
+          <SectionTitle>Where cadets are struggling</SectionTitle>
+          {report.commonStruggles.length === 0 ? (
+            <p className={`text-sm ${MUTED}`}>
+              No concept is a problem yet. This fills in once cadets have answered {MIN_ANSWERS}+ questions on a concept.
+            </p>
           ) : (
-            <ol className="space-y-3">
-              {top.map((c, i) => (
-                <li key={c.name}>
+            <ul className="space-y-3">
+              {report.commonStruggles.map((s) => (
+                <li key={s.concept}>
                   <div className="flex items-baseline justify-between gap-3 text-sm">
-                    <span className={`font-medium truncate ${STRONG}`}>{i + 1}. {c.name}</span>
-                    <span className={MUTED}>{fmtNumber(c.xp)} XP</span>
+                    <span className={`font-medium ${STRONG}`}>{conceptName(s.concept)}</span>
+                    <span className={MUTED}>
+                      {s.cadets} {s.cadets === 1 ? 'cadet' : 'cadets'} · {s.avgAccuracy}% average
+                    </span>
                   </div>
                   <div className="h-1.5 mt-1 rounded-full bg-[#e2e4e8] dark:bg-[#2a3545] overflow-hidden">
-                    <div className="h-full rounded-full bg-[#c9a84c]" style={{ width: `${Math.round((c.xp / maxXp) * 100)}%` }} />
+                    <div className="h-full rounded-full" style={{ width: `${Math.round((s.cadets / rows.length) * 100)}%`, backgroundColor: '#c44536' }} />
                   </div>
                 </li>
               ))}
-            </ol>
+            </ul>
           )}
+          <p className={`text-xs mt-4 ${MUTED}`}>Bars show the share of all cadets who are under {STRUGGLE_BELOW}% on that concept.</p>
+        </div>
+
+        <div className="card lg:col-span-2">
+          <SectionTitle>Top cadets by XP</SectionTitle>
+          <ol className="space-y-3">
+            {top.map((c, i) => (
+              <li key={c.name}>
+                <div className="flex items-baseline justify-between gap-3 text-sm">
+                  <span className={`font-medium truncate ${STRONG}`}>{i + 1}. {c.name}</span>
+                  <span className={MUTED}>{fmtNumber(c.xp)} XP</span>
+                </div>
+                <div className="h-1.5 mt-1 rounded-full bg-[#e2e4e8] dark:bg-[#2a3545] overflow-hidden">
+                  <div className="h-full rounded-full bg-[#c9a84c]" style={{ width: `${Math.round((c.xp / maxXp) * 100)}%` }} />
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
 
@@ -272,17 +363,74 @@ function OverviewTab({
 }
 
 // -----------------------------------------------------------------------------
-// Cadets tab (search, filter, sort)
+// Cadets tab (search, filter, sort, per-cadet summary)
 // -----------------------------------------------------------------------------
 
 type SortKey = 'name' | 'xp' | 'streak' | 'completion' | 'accuracy';
 type CadetFilter = 'all' | 'help' | 'ok';
+
+const FLAG_REASON_TEXT: Record<FlagReason, string> = {
+  'low-accuracy': 'Low accuracy overall',
+  'struggling-concepts': 'Struggling with a concept',
+  inactive: 'Not practicing lately',
+};
+
+function CadetDetail({ row }: { row: CadetAnalyticsRow }) {
+  const summary = summarizeCadet(row);
+  const weakestFirst = [...row.concepts].sort((a, b) => a.accuracy - b.accuracy);
+  return (
+    <div className={`rounded-lg border p-4 bg-[#fafafa] dark:bg-[#0f1720]/60 ${DIVIDER}`}>
+      <p className={`text-sm leading-relaxed ${STRONG}`}>{summary.sentences.join(' ')}</p>
+
+      {row.flagReasons.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {row.flagReasons.map((r) => (
+            <Pill key={r} tone="red">{FLAG_REASON_TEXT[r]}</Pill>
+          ))}
+        </div>
+      )}
+
+      {weakestFirst.length > 0 && (
+        <div className="mt-4">
+          <p className={`text-sm font-semibold mb-2 ${STRONG}`}>Every concept, weakest first</p>
+          <ul className="grid md:grid-cols-2 gap-x-6 gap-y-2">
+            {weakestFirst.map((c) => (
+              <li key={c.concept}>
+                <div className="flex items-baseline justify-between gap-3 text-sm">
+                  <span className={STRONG}>{conceptName(c.concept)}</span>
+                  <span className={`text-xs ${MUTED}`}>
+                    {c.correct}/{c.attempts} correct
+                    {c.attempts < MIN_ANSWERS ? ' · too few answers' : ''}
+                  </span>
+                </div>
+                <div className="h-1.5 mt-1 rounded-full bg-[#e2e4e8] dark:bg-[#2a3545] overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{
+                      width: `${c.accuracy}%`,
+                      backgroundColor: c.attempts < MIN_ANSWERS ? '#9aa3b0' : accuracyColor(c.accuracy),
+                    }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <p className={`text-xs mt-4 ${MUTED}`}>
+        Last synced {row.lastActive ? fmtWhen(row.lastActive) : 'unknown'} · best streak {row.bestStreak} {row.bestStreak === 1 ? 'day' : 'days'}
+      </p>
+    </div>
+  );
+}
 
 function CadetsTab({ rows }: { rows: CadetAnalyticsRow[] }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<CadetFilter>('all');
   const [sortKey, setSortKey] = useState<SortKey>('xp');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [openName, setOpenName] = useState<string | null>(null);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -356,7 +504,7 @@ function CadetsTab({ rows }: { rows: CadetAnalyticsRow[] }) {
       </div>
 
       <div className="overflow-x-auto -mx-4 px-4">
-        <table className="w-full text-sm border-collapse min-w-[680px]">
+        <table className="w-full text-sm border-collapse min-w-[820px]">
           <thead>
             <tr className={`text-left border-b ${DIVIDER}`}>
               {columns.map((c) => (
@@ -375,39 +523,70 @@ function CadetsTab({ rows }: { rows: CadetAnalyticsRow[] }) {
                   </button>
                 </th>
               ))}
+              <th scope="col" className={`py-2 pr-3 font-semibold ${MUTED}`}>Struggling with</th>
               <th scope="col" className={`py-2 font-semibold ${MUTED}`}>Status</th>
             </tr>
           </thead>
           <tbody>
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={6} className={`py-10 text-center ${MUTED}`}>
+                <td colSpan={7} className={`py-10 text-center ${MUTED}`}>
                   {rows.length === 0
-                    ? 'No cadets yet. They appear here after they earn XP and their score is submitted.'
+                    ? 'No cadets yet. They appear here after they sign in and earn XP.'
                     : 'No cadets match your search or filter.'}
                 </td>
               </tr>
             ) : (
               visible.map((row) => {
                 const pct = completionOf(row);
+                const isOpen = openName === row.name;
+                const struggling = summarizeCadet(row).struggling;
                 return (
-                  <tr key={row.name} className={`border-b last:border-b-0 ${DIVIDER} ${STRONG}`}>
-                    <td className="py-3 pr-3 font-medium whitespace-nowrap">{row.name}</td>
-                    <td className="py-3 pr-3">{fmtNumber(row.xp)}</td>
-                    <td className="py-3 pr-3">{row.streak} {row.streak === 1 ? 'day' : 'days'}</td>
-                    <td className="py-3 pr-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-[#c9a84c]" style={{ width: `${pct}%` }} />
+                  <Fragment key={row.name}>
+                    <tr className={`border-b last:border-b-0 ${DIVIDER} ${STRONG}`}>
+                      <td className="py-3 pr-3 font-medium whitespace-nowrap">
+                        <button
+                          onClick={() => setOpenName(isOpen ? null : row.name)}
+                          aria-expanded={isOpen}
+                          className="inline-flex items-center gap-2 min-h-[36px] hover:underline"
+                        >
+                          <span aria-hidden="true" className={MUTED}>{isOpen ? '▾' : '▸'}</span>
+                          {row.name}
+                        </button>
+                      </td>
+                      <td className="py-3 pr-3">{fmtNumber(row.xp)}</td>
+                      <td className="py-3 pr-3">{row.streak} {row.streak === 1 ? 'day' : 'days'}</td>
+                      <td className="py-3 pr-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-16 h-1.5 bg-[#e2e4e8] dark:bg-[#2a3545] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-[#c9a84c]" style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="text-xs whitespace-nowrap">{row.lessonsCompleted}/{TOTAL_LESSONS}</span>
                         </div>
-                        <span className="text-xs whitespace-nowrap">{row.lessonsCompleted}/{TOTAL_LESSONS} ({pct}%)</span>
-                      </div>
-                    </td>
-                    <td className="py-3 pr-3">{row.conceptAccuracy === null ? '—' : `${row.conceptAccuracy}%`}</td>
-                    <td className="py-3">
-                      <Pill tone={row.flaggedForHelp ? 'red' : 'green'}>{row.flaggedForHelp ? 'Needs attention' : 'On track'}</Pill>
-                    </td>
-                  </tr>
+                      </td>
+                      <td className="py-3 pr-3">{row.conceptAccuracy === null ? '—' : `${row.conceptAccuracy}%`}</td>
+                      <td className="py-3 pr-3 max-w-[220px]">
+                        {struggling.length === 0 ? (
+                          <span className={MUTED}>—</span>
+                        ) : (
+                          <span className="text-[#c44536] font-medium">
+                            {struggling.slice(0, 2).map((c) => conceptName(c.concept)).join(', ')}
+                            {struggling.length > 2 ? ` +${struggling.length - 2}` : ''}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3">
+                        <Pill tone={row.flaggedForHelp ? 'red' : 'green'}>{row.flaggedForHelp ? 'Needs attention' : 'On track'}</Pill>
+                      </td>
+                    </tr>
+                    {isOpen && (
+                      <tr className={`border-b ${DIVIDER}`}>
+                        <td colSpan={7} className="pb-4">
+                          <CadetDetail row={row} />
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })
             )}
@@ -415,7 +594,7 @@ function CadetsTab({ rows }: { rows: CadetAnalyticsRow[] }) {
         </table>
       </div>
       <p className={`text-xs mt-4 ${MUTED}`}>
-        Quiz accuracy shows “—” until a cadet has answered quiz questions. Export CSV (top right) includes each cadet’s struggling concepts.
+        Select a cadet’s name for a plain-language summary and a breakdown of every concept. {FLAG_HELP}
       </p>
     </div>
   );
@@ -1119,9 +1298,7 @@ export default function AdminPanel() {
     : apiError
       ? { label: 'Server error', tone: 'red' }
       : analytics
-        ? analytics.meta?.demo
-          ? { label: 'Sample data', tone: 'gold' }
-          : { label: 'Live data', tone: 'green' }
+        ? { label: 'Live data', tone: 'green' }
         : import.meta.env.DEV
           ? { label: 'Local mode', tone: 'gray' }
           : { label: 'Connecting…', tone: 'gray' };
