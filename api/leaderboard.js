@@ -1,44 +1,15 @@
 // Vercel serverless functions: /api/leaderboard
-//   GET  -> global high-score standings (sorted by XP, top 100)
-//   POST -> submit/upsert a cadet's XP update (syncs rank across devices)
+//   GET  -> global standings (sorted by XP, top 100). Real cadets only.
+//   POST -> submit/upsert a cadet's progress (XP, streak, lessons, quiz results)
 //
-// ⚠️ STORAGE CAVEAT: Vercel serverless functions are stateless and restart
-// frequently, so this in-memory store only shares data between requests that
-// hit the same warm instance — entries will NOT reliably persist or sync
-// globally until you connect a real database (see README note below). The
-// API contract is designed so swapping in Vercel KV / Upstash Redis /
-// Postgres later requires changing only load()/save() here.
+// Storage: Vercel KV via api/_lib/kv.js (in-memory fallback until one is
+// connected). There is no mock data: with no submissions the list is empty.
 //
-// Seed data mirrors the former client-side MOCK_LEADERBOARD so the UI keeps
-// working while no real submissions exist yet.
+// Privacy: the public GET exposes only name, XP, streak, lessons and banner.
+// Quiz results (conceptMastery) and activity times are stored for the admin
+// panel and are never returned from this endpoint.
 
-const SEED = [
-  { name: 'Cpl Thompson', xp: 2450, streak: 21, lessons: 48, bannerBg: 'linear-gradient(135deg, #c9a84c 0%, #a68a3a 100%)', stickers: ['⭐', '🏅', '💫'] },
-  { name: 'L/Cpl Martinez', xp: 1890, streak: 14, lessons: 35, bannerBg: 'linear-gradient(135deg, #3a8a5c 0%, #2d6d48 100%)', stickers: ['⭐', '🔥'] },
-  { name: 'Cdt Williams', xp: 1650, streak: 10, lessons: 30, bannerBg: 'linear-gradient(135deg, #4a7c8a 0%, #2d5a66 100%)', stickers: ['⭐', '💎'] },
-  { name: 'Cdt Brown', xp: 1200, streak: 7, lessons: 22, bannerBg: 'linear-gradient(135deg, #6b4c8a 0%, #4a3566 100%)', stickers: ['⭐'] },
-  { name: 'Cdt Davis', xp: 980, streak: 5, lessons: 18, bannerBg: 'linear-gradient(135deg, #c44536 0%, #a33628 100%)', stickers: ['⭐', '🏅'] },
-  { name: 'Cdt Johnson', xp: 750, streak: 3, lessons: 14, bannerBg: 'linear-gradient(135deg, #1a2332 0%, #2d3a4a 100%)', stickers: ['⭐'] },
-];
-
-// ---- Storage: Vercel KV with in-memory fallback -----------------------------
-// See api/_lib/kv.js. With a KV store connected, entries persist across cold
-// starts and sync globally across devices; without one we fall back to the
-// per-instance in-memory store (plus SEED) so nothing breaks meanwhile.
-
-import { getJSON, setJSON } from './_lib/kv.js';
-
-const ENTRIES_KEY = 'leaderboard:entries';
-
-async function load() {
-  const stored = await getJSON(ENTRIES_KEY, null);
-  if (Array.isArray(stored) && stored.length > 0) return stored;
-  return SEED.map((e) => ({ ...e }));
-}
-
-async function save(list) {
-  await setJSON(ENTRIES_KEY, list);
-}
+import { loadCadets, saveCadets, publicEntry } from './_lib/cadets.js';
 
 // ---- Helpers ---------------------------------------------------------------
 function sanitizeString(value, max) {
@@ -47,29 +18,49 @@ function sanitizeString(value, max) {
   return value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, max);
 }
 
-// ---- Honeypot anti-bot field -------------------------------------------------
-// The client renders a visually hidden input named `website_url` in every form
-// that submits to this endpoint (leaderboard submit + login/onboarding). Real
-// users never see or fill it; naive scrapers/bots auto-populate every text
-// field they find. If the field is present AND non-empty we treat the request
-// as automated and reject it SILENTLY — returning a fake success response with
-// the current standings so bots can't tell they were blocked (and never store
-// their payload).
-const HONEYPOT_FIELD = 'website_url';
-function isBotSubmission(body) {
-  const hp = body?.[HONEYPOT_FIELD];
-  return typeof hp === 'string' && hp.trim().length > 0;
-}
-
 function sanitizeNumber(value, max) {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
   return Math.min(Math.floor(n), max);
 }
 
+function sanitizeIso(value) {
+  if (typeof value !== 'string') return '';
+  const t = Date.parse(value);
+  return Number.isFinite(t) ? new Date(t).toISOString() : '';
+}
+
+// Quiz results per concept: { [conceptId]: { attempts, correct, lastReviewed } }.
+// Keys are restricted and values clamped so the store can't be flooded or abused.
+const MAX_CONCEPTS = 40;
+function sanitizeMastery(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const out = {};
+  for (const [key, val] of Object.entries(raw).slice(0, MAX_CONCEPTS)) {
+    if (!/^[A-Za-z][A-Za-z0-9_-]{0,39}$/.test(key) || key.startsWith('__')) continue;
+    if (!val || typeof val !== 'object') continue;
+    const attempts = sanitizeNumber(val.attempts, 1_000_000);
+    const correct = Math.min(sanitizeNumber(val.correct, 1_000_000), attempts);
+    if (attempts === 0) continue;
+    out[key] = { attempts, correct, lastReviewed: sanitizeIso(val.lastReviewed) };
+  }
+  return Object.keys(out).length > 0 ? out : null;
+}
+
+// ---- Honeypot anti-bot field -------------------------------------------------
+// The client renders a visually hidden input named `website_url` in every form
+// that submits to this endpoint. Real users never fill it; bots usually do. If
+// it's present AND non-empty we drop the request SILENTLY (fake success) so bots
+// can't tell they were blocked, and we never store their payload.
+const HONEYPOT_FIELD = 'website_url';
+function isBotSubmission(body) {
+  const hp = body?.[HONEYPOT_FIELD];
+  return typeof hp === 'string' && hp.trim().length > 0;
+}
+
 function ranked(list) {
   const sorted = [...list].sort((a, b) => b.xp - a.xp).slice(0, 100);
-  return sorted.map((e, i) => ({ ...e, rank: i + 1 }));
+  return sorted.map((e, i) => ({ ...publicEntry(e), rank: i + 1 }));
 }
 
 async function parseBody(req) {
@@ -91,17 +82,14 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'GET') {
-    return res.status(200).json({ entries: ranked(await load()) });
+    return res.status(200).json({ entries: ranked(await loadCadets()) });
   }
 
   if (req.method === 'POST') {
     const body = await parseBody(req);
 
-    // Honeypot check FIRST: silently drop bot submissions — respond exactly
-    // like a successful submit so automated scrapers can't detect the block,
-    // but never touch the store with their payload.
     if (isBotSubmission(body)) {
-      return res.status(200).json({ ok: true, entry: null, entries: ranked(await load()) });
+      return res.status(200).json({ ok: true, entry: null, entries: ranked(await loadCadets()) });
     }
 
     const name = sanitizeString(body.name, 40);
@@ -109,17 +97,22 @@ export default async function handler(req, res) {
       return res.status(400).json({ ok: false, error: 'name is required' });
     }
 
-    const list = await load();
+    const list = await loadCadets();
     const existing = list.find((e) => e.name.toLowerCase() === name.toLowerCase());
+    const now = new Date().toISOString();
+    const streak = sanitizeNumber(body.streak, 3650);
     const incoming = {
       name,
       xp: sanitizeNumber(body.xp, 1_000_000),
-      streak: sanitizeNumber(body.streak, 3650),
+      streak, // best streak (public leaderboard never goes down)
+      currentStreak: streak, // latest reported streak (admin panel)
       lessons: sanitizeNumber(body.lessons, 100_000),
       bannerBg: sanitizeString(body.bannerBg, 200),
       stickers: Array.isArray(body.stickers)
         ? body.stickers.filter((s) => typeof s === 'string').slice(0, 8)
         : [],
+      conceptMastery: sanitizeMastery(body.conceptMastery),
+      updatedAt: now,
     };
 
     if (existing) {
@@ -127,15 +120,19 @@ export default async function handler(req, res) {
       Object.assign(existing, {
         xp: Math.max(existing.xp, incoming.xp),
         streak: Math.max(existing.streak, incoming.streak),
+        currentStreak: incoming.currentStreak,
         lessons: Math.max(existing.lessons, incoming.lessons),
         bannerBg: incoming.bannerBg || existing.bannerBg,
         stickers: incoming.stickers.length ? incoming.stickers : existing.stickers,
+        // Latest quiz snapshot wins; keep the old one if this payload had none.
+        conceptMastery: incoming.conceptMastery ?? existing.conceptMastery ?? null,
+        updatedAt: now,
       });
     } else {
       list.push(incoming);
     }
 
-    await save(list);
+    await saveCadets(list);
     const standings = ranked(list);
     const me = standings.find((e) => e.name.toLowerCase() === name.toLowerCase());
     return res.status(200).json({ ok: true, entry: me, entries: standings });
