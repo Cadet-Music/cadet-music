@@ -70,24 +70,50 @@ export async function verifyAdminPassword(
   }
 }
 
-// ---- Admin analytics (server-backed, replaces demo-mode placeholders) --------
+// ---- Admin analytics (server-backed) ----------------------------------------
+
+/** One concept's quiz results for one cadet. `concept` is the id from CONCEPTS (e.g. 'noteValues'). */
+export interface CadetConceptStat {
+  concept: string;
+  attempts: number;
+  correct: number;
+  accuracy: number;
+  lastReviewed: string | null;
+}
+
+export type FlagReason = 'low-accuracy' | 'struggling-concepts' | 'inactive';
+
 export interface CadetAnalyticsRow {
   name: string;
   xp: number;
+  /** Current streak (0 if the cadet hasn't synced in the last day). */
   streak: number;
+  bestStreak: number;
   lessonsCompleted: number;
   completionRate: number;
   conceptAttempts: number;
   conceptAccuracy: number | null;
+  /** Concept ids under 60% after 5+ answers. */
   strugglingConcepts: string[];
+  /** Every concept the cadet has answered, weakest first. */
+  concepts: CadetConceptStat[];
+  /** ISO time of the cadet's last sync, or null if unknown. */
+  lastActive: string | null;
+  daysInactive: number | null;
+  flagReasons: FlagReason[];
   flaggedForHelp: boolean;
+}
+
+/** A concept several cadets are struggling with. */
+export interface CommonStruggle {
+  concept: string;
+  cadets: number;
+  avgAccuracy: number;
 }
 
 export interface AdminAnalyticsReport {
   ok: boolean;
   generatedAt: string;
-  /** meta.demo = true when the server had no real KV submissions yet and fell back to seed rows. */
-  meta?: { demo?: boolean };
   totals: {
     cadets: number;
     totalXP: number;
@@ -97,6 +123,8 @@ export interface AdminAnalyticsReport {
     strugglingCount: number;
   };
   cadets: CadetAnalyticsRow[];
+  /** Concepts most cadets struggle with, most widespread first. */
+  commonStruggles: CommonStruggle[];
   /** Server-aggregated visitor telemetry (global, from Vercel KV via /api/telemetry). */
   telemetry?: ServerTelemetryReport;
 }
@@ -146,7 +174,8 @@ export interface ServerTelemetryReport {
 /**
  * Fetch live aggregated cadet analytics from /api/admin/analytics.
  * Requires the bearer token returned by verifyAdminPassword(). A 401 (expired
- * or missing token) and any network failure resolve to `null` — never throws.
+ * or missing token) and any network failure resolve to `report: null` with an
+ * error message — never throws.
  */
 export interface AdminAnalyticsResult {
   report: AdminAnalyticsReport | null;
@@ -168,7 +197,9 @@ export async function fetchAdminAnalytics(token: string | null): Promise<AdminAn
       return { report: null, error: reason };
     }
     const data = await res.json();
-    if (data?.ok === true && Array.isArray(data.cadets)) return { report: data };
+    if (data?.ok === true && Array.isArray(data.cadets)) {
+      return { report: { ...data, commonStruggles: Array.isArray(data.commonStruggles) ? data.commonStruggles : [] } };
+    }
     return { report: null, error: 'Unexpected response shape from /api/admin/analytics.' };
   } catch (err) {
     console.warn('admin analytics request failed:', err);
@@ -176,7 +207,11 @@ export async function fetchAdminAnalytics(token: string | null): Promise<AdminAn
   }
 }
 
-/** URL for the CSV export of the same report (opens/downloads with token). */
+/**
+ * @deprecated Puts the admin token in the URL, which leaks it into browser
+ * history and server logs. The admin panel now downloads the CSV with an
+ * Authorization header instead.
+ */
 export function adminAnalyticsCsvUrl(token: string): string {
   return `/api/admin/analytics?format=csv&token=${encodeURIComponent(token)}`;
 }
@@ -189,7 +224,12 @@ export async function fetchLeaderboard(): Promise<ServerLeaderboardEntry[]> {
   return Array.isArray(data?.entries) ? data.entries : [];
 }
 
-/** Submit a cadet's XP update to /api/leaderboard (POST). Returns fresh standings.
+/** Quiz results sent with a progress sync, keyed by concept id. */
+export type ConceptMasterySync = Record<string, { attempts: number; correct: number; lastReviewed: string }>;
+
+/** Submit a cadet's progress to /api/leaderboard (POST). Returns fresh standings.
+ * `conceptMastery` powers the admin panel's "what is this cadet struggling with"
+ * summary; the public leaderboard never returns it.
  * `honeypot` is the value of the hidden anti-bot field (`website_url`) from the
  * submit form — real users always leave it empty; if a bot fills it in, the
  * server silently drops the submission. */
@@ -200,6 +240,7 @@ export async function submitScore(entry: {
   lessons: number;
   bannerBg?: string;
   stickers?: string[];
+  conceptMastery?: ConceptMasterySync;
   honeypot?: string;
 }): Promise<ServerLeaderboardEntry[]> {
   const { honeypot, ...payload } = entry;
