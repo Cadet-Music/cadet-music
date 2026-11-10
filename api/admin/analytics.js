@@ -10,6 +10,8 @@
 //   `Authorization: Bearer <token>`. Set ANALYTICS_SECRET in Vercel env vars; if
 //   unset, ADMIN_PASSWORD-derived signing material is used instead.
 //
+// ACTIVITY: sign-ins are grouped per cadet account (where, on what device, how often).
+//
 // DATA SOURCE:
 //   Cadet rows come from api/_lib/cadets.js (the same store /api/leaderboard
 //   writes). With no submissions yet, `cadets` is simply empty.
@@ -24,7 +26,11 @@ import crypto from 'crypto';
 import { getJSON } from '../_lib/kv.js';
 import { loadCadets } from '../_lib/cadets.js';
 
-// ---- Server-side visitor telemetry aggregation ------------------------------
+// ---- Server-side activity, grouped by cadet account ---------------------------
+// Every page load posts an anonymous "visit". A sign-in or session ping also posts
+// a "login" record carrying the cadet's name and the id of the visit it came
+// from, so each login can be joined to where and on what device it happened.
+// Anonymous visits are NOT listed; they are only counted.
 function parseBrowser(ua) {
   const s = String(ua || '');
   if (/Edg\//.test(s)) return 'Edge';
@@ -36,37 +42,99 @@ function parseBrowser(ua) {
   return 'Unknown';
 }
 
-function topBy(list, keyFn, limit = 6) {
-  const m = new Map();
-  for (const item of list) {
-    const k = keyFn(item) || 'Unknown';
-    m.set(k, (m.get(k) ?? 0) + 1);
-  }
-  return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit);
-}
+const placeOf = (v) => {
+  if (!v) return 'Unknown';
+  const parts = [v.city, v.region].filter(Boolean).join(', ');
+  const cc = v.countryCode ? ` (${v.countryCode})` : '';
+  return (parts || v.country || 'Unknown') + (parts ? cc : '');
+};
+
+const deviceOf = (v) => (v ? `${v.platform || 'Unknown'} · ${parseBrowser(v.userAgent)}` : 'Unknown');
+
+const topKeys = (map, limit = 3) =>
+  [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, limit).map(([k]) => k);
 
 async function aggregateTelemetry() {
   const visitorsRaw = await getJSON('telemetry:visitors', []);
   const loginsRaw = await getJSON('telemetry:logins', []);
   const visitors = Array.isArray(visitorsRaw) ? visitorsRaw : [];
   const logins = Array.isArray(loginsRaw) ? loginsRaw : [];
+
+  const visitorById = new Map(visitors.map((v) => [v.id, v]));
+  const linked = new Set(logins.map((l) => l.visitorId).filter(Boolean));
   const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const recent = visitors.filter((v) => Date.parse(v.loggedAt ?? v.timestamp) >= weekAgo);
+
+  const byName = new Map();
+  let identifiedSessions = 0;
+  let identifiedLast7 = 0;
+  // Records are stored newest first, so the first one seen per cadet is their latest.
+  for (const login of logins) {
+    const name = String(login.username || '').trim();
+    if (!name) continue;
+    identifiedSessions += 1;
+    const when = Date.parse(login.loggedAt ?? login.timestamp);
+    const isRecent = Number.isFinite(when) && when >= weekAgo;
+    if (isRecent) identifiedLast7 += 1;
+    const visit = visitorById.get(login.visitorId);
+    const key = name.toLowerCase();
+    let acc = byName.get(key);
+    if (!acc) {
+      acc = {
+        username: name,
+        instrument: login.instrument || '',
+        lessonProgress: login.lessonProgress || '',
+        xp: login.xp,
+        streak: login.streak,
+        sessions: 0,
+        sessionsLast7Days: 0,
+        firstSeen: login.loggedAt ?? login.timestamp,
+        lastSeen: login.loggedAt ?? login.timestamp,
+        ips: new Set(),
+        places: new Map(),
+        devices: new Map(),
+        recent: [],
+      };
+      byName.set(key, acc);
+    }
+    acc.sessions += 1;
+    if (isRecent) acc.sessionsLast7Days += 1;
+    acc.firstSeen = login.loggedAt ?? login.timestamp; // ends up as the oldest
+    if (visit?.ip) acc.ips.add(visit.ip);
+    const place = placeOf(visit);
+    const device = deviceOf(visit);
+    acc.places.set(place, (acc.places.get(place) ?? 0) + 1);
+    acc.devices.set(device, (acc.devices.get(device) ?? 0) + 1);
+    if (acc.recent.length < 8) {
+      acc.recent.push({ when: login.loggedAt ?? login.timestamp, place, device, ip: visit?.ip || '' });
+    }
+  }
+
+  const accounts = [...byName.values()]
+    .map((a) => ({
+      username: a.username,
+      instrument: a.instrument,
+      lessonProgress: a.lessonProgress,
+      xp: a.xp,
+      streak: a.streak,
+      sessions: a.sessions,
+      sessionsLast7Days: a.sessionsLast7Days,
+      firstSeen: a.firstSeen,
+      lastSeen: a.lastSeen,
+      ipCount: a.ips.size,
+      places: topKeys(a.places),
+      devices: topKeys(a.devices),
+      recent: a.recent,
+    }))
+    .sort((a, b) => Date.parse(b.lastSeen) - Date.parse(a.lastSeen));
+
   return {
     totals: {
-      sessions: visitors.length,
-      sessionsLast7Days: recent.length,
-      uniqueIps: new Set(visitors.map((v) => v.ip).filter(Boolean)).size,
-      touchSessions: visitors.filter((v) => v.touch).length,
-      logins: logins.length,
+      accounts: accounts.length,
+      sessions: identifiedSessions,
+      sessionsLast7Days: identifiedLast7,
+      anonymousVisits: visitors.filter((v) => !linked.has(v.id)).length,
     },
-    countries: topBy(visitors, (v) => v.country),
-    cities: topBy(visitors, (v) => v.city),
-    oses: topBy(visitors, (v) => v.platform),
-    browsers: topBy(visitors, (v) => parseBrowser(v.userAgent)),
-    // Newest first, trimmed for the table payload.
-    recentVisitors: visitors.slice(0, 50),
-    recentLogins: logins.slice(0, 50),
+    accounts,
   };
 }
 
@@ -103,10 +171,10 @@ function verifyAdminToken(token) {
 }
 
 // ---- Aggregation -------------------------------------------------------------
-// Total curriculum lesson count (mirrors getAllLessons().length in src/data.ts).
+// Lessons per instrument path (mirrors getAllLessons('alto-sax').length in src/curriculum).
 // The admin panel recomputes completion from the real curriculum, so this is
-// only used for the CSV and as a fallback.
-const TOTAL_LESSONS = 78;
+// only used for the CSV export. Update it if you add or remove lessons.
+const TOTAL_LESSONS = 154;
 
 // Thresholds. Keep in sync with the constants at the top of AdminPanel.tsx.
 const MIN_ANSWERS = 5; // answers needed on one concept before judging it
