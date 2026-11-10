@@ -4,21 +4,46 @@
 //
 // Configure ADMIN_PASSWORD in Vercel: Project Settings -> Environment Variables.
 //
-// Request body:  { "email": "<cadet email>", "password": "<attempt>" }
+// Request body:  { "password": "<attempt>" }
 // Responses:     200 { ok: true, token } on success — `token` is a short-lived
 //                                        (2h) HMAC-signed bearer token used by
 //                                        /api/admin/analytics for auth'd data
-//                400 { ok: false, error } missing or malformed cadet email
-//                401 { ok: false }       wrong password
+//                401 { ok: false, error } wrong password
 //                405                     non-POST method
+//                429 { ok: false, error } too many wrong passwords from this address
 //                500 { ok: false }       server misconfiguration (no env var)
+//
+// There is deliberately NO email field: the login form must not reveal any
+// format that could be guessed. Because the password is now the only secret,
+// repeated wrong attempts from one address are locked out for a while.
 
 import crypto from 'crypto';
 
-// Cadet email: [first initial][last name][3 digits]@cdt.cadets.gc.ca
-const CADET_EMAIL_REGEX = /^[a-z][a-z]+[0-9]{3}@cdt\.cadets\.gc\.ca$/i;
-const CADET_EMAIL_ERROR =
-  'Invalid cadet email format. Must follow [first initial][last name][3 digits]@cdt.cadets.gc.ca';
+import { getJSON, setJSON } from './_lib/kv.js';
+
+// ---- Brute-force protection -------------------------------------------------
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_WINDOW_MS = 15 * 60 * 1000;
+
+function clientIp(req) {
+  const fwd = String(req.headers['x-forwarded-for'] || '');
+  const ip = (fwd.split(',')[0] || '').trim() || String(req.socket?.remoteAddress || '');
+  return ip.replace(/[^0-9a-fA-F:.]/g, '').slice(0, 45) || 'unknown';
+}
+
+async function readAttempts(ip) {
+  const rec = await getJSON(`admin:attempts:${ip}`, null);
+  if (!rec || typeof rec.count !== 'number' || typeof rec.first !== 'number') return null;
+  if (Date.now() - rec.first > LOCKOUT_WINDOW_MS) return null; // window expired
+  return rec;
+}
+
+async function recordFailure(ip, existing) {
+  const rec = existing ?? { count: 0, first: Date.now() };
+  rec.count += 1;
+  await setJSON(`admin:attempts:${ip}`, rec);
+  return rec;
+}
 
 // Very small timing-equalised comparison for short secrets.
 function safeEqual(a, b) {
@@ -51,6 +76,8 @@ function createAdminToken(ttlMs = 2 * 60 * 60 * 1000) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader('Cache-Control', 'no-store');
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ ok: false, error: 'Method not allowed' });
@@ -77,30 +104,35 @@ export default async function handler(req, res) {
     }
   }
 
-  // 1. Cadet email validation
-  const email = (typeof body?.email === 'string' ? body.email : '').trim();
-  if (!email || !CADET_EMAIL_REGEX.test(email)) {
-    res.setHeader('Cache-Control', 'no-store');
-    return res.status(400).json({ ok: false, error: CADET_EMAIL_ERROR });
-  }
-
-  // 2. Password sanitization & diagnostics
   const expectedPassword = (process.env.ADMIN_PASSWORD || '').trim();
-  const providedPassword = (typeof body?.password === 'string' ? body.password : '').trim();
-
   if (!expectedPassword) {
     console.error('[Auth Error] ADMIN_PASSWORD not configured');
     return res.status(500).json({ ok: false, error: 'Server misconfigured' });
   }
 
-  res.setHeader('Cache-Control', 'no-store');
-  const ok = providedPassword.length > 0 && safeEqual(providedPassword, expectedPassword);
-  if (!ok) {
-    console.error('[Auth Error] Password mismatch');
-    return res.status(401).json({ ok: false });
+  // 1. Locked out? Refuse BEFORE comparing, so a lockout can't be used to test guesses.
+  const ip = clientIp(req);
+  const attempts = await readAttempts(ip);
+  if (attempts && attempts.count >= MAX_FAILED_ATTEMPTS) {
+    const retryAfterSec = Math.max(1, Math.ceil((attempts.first + LOCKOUT_WINDOW_MS - Date.now()) / 1000));
+    res.setHeader('Retry-After', String(retryAfterSec));
+    return res.status(429).json({
+      ok: false,
+      error: `Too many incorrect attempts. Try again in ${Math.ceil(retryAfterSec / 60)} minute(s).`,
+    });
   }
 
-  // Issue a short-lived signed bearer token for /api/admin/analytics.
+  // 2. Password check
+  const providedPassword = (typeof body?.password === 'string' ? body.password : '').trim();
+  const ok = providedPassword.length > 0 && safeEqual(providedPassword, expectedPassword);
+  if (!ok) {
+    await recordFailure(ip, attempts);
+    console.error('[Auth Error] Password mismatch');
+    return res.status(401).json({ ok: false, error: 'Incorrect password.' });
+  }
+
+  // 3. Success: clear the counter and issue a short-lived signed bearer token.
+  if (attempts) await setJSON(`admin:attempts:${ip}`, { count: 0, first: Date.now() });
   const token = createAdminToken();
   if (!token) {
     return res.status(500).json({ ok: false, error: 'Server misconfigured' });
