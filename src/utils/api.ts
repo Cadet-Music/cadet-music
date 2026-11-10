@@ -13,49 +13,49 @@ export interface ServerLeaderboardEntry {
 
 /**
  * Verify an admin login against the server (/api/admin-login).
- * The cadet email must match the official pattern, and the password is
- * validated server-side via process.env.ADMIN_PASSWORD, so no secret lives in
- * the client bundle.
+ * The password is validated server-side via process.env.ADMIN_PASSWORD, so no
+ * secret lives in the client bundle. There is intentionally no email field:
+ * the form must not reveal any format that could be guessed.
  *
  * On success the server also returns a short-lived signed bearer token used
  * for authenticated endpoints like /api/admin/analytics.
  *
- * Every failure mode (400 bad email, 401 wrong password, 405/500
- * misconfiguration, network error, malformed JSON) resolves to
- * `{ ok: false, token: null }` — this function NEVER throws.
+ * Every failure mode (401 wrong password, 429 locked out, 500 misconfiguration,
+ * network error, malformed JSON) resolves to `{ ok: false, token: null }` with a
+ * readable `error` — this function NEVER throws.
  */
 export interface AdminLoginResult {
   ok: boolean;
   token: string | null;
 }
 
-export async function verifyAdminPassword(
-  email: string,
-  password: string,
-): Promise<AdminLoginResult & { error?: string }> {
+export async function verifyAdminPassword(password: string): Promise<AdminLoginResult & { error?: string }> {
   try {
     const res = await fetch('/api/admin-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ password }),
     });
     if (res.status === 500) {
       console.error('admin-login endpoint misconfigured (is ADMIN_PASSWORD set in Vercel?)');
       return { ok: false, token: null, error: 'Server misconfigured: ADMIN_PASSWORD is not set in Vercel environment variables.' };
     }
-    if (res.status === 400) {
-      return {
-        ok: false,
-        token: null,
-        error: 'Enter a valid cadet email (first initial, last name, 3 digits, @cdt.cadets.gc.ca).',
-      };
+    if (res.status === 429) {
+      let message = 'Too many incorrect attempts. Try again later.';
+      try {
+        const data = await res.json();
+        if (typeof data?.error === 'string') message = data.error;
+      } catch {
+        /* keep the default message */
+      }
+      return { ok: false, token: null, error: message };
     }
     // 401 = wrong password; handled as a normal result, not an exception.
     if (!res.ok) {
       return {
         ok: false,
         token: null,
-        error: res.status === 401 ? 'Incorrect admin password.' : `Server returned ${res.status}.`,
+        error: res.status === 401 ? 'Incorrect password.' : `Server returned ${res.status}.`,
       };
     }
     const data = await res.json();
@@ -129,46 +129,42 @@ export interface AdminAnalyticsReport {
   telemetry?: ServerTelemetryReport;
 }
 
-export interface ServerVisitorRecord {
-  id: string;
-  timestamp: string;
+/** One recent sign-in by a cadet, joined to the visit it came from. */
+export interface AccountSession {
+  when: string;
+  place: string;
+  device: string;
   ip: string;
-  city: string;
-  region: string;
-  country: string;
-  countryCode: string;
-  userAgent: string;
-  platform: string;
-  viewport: string;
-  touch: boolean;
-  loggedAt?: string;
 }
 
-export interface ServerLoginRecord {
-  id: string;
-  timestamp: string;
+/** Everything the server knows about one cadet account's activity. */
+export interface AccountActivity {
   username: string;
   instrument: string;
   lessonProgress: string;
   xp: number;
   streak: number;
-  events: string;
+  sessions: number;
+  sessionsLast7Days: number;
+  firstSeen: string;
+  lastSeen: string;
+  ipCount: number;
+  /** Most common places and devices, most frequent first. */
+  places: string[];
+  devices: string[];
+  recent: AccountSession[];
 }
 
 export interface ServerTelemetryReport {
   totals: {
+    accounts: number;
+    /** Sign-ins that are tied to a cadet account. */
     sessions: number;
     sessionsLast7Days: number;
-    uniqueIps: number;
-    touchSessions: number;
-    logins: number;
+    /** Page visits that could not be tied to any account (counted, never listed). */
+    anonymousVisits: number;
   };
-  countries: [string, number][];
-  cities: [string, number][];
-  oses: [string, number][];
-  browsers: [string, number][];
-  recentVisitors: ServerVisitorRecord[];
-  recentLogins: ServerLoginRecord[];
+  accounts: AccountActivity[];
 }
 
 /**
