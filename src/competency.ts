@@ -31,6 +31,7 @@ export const CONCEPTS = {
   INTERVALS: 'intervals',
   TRANSPOSITION: 'transposition',
   TEMPO_TERMS: 'tempoTerms',
+  CHORDS: 'chords',
   
   // Foundational
   MUSIC_STAFF: 'musicStaff',
@@ -64,6 +65,7 @@ export const CONCEPT_NAMES: Record<Concept, string> = {
   [CONCEPTS.INTERVALS]: 'Intervals',
   [CONCEPTS.TRANSPOSITION]: 'Transposition',
   [CONCEPTS.TEMPO_TERMS]: 'Tempo Terms',
+  [CONCEPTS.CHORDS]: 'Chords & Cadences',
   [CONCEPTS.MUSIC_STAFF]: 'Music Staff',
   [CONCEPTS.NOTE_NAMES]: 'Note Names',
   [CONCEPTS.SAXOPHONE_ASSEMBLY]: 'Saxophone Assembly',
