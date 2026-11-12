@@ -11,6 +11,7 @@ import { AudioActivity, SingleNoteConfig, ScaleConfig, PatternConfig } from '../
 import WaveformVisualizer from './WaveformVisualizer';
 import { useStore } from '../store';
 import { concertToWritten, convertPitchForInstrument } from '../instruments';
+import { DEFAULT_INSTRUMENT_ID } from '../instruments/registry';
 
 interface AudioPracticeActivityProps {
   activity: AudioActivity;
@@ -29,7 +30,7 @@ export default function AudioPracticeActivity({
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string>('');
   
-  const instrumentId = user?.instrumentId || 'alto-sax';
+  const instrumentId = user?.instrumentId || DEFAULT_INSTRUMENT_ID;
 
   useEffect(() => {
     audioManager.setOnStateChange((newState) => {

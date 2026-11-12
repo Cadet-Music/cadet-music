@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { DEFAULT_INSTRUMENT_ID, instrumentIdForType } from './instruments/registry';
+import type { RequirementRecord } from './requirements/model';
 import { persist } from 'zustand/middleware';
 import { CadetLevel, LEVEL_INFO } from './data';
 import { ConceptStats, Concept, recordCorrectAnswer, recordIncorrectAnswer, initializeConceptMastery } from './competency';
@@ -97,9 +99,13 @@ export interface User {
   songsSelected: boolean;
   bannerBg: string;
   bannerStickers: BannerSticker[];
+  /** Level the cadet is working toward. Undefined until chosen. */
+  targetLevel?: CadetLevel;
+  /** Requirement records keyed by requirement id. Written only by the cadet's own actions or an instructor. */
+  requirements?: Record<string, RequirementRecord>;
 }
 
-export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'animations' | 'privacy' | 'terms' | 'cookies' | 'telemetry-notice' | 'tone-coach';
+export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'animations' | 'privacy' | 'terms' | 'cookies' | 'telemetry-notice' | 'tone-coach' | 'gap-map';
 
 interface AppState {
   user: User | null;
@@ -126,6 +132,8 @@ interface AppState {
   setCurrentLesson: (lessonId: string | null) => void;
   completeLesson: (lessonId: string, xp: number) => void;
   setInstrument: (instrument: Instrument) => void;
+  setTargetLevel: (level: CadetLevel) => void;
+  setRequirementReady: (requirementId: string, ready: boolean) => void;
   setActiveSongs: (songs: string[]) => void;
   setSongsSelected: (val: boolean) => void;
   setOnboarded: (val: boolean) => void;
@@ -181,7 +189,7 @@ const defaultUser = (data: { username: string; rank?: string; lastName?: string;
   email: data.email || '',
   avatar: '🎵',
   instrument: 'alto',
-  instrumentId: 'alto-sax',
+  instrumentId: DEFAULT_INSTRUMENT_ID,
   progress: {
     completedLessons: [],
     xp: 0,
@@ -294,19 +302,31 @@ export const useStore = create<AppState>()(
       setInstrument: (instrument) => {
         const user = get().user;
         if (!user) return;
-        
-        // Map instrument type to full instrument ID
-        const instrumentIdMap: Record<string, string> = {
-          'alto': 'alto-sax',
-          'tenor': 'tenor-sax',
-          'baritone': 'baritone-sax',
-          'soprano': 'soprano-sax',
-        };
-        
-        const instrumentId = instrumentIdMap[instrument] || 'alto-sax';
-        
+        // Unknown instrument types are ignored rather than silently mapped to another instrument.
+        const instrumentId = instrumentIdForType(instrument);
+        if (!instrumentId) return;
         set({ user: { ...user, instrument, instrumentId } });
       },
+
+      setTargetLevel: (level) => {
+        const user = get().user;
+        if (!user) return;
+        set({ user: { ...user, targetLevel: level } });
+      },
+
+      setRequirementReady: (requirementId, ready) => {
+        const user = get().user;
+        if (!user) return;
+        const current: RequirementRecord = user.requirements?.[requirementId] ?? {};
+        const next: RequirementRecord = { ...current };
+        if (ready) {
+          next.readyAt = current.readyAt ?? new Date().toISOString();
+        } else {
+          delete next.readyAt;
+        }
+        set({ user: { ...user, requirements: { ...(user.requirements ?? {}), [requirementId]: next } } });
+      },
+
       
       setActiveSongs: (songs) => {
         const user = get().user;

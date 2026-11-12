@@ -32,6 +32,7 @@ import {
 } from './templates';
 import type { Generated } from './templates';
 import { FALSE_VARIANTS } from './tfVariants';
+import { DEFAULT_INSTRUMENT_ID, getInstrumentEntry } from '../instruments/registry';
 
 export type { CadetLevel, Lesson, CurriculumSection, TrackId, LessonContentData, ExerciseData } from './types';
 export { LEVELS } from './standards';
@@ -294,31 +295,44 @@ for (const track of Object.keys(TRACKS) as TrackId[]) {
 // Public API
 // ---------------------------------------------------------------------------
 
-/** Clarinet and bass clarinet use the clarinet track; every saxophone uses the saxophone track. */
-export function trackForInstrument(instrumentId?: string | null): TrackId {
-  return instrumentId && /clarinet/i.test(instrumentId) ? 'clarinet' : 'saxophone';
+/**
+ * The lesson track for an instrument, as declared by the instrument registry.
+ * Returns null for unregistered instruments. There is no fallback to another
+ * instrument's content: an unknown instrument gets an empty path.
+ */
+export function trackForInstrument(instrumentId?: string | null): TrackId | null {
+  return getInstrumentEntry(instrumentId)?.curriculumTrack ?? null;
 }
 
-let activeTrack: TrackId = 'saxophone';
+/** Track used when no instrument is given (the default for new accounts). */
+let activeTrack: TrackId | null = trackForInstrument(DEFAULT_INSTRUMENT_ID);
 
 /** The active instrument's path. This is a live binding: it updates when setActiveInstrument() runs. */
-export let CURRICULUM: CurriculumSection[] = TRACKS.saxophone.sections;
+export let CURRICULUM: CurriculumSection[] = activeTrack ? TRACKS[activeTrack].sections : [];
 
 /** Call this whenever the signed-in cadet's instrument is known (e.g. at the top of AppShell). */
 export function setActiveInstrument(instrumentId?: string | null): void {
   const track = trackForInstrument(instrumentId);
   if (track !== activeTrack) {
     activeTrack = track;
-    CURRICULUM = TRACKS[track].sections;
+    CURRICULUM = track ? TRACKS[track].sections : [];
   }
 }
 
-export function getCurriculum(instrumentId?: string | null): CurriculumSection[] {
-  return TRACKS[instrumentId === undefined ? activeTrack : trackForInstrument(instrumentId)].sections;
+/** Track for a lookup: an explicit instrument ID, or the active track when none is given. */
+function resolveTrack(instrumentId?: string | null): TrackId | null {
+  return instrumentId === undefined ? activeTrack : trackForInstrument(instrumentId);
 }
 
-export const getAllLessons = (instrumentId?: string | null): Lesson[] =>
-  TRACKS[instrumentId === undefined ? activeTrack : trackForInstrument(instrumentId)].lessons;
+export function getCurriculum(instrumentId?: string | null): CurriculumSection[] {
+  const track = resolveTrack(instrumentId);
+  return track ? TRACKS[track].sections : [];
+}
+
+export const getAllLessons = (instrumentId?: string | null): Lesson[] => {
+  const track = resolveTrack(instrumentId);
+  return track ? TRACKS[track].lessons : [];
+};
 
 export const getLessonById = (id: string): Lesson | undefined => BY_ID.get(id);
 
@@ -330,7 +344,7 @@ export const getLessonStatus = (
 ): 'locked' | 'available' | 'completed' => {
   if (completedLessons.includes(lessonId)) return 'completed';
   const track = instrumentId === undefined ? (TRACK_OF.get(lessonId) ?? activeTrack) : trackForInstrument(instrumentId);
-  const all = TRACKS[track].lessons;
+  const all = track ? TRACKS[track].lessons : [];
   const idx = all.findIndex((l) => l.id === lessonId);
   if (idx === 0) return 'available';
   if (idx > 0 && completedLessons.includes(all[idx - 1].id)) return 'available';
@@ -362,6 +376,7 @@ export interface OfficialSong {
 /** Official prepared-music lists (Annex D) for an instrument and level. */
 export function getOfficialSongs(level: CadetLevel, instrumentId?: string | null): { listA: OfficialSong[]; listB: OfficialSong[] } {
   const track = trackForInstrument(instrumentId);
+  if (!track) return { listA: [], listB: [] };
   const ids = new Map<string, string>();
   for (const [id, info] of TRACKS[track].pieceIds) ids.set(`${info.level}:${info.piece.slug}`, id);
   const songs = REPERTOIRE[track][level].map((p) => ({

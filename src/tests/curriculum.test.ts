@@ -85,8 +85,8 @@ describe('curriculum', () => {
   });
 
   it('routes instruments to the right path', () => {
-    expect(trackForInstrument('tenor-sax')).toBe('saxophone');
-    expect(trackForInstrument('bass-clarinet')).toBe('clarinet');
+    expect(trackForInstrument('tenor-sax')).toBeNull(); // unregistered: no fallback to saxophone
+    expect(trackForInstrument('bass-clarinet')).toBeNull(); // unregistered until implemented
   });
 
   it('maps old lesson ids onto the new ones', () => {
