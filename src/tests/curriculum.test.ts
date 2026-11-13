@@ -1,6 +1,39 @@
 // Structural checks for the rewritten curriculum. If your runner is Jest rather than Vitest,
 // change the first import to use Jest's globals.
-import { describe, it, expect } from 'vitest';
+// Self-contained describe / it / expect (no test framework dependency).
+// Output uses the ✅ / ❌ markers that src/tests/run.mjs counts.
+import assert from 'node:assert/strict';
+
+type Suite = { name: string; cases: Array<{ name: string; run: () => void }> };
+const suites: Suite[] = [];
+let currentSuite: Suite | null = null;
+function describe(name: string, body: () => void): void {
+  currentSuite = { name, cases: [] };
+  suites.push(currentSuite);
+  body();
+  currentSuite = null;
+}
+function it(name: string, run: () => void): void {
+  currentSuite!.cases.push({ name, run });
+}
+function expect(actual: any, message?: string) {
+  const fail = (what: string): never => {
+    throw new assert.AssertionError({ message: `${message ? message + ': ' : ''}${what} (actual: ${JSON.stringify(actual)?.slice(0, 160)})` });
+  };
+  const make = (negated: boolean) => {
+    const check = (ok: boolean, what: string) => { if (ok === negated) fail(`${negated ? 'not ' : ''}${what}`); };
+    return {
+      toBe: (e: unknown) => check(Object.is(actual, e), `toBe ${JSON.stringify(e)}`),
+      toEqual: (e: unknown) => check(JSON.stringify(actual) === JSON.stringify(e), `toEqual ${JSON.stringify(e)}`),
+      toBeNull: () => check(actual === null, 'toBeNull'),
+      toBeGreaterThan: (n: number) => check(actual > n, `> ${n}`),
+      toBeGreaterThanOrEqual: (n: number) => check(actual >= n, `>= ${n}`),
+      toContain: (x: unknown) => check(typeof actual === 'string' || Array.isArray(actual) ? (actual as any).includes(x) : false, `toContain ${JSON.stringify(x)}`),
+    };
+  };
+  return { ...make(false), not: make(true) };
+}
+
 import {
   getAllLessons, getCurriculumContent, getCurriculumExercises, getLessonStatus, getOfficialSongs,
   migrateCompletedLessons, trackForInstrument,
@@ -85,11 +118,26 @@ describe('curriculum', () => {
   });
 
   it('routes instruments to the right path', () => {
-    expect(trackForInstrument('tenor-sax')).toBe('saxophone');
-    expect(trackForInstrument('bass-clarinet')).toBe('clarinet');
+    expect(trackForInstrument('tenor-sax')).toBeNull(); // unregistered: no fallback to saxophone
+    expect(trackForInstrument('bass-clarinet')).toBeNull(); // unregistered until implemented
   });
 
   it('maps old lesson ids onto the new ones', () => {
     expect(migrateCompletedLessons(['basic-intro'])).toContain('sax-b-parts');
   });
 });
+
+// ---- runner -------------------------------------------------------------
+let failures = 0;
+for (const suite of suites) {
+  for (const c of suite.cases) {
+    try {
+      c.run();
+      console.log(`✅ ${suite.name} > ${c.name}`);
+    } catch (err) {
+      failures++;
+      console.log(`❌ ${suite.name} > ${c.name}\n   ${(err as Error).message}`);
+    }
+  }
+}
+if (failures > 0) process.exitCode = 1;

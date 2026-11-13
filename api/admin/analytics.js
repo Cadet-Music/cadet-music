@@ -154,7 +154,7 @@ export function createAdminToken(ttlMs = 2 * 60 * 60 * 1000) {
   return `${payload}.${sig}`;
 }
 
-function verifyAdminToken(token) {
+export function verifyAdminToken(token) {
   const key = signingKey();
   if (!key || typeof token !== 'string') return false;
   const dot = token.indexOf('.');

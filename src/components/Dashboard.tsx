@@ -131,6 +131,17 @@ export default function Dashboard() {
         </div>
       </motion.header>
 
+      {/* Entry to the path: target level, next step and gap map */}
+      <div className="px-4 pt-4 max-w-xl mx-auto">
+        <button onClick={() => setCurrentView('gap-map')} className="w-full card text-left flex items-center justify-between gap-3">
+          <span>
+            <span className="block text-sm font-semibold text-[#1a2332] dark:text-white">Your path</span>
+            <span className="block text-xs text-[#5a6577] dark:text-[#9aa3b0]">See your next step and what is still to do</span>
+          </span>
+          <span aria-hidden="true" className="text-[#a68a3a] dark:text-[#c9a84c]">›</span>
+        </button>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-6 relative z-10">
         {/* Stats Overview with Staggered Animation */}

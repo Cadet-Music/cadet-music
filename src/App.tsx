@@ -10,6 +10,12 @@ import CommandPalette from './components/CommandPalette';
 import ShortcutsHelp from './components/ShortcutsHelp';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import { collectVisitorTelemetry, sendLoginPing } from './utils/telemetry';
+import { setActiveInstrument } from './curriculum';
+import useProfileSync from './hooks/useProfileSync';
+import { getSessionToken } from './utils/authApi';
+import { isUnsupportedInstrument } from './instruments/registry';
+import TargetGapMap from './components/TargetGapMap';
+import UnsupportedInstrument from './components/UnsupportedInstrument';
 
 // Route-level code splitting: heavy / rarely-visited views load on demand
 const Settings = lazy(() => import('./components/Settings'));
@@ -98,8 +104,18 @@ function AppShell() {
   // Global keyboard shortcuts: ? help, m dark mode, n next lesson, etc.
   useKeyboardShortcuts();
 
-  if (!user) return <><Login /><KonamiListener /><SecretCornerListener /></>;
+  // The lesson track follows the cadet's registered instrument. Without this the saxophone default applies to everyone.
+  const instrumentId = user?.instrumentId;
+  useEffect(() => {
+    setActiveInstrument(instrumentId);
+  }, [instrumentId]);
+
+  // Progress only syncs with a session, so a device without one must sign in first.
+  if (!user || !getSessionToken()) return <><Login /><KonamiListener /><SecretCornerListener /></>;
   if (!user.onboarded) return <><Onboarding /><KonamiListener /><SecretCornerListener /></>;
+
+  // No content or requirements for this instrument: say so, never show another instrument's path.
+  if (isUnsupportedInstrument(user.instrumentId)) return <><UnsupportedInstrument /><SecretCornerListener /></>;
 
   // Force song selection after onboarding
   if (!user.songsSelected) return <><Songs /><SecretCornerListener /></>;
@@ -128,6 +144,8 @@ function AppShell() {
       page = <CookiePolicy />; break;
     case 'telemetry-notice':
       page = <DataTelemetryNotice />; break;
+    case 'gap-map':
+      page = <TargetGapMap />; break;
     case 'tone-coach':
       page = <ToneCoachView />; break;
     default:
@@ -147,6 +165,7 @@ function AppShell() {
 }
 
 function App() {
+  useProfileSync();
   const { darkMode, adminUnlocked, currentView, logVisitorSession, user } = useStore();
 
   // Server-side visitor telemetry (POST /api/telemetry → Vercel KV) plus a

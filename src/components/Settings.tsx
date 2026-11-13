@@ -1,3 +1,4 @@
+import { instrumentIdForType, isUnsupportedInstrument } from '../instruments/registry';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore, Instrument } from '../store';
@@ -51,9 +52,9 @@ export default function Settings() {
 
   const instruments: { id: Instrument; name: string; scale: string; desc: string }[] = [
     { id: 'alto', name: 'Alto Saxophone', scale: 'E♭', desc: 'Most common' },
-    { id: 'tenor', name: 'Tenor Saxophone', scale: 'B♭', desc: 'Jazz & rock' },
-    { id: 'baritone', name: 'Baritone Saxophone', scale: 'E♭', desc: 'Deep tone' },
-    { id: 'soprano', name: 'Soprano Saxophone', scale: 'B♭', desc: 'Highest pitch' },
+    { id: 'tenor', name: 'Tenor Saxophone', scale: 'B♭', desc: 'Coming later' },
+    { id: 'baritone', name: 'Baritone Saxophone', scale: 'E♭', desc: 'Coming later' },
+    { id: 'soprano', name: 'Soprano Saxophone', scale: 'B♭', desc: 'Coming later' },
   ];
 
   const handleInstrumentLevelChange = (newLevel: CadetLevel) => {
@@ -200,6 +201,7 @@ export default function Settings() {
               <button
                 key={inst.id}
                 onClick={() => setInstrument(inst.id)}
+                disabled={isUnsupportedInstrument(instrumentIdForType(inst.id))}
                 className={`w-full card flex items-center gap-4 text-left transition-all ${
                   user.instrument === inst.id ? 'border-[#c9a84c] bg-[#c9a84c]/5 dark:bg-[#c9a84c]/10' : ''
                 }`}

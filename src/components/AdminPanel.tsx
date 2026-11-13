@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, Fragment } from 'react';
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import AccountTools from './AccountTools';
 import { useStore } from '../store';
 import { getAllLessons } from '../curriculum';
 import { CONCEPT_NAMES, Concept } from '../competency';
@@ -23,7 +24,7 @@ import {
 // real curriculum so it can never drift from a number hard-coded on the server.
 const TOTAL_LESSONS = getAllLessons('alto-sax').length;
 
-type TabId = 'overview' | 'cadets' | 'activity';
+type TabId = 'overview' | 'cadets' | 'activity' | 'accounts';
 type Tone = 'green' | 'red' | 'gold' | 'gray';
 
 const TONE_CLASSES: Record<Tone, string> = {
@@ -877,6 +878,7 @@ export default function AdminPanel() {
   const tabs: { id: TabId; label: string }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'cadets', label: `Cadets${analytics ? ` (${analytics.totals.cadets})` : ''}` },
+    { id: 'accounts', label: 'Accounts' },
     { id: 'activity', label: `Activity${telemetry && telemetry.totals.accounts > 0 ? ` (${telemetry.totals.accounts})` : ''}` },
   ];
 
@@ -966,6 +968,7 @@ export default function AdminPanel() {
             )
           )}
           {activeTab === 'activity' && <ActivityTab telemetry={telemetry} loading={analyticsLoading} />}
+          {activeTab === 'accounts' && <AccountTools adminToken={adminToken} />}
         </div>
       </main>
     </div>

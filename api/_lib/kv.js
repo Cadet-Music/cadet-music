@@ -56,3 +56,12 @@ export async function setJSON(key, value) {
     return false;
   }
 }
+
+/** Delete a key. Safe to call when KV is not configured. */
+export async function delJSON(key) {
+  const client = await getKv();
+  if (client) {
+    try { await client.del(key); } catch (err) { console.error(`[kv] DEL ${key} failed:`, err?.message ?? err); }
+  }
+  MEMORY.delete(key);
+}
