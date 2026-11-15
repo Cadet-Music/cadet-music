@@ -135,7 +135,8 @@ function AppShell() {
     case 'analytics':
       page = <Analytics />; break;
     case 'animations':
-      page = <AnimationDemo />; break;
+      // Developer tool only: cadets are sent to the dashboard.
+      page = import.meta.env.DEV ? <AnimationDemo /> : <Dashboard />; break;
     case 'privacy':
       page = <PrivacyPolicy />; break;
     case 'terms':

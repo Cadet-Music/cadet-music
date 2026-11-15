@@ -88,9 +88,10 @@ export function resolveTarget(
   records: Readonly<Record<string, RequirementRecord>>,
   completedLessons: readonly string[],
 ): CadetLevel | null {
+  // A requested level is kept even when its requirements are not written yet; the gap map says so.
+  if (requested) return requested;
   const levels = availableLevels(program);
   if (levels.length === 0) return null;
-  if (requested && levels.includes(requested)) return requested;
   const firstOpen = levels.find((l) => !levelComplete(program, l, records, completedLessons));
   return firstOpen ?? levels[levels.length - 1];
 }
@@ -147,13 +148,19 @@ export function buildGapMap(
   completedLessons: readonly string[],
 ): GapMap {
   const targetItems = statusesForLevel(program, target, records, completedLessons);
-  const earlierOpen = LEVEL_ORDER.filter((l) => levelIndex(l) < levelIndex(target))
-    .flatMap((l) => statusesForLevel(program, l, records, completedLessons))
-    .filter((s) => !isCounted(s.state));
+  // With no requirements for the target there is nothing to focus on. Earlier-level items are
+  // not shown either: without a diagnostic, listing them would present beginner content to an
+  // advanced cadet. Adding the diagnostic is what makes earlier gaps meaningful.
+  const noTargetRequirements = targetItems.length === 0;
+  const earlierOpen = noTargetRequirements
+    ? []
+    : LEVEL_ORDER.filter((l) => levelIndex(l) < levelIndex(target))
+        .flatMap((l) => statusesForLevel(program, l, records, completedLessons))
+        .filter((s) => !isCounted(s.state));
 
   return {
     target,
-    focus: currentFocus(program, target, records, completedLessons),
+    focus: noTargetRequirements ? null : currentFocus(program, target, records, completedLessons),
     targetGroups: groupByFamily(targetItems),
     earlierOpen,
     targetOpen: targetItems.filter((s) => !isCounted(s.state)).length,

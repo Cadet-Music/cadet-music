@@ -44,7 +44,7 @@ const ListIcon = () => (
 );
 
 export default function Settings() {
-  const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode, setTheoryLevel, setInstrumentLevel } = useStore();
+  const { user, setCurrentView, setInstrument, setActiveSongs, setDarkMode, darkMode, setTheoryLevel, setInstrumentLevel, logout } = useStore();
   const [activeTab, setActiveTab] = useState<'profile' | 'instrument' | 'levels' | 'songs'>('profile');
   const [showLevelWarning, setShowLevelWarning] = useState(false);
 
@@ -139,6 +139,12 @@ export default function Settings() {
         {/* Profile Tab */}
         {activeTab === 'profile' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+            <div className="card">
+              <p className="text-sm text-[#5a6577] dark:text-[#9aa3b0] mb-3">Signed in as {user.email || user.username}. Your progress is saved to your account.</p>
+              <button onClick={() => { if (confirm('Sign out on this device? Your progress stays saved to your account.')) logout(); }} className="btn-secondary w-full py-3">
+                Sign out
+              </button>
+            </div>
             <div className="card text-center">
               <p className="text-xs font-semibold text-[#5a6577] dark:text-[#9aa3b0] uppercase tracking-wide mb-3">Profile</p>
               <div className="w-16 h-16 rounded-full bg-[#1a2332] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#1a2332] text-2xl font-bold mx-auto mb-3">

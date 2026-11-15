@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
-import { CURRICULUM, getAllLessons, getLessonStatus } from '../data';
+import { getAllLessons, sectionsForLevel, sectionLessonStatus } from '../curriculum';
+import { workingLevelFor } from '../requirements/workingLevel';
+import type { CadetLevel } from '../curriculum/types';
 import Footer from './Footer';
 import QuestsAndPractice from './QuestsAndPractice';
 import ShareCardTemplate from './ShareCardTemplate';
@@ -32,8 +34,21 @@ export default function Dashboard() {
   const completedCount = completedIds.length;
   const progressPercent = Math.round((completedCount / totalLessons) * 100);
 
+  // The lesson path shows the cadet's working level only. Target first; otherwise the first open level.
+  const workingLevel: CadetLevel = workingLevelFor(user.instrumentId, user.targetLevel, user.requirements ?? {}, completedIds);
+  const workingSections = sectionsForLevel(user.instrumentId, workingLevel);
+  const LEVEL_NAME: Record<CadetLevel, string> = {
+    BASIC: 'Basic', ONE: 'Level One', TWO: 'Level Two', THREE: 'Level Three', FOUR: 'Level Four', FIVE: 'Level Five',
+  };
+  const levelHeading = `${LEVEL_NAME[workingLevel]} lessons`;
+
+  const workingStatus = (lessonId: string) => {
+    const section = workingSections.find((s) => s.lessons.some((l) => l.id === lessonId));
+    return section ? sectionLessonStatus(section.lessons, lessonId, completedIds) : 'locked';
+  };
+
   const handleNodeClick = (lessonId: string) => {
-    const status = getLessonStatus(lessonId, completedIds);
+    const status = workingStatus(lessonId);
     if (status === 'locked') return;
     setSelectedNode(lessonId);
   };
@@ -111,6 +126,7 @@ export default function Dashboard() {
             >
               🎓 Tone Coach
             </motion.button>
+            {import.meta.env.DEV && (
             <motion.button
               onClick={() => setCurrentView('animations')}
               className="btn-secondary"
@@ -119,6 +135,7 @@ export default function Dashboard() {
             >
               ✨ Animations
             </motion.button>
+            )}
             <motion.button
               onClick={() => setCurrentView('settings')}
               className="btn-secondary"
@@ -263,10 +280,10 @@ export default function Dashboard() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            Curriculum
+            {levelHeading}
           </motion.h2>
           
-          {CURRICULUM.map((section, sectionIdx) => (
+          {workingSections.map((section, sectionIdx) => (
             <motion.div
               key={section.id}
               className="mb-8 last:mb-0"
@@ -280,7 +297,7 @@ export default function Dashboard() {
               
               <div className="space-y-3">
                 {section.lessons.map((lesson, lessonIdx) => {
-                  const status = getLessonStatus(lesson.id, completedIds);
+                  const status = sectionLessonStatus(section.lessons, lesson.id, completedIds);
                   const isSelected = selectedNode === lesson.id;
                   
                   return (

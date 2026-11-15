@@ -10,6 +10,7 @@ import profile from '../../api/profile.js';
 import resetPassword from '../../api/admin/reset-password.js';
 import clearTestData from '../../api/admin/clear-test-data.js';
 import { createAdminToken } from '../../api/admin/analytics.js';
+import analytics from '../../api/admin/analytics.js';
 import { hashPassword, verifyPassword } from '../../api/_lib/accounts.js';
 
 process.env.SESSION_SECRET = 'test-session-secret-that-is-long-enough-123456';
@@ -149,6 +150,42 @@ test('clear-test-data needs the confirmation phrase and then removes accounts', 
   assert.equal(cleared.code, 200);
   const gone = await call(login, { method: 'POST', body: { email, password: 'longenough' } });
   assert.equal(gone.code, 401);
+});
+
+test('account flow: sign up, sign out, sign back in, and the saved profile is restored on a new device', async () => {
+  const email = freshEmail();
+  const s = await call(signup, { method: 'POST', body: { email, displayName: 'Cdt Flow', password: 'longenough' } });
+  assert.equal(s.code, 200);
+  // Sign-out clears the client token; the server keeps the account and profile.
+  const l1 = await call(login, { method: 'POST', body: { email, password: 'longenough' } });
+  assert.equal(l1.code, 200);
+  await call(profile, { method: 'PUT', headers: auth(l1.body.token), body: { profile: { username: 'Cdt Flow', progress: { xp: 150, completedLessons: ['sax-b-parts', 'sax-b-assembly'] } } } });
+  // Sign back in on the same device (new session token).
+  const l2 = await call(login, { method: 'POST', body: { email, password: 'longenough' } });
+  assert.equal(l2.code, 200);
+  assert.equal(l2.body.profile.progress.xp, 150);
+  // A different device has no token at all: sign-in alone restores the profile.
+  const newDevice = await call(login, { method: 'POST', body: { email, password: 'longenough' } });
+  assert.equal(newDevice.body.profile.progress.completedLessons.length, 2);
+});
+
+test('admin panel lists cadets from their saved profiles', async () => {
+  const email = freshEmail();
+  await call(signup, { method: 'POST', body: { email, displayName: 'Cdt Listed', password: 'longenough' } });
+  const l = await call(login, { method: 'POST', body: { email, password: 'longenough' } });
+  await call(profile, { method: 'PUT', headers: auth(l.body.token), body: { profile: { username: 'Cdt Listed', progress: { xp: 320, streak: 3, completedLessons: ['a', 'b', 'c'] } } } });
+  const r = await call(analytics, { method: 'GET', headers: auth(createAdminToken()!), query: {} });
+  assert.equal(r.code, 200);
+  const row = r.body.cadets.find((c: any) => c.name === 'Cdt Listed');
+  assert.ok(row, 'cadet appears in the admin list');
+  assert.equal(row.xp, 320);
+  assert.equal(row.lessonsCompleted, 3);
+});
+
+test('admin list is empty before any profile is saved, and does not error', async () => {
+  const r = await call(analytics, { method: 'GET', headers: auth(createAdminToken()!), query: {} });
+  assert.equal(r.code, 200);
+  assert.ok(Array.isArray(r.body.cadets));
 });
 
 (async () => {

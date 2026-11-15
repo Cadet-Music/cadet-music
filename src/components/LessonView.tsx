@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store';
-import { getLessonById } from '../data';
+import { getLessonById, getCurriculumContent, getCurriculumExercises } from '../curriculum';
 import { CONCEPTS, Concept, ConceptStats } from '../competency';
 import { calculateAllAdaptiveWeights, applyConceptFloor } from '../adaptive';
 import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
@@ -44,6 +44,9 @@ interface Exercise {
 }
 
 function getExercisesForLesson(lessonId: string): Exercise[] {
+  // Curriculum quizzes first; the hand-written table below only covers legacy audio lessons.
+  const fromCurriculum = getCurriculumExercises(lessonId);
+  if (fromCurriculum) return fromCurriculum as unknown as Exercise[];
   const exercises: Record<string, Exercise[]> = {
     'pb-1': [
       { type: 'multiple-choice', question: 'Which part vibrates to make sound?', options: [{ text: 'The reed', correct: true }, { text: 'The bell', correct: false }, { text: 'The keys', correct: false }, { text: 'The neck', correct: false }], concept: CONCEPTS.SAXOPHONE_ASSEMBLY },
@@ -687,9 +690,11 @@ export default function LessonView() {
   
   // Check if this is a clarinet lesson and load appropriate content
   const isClarinetLesson = currentLessonId?.startsWith('clarinet-');
-  const lessonContentData = currentLessonId 
-    ? (isClarinetLesson ? getClarinetLessonContent(currentLessonId) : getLessonContent(currentLessonId))
+  const lessonContentData = currentLessonId
+    ? ((getCurriculumContent(currentLessonId) as unknown as LessonContent | null) ??
+       (isClarinetLesson ? getClarinetLessonContent(currentLessonId) : getLessonContent(currentLessonId)))
     : null;
+  const watchLinks = currentLessonId ? getCurriculumContent(currentLessonId)?.videos : undefined;
 
   // Phase 0 adaptivity loop (Gap B1/E4): order this lesson's exercises with
   // the adaptive weighting engine against the cadet's concept mastery data.
@@ -1109,6 +1114,20 @@ export default function LessonView() {
                   {lessonContentData.practiceInstructions}
                 </p>
               </motion.div>
+
+              {watchLinks && watchLinks.length > 0 && (
+                <div className="bg-white dark:bg-[#1a2332] rounded-lg p-5 border border-[#c8c8c8] dark:border-[#2a3545] mb-6">
+                  <h3 className="text-lg font-semibold text-[#1a2332] dark:text-white mb-3">Watch</h3>
+                  <ul className="space-y-3">
+                    {watchLinks.map((v) => (
+                      <li key={v.url}>
+                        <a href={v.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[#a68a3a] dark:text-[#c9a84c] hover:underline">{v.title}</a>
+                        {v.note && <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mt-0.5">{v.note}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Interactive Exercise */}
               {lessonContentData.interactiveExercise && (

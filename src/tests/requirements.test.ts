@@ -139,7 +139,7 @@ test('target resolution: requested level wins; otherwise first open level; unkno
   assert.equal(resolveTarget(program, 'ONE', {}, []), 'ONE');
   assert.equal(resolveTarget(program, undefined, {}, []), 'BASIC');
   assert.equal(resolveTarget(program, undefined, observed(basicIds), []), 'ONE');
-  assert.equal(resolveTarget(program, 'FIVE', {}, []), 'BASIC', 'FIVE has no requirements yet');
+  assert.equal(resolveTarget(program, 'FIVE', {}, []), 'FIVE', 'a requested level is kept even without requirements');
 });
 
 test('gap map for Level One lists earlier open Basic requirements separately', () => {
@@ -155,6 +155,48 @@ test('gap map groups target requirements by family without losing any', () => {
   const gap = buildGapMap(program, 'ONE', {}, []);
   const grouped = gap.targetGroups.reduce((n, g) => n + g.items.length, 0);
   assert.equal(grouped, oneIds.length);
+});
+
+import { sectionsForLevel, sectionLessonStatus } from '../curriculum';
+
+test('a Level Five target shows only Level Five lessons, never Basic', () => {
+  const sections = sectionsForLevel('alto-sax', 'FIVE');
+  assert.ok(sections.length > 0, 'Level Five has lessons in the curriculum');
+  for (const section of sections) {
+    for (const lesson of section.lessons) assert.equal(lesson.level, 'FIVE', `${lesson.id} is not Level Five`);
+  }
+});
+
+test('within a level, lessons unlock in order', () => {
+  const lessons = sectionsForLevel('alto-sax', 'BASIC').flatMap((s) => s.lessons);
+  assert.equal(sectionLessonStatus(lessons, lessons[0].id, []), 'available');
+  assert.equal(sectionLessonStatus(lessons, lessons[1].id, []), 'locked');
+  assert.equal(sectionLessonStatus(lessons, lessons[1].id, [lessons[0].id]), 'available');
+});
+
+test('a level with no requirements written yet gives an empty gap map, not a false "complete"', () => {
+  const gap = buildGapMap(program, 'FIVE', {}, []);
+  assert.equal(gap.targetTotal, 0);
+  assert.equal(gap.focus, null);
+});
+
+import { workingLevelFor } from '../requirements/workingLevel';
+
+test('working level: no target and alto sax starts at Basic', () => {
+  assert.equal(workingLevelFor('alto-sax', undefined, {}, []), 'BASIC');
+});
+
+test('working level: a Level Five target is used even though its requirements are not written', () => {
+  assert.equal(workingLevelFor('alto-sax', 'FIVE', {}, []), 'FIVE');
+});
+
+test('working level: after Basic is passed, the first open level is Level One', () => {
+  assert.equal(workingLevelFor('alto-sax', undefined, observed(basicIds), []), 'ONE');
+});
+
+test('working level: an instrument with no requirement program starts at Basic', () => {
+  assert.equal(workingLevelFor('clarinet', undefined, {}, []), 'BASIC');
+  assert.equal(workingLevelFor('tenor-sax', undefined, {}, []), 'BASIC');
 });
 
 let failed = 0;

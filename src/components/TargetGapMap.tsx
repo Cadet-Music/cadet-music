@@ -3,7 +3,7 @@ import { useStore } from '../store';
 import { getLessonById } from '../curriculum';
 import { getRequirementProgram } from '../requirements/programs';
 import {
-  availableLevels,
+  LEVEL_ORDER,
   buildGapMap,
   resolveTarget,
   type RequirementStatus,
@@ -59,11 +59,12 @@ export default function TargetGapMap() {
     );
   }
 
-  const levels = availableLevels(program);
+  const levels = LEVEL_ORDER;
   const target = resolveTarget(program, user.targetLevel, records, completed);
   if (!target) return null;
   const gap = buildGapMap(program, target, records, completed);
   const focus: RequirementStatus | null = gap.focus;
+  const noRequirementsYet = gap.targetTotal === 0;
 
   // First teaching lesson that exists in the curriculum, so "Practise this" always opens something real.
   const practiceLessonId = focus?.def.teachingLessonIds.find((id) => getLessonById(id)) ?? null;
@@ -104,6 +105,12 @@ export default function TargetGapMap() {
             })}
           </div>
         </section>
+
+        {noRequirementsYet && (
+          <p className="card text-sm text-[#1a2332] dark:text-white" role="status">
+            The requirements for {LEVEL_LABEL[target]} are not in the app yet. Your lessons for this level are still available on your dashboard.
+          </p>
+        )}
 
         {/* Current focus */}
         <motion.section

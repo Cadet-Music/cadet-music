@@ -24,7 +24,7 @@
 import crypto from 'crypto';
 
 import { getJSON } from '../_lib/kv.js';
-import { loadCadets } from '../_lib/cadets.js';
+import { loadCadetsFromProfiles } from '../_lib/accounts.js';
 
 // ---- Server-side activity, grouped by cadet account ---------------------------
 // Every page load posts an anonymous "visit". A sign-in or session ping also posts
@@ -325,7 +325,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ ok: false, error: 'unauthorized' });
   }
 
-  const cadets = await loadCadets();
+  const cadets = await loadCadetsFromProfiles();
   const { rows, totals, struggles } = buildReport(cadets);
 
   if (req.query.format === 'csv') {

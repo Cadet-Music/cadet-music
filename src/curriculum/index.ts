@@ -324,6 +324,28 @@ function resolveTrack(instrumentId?: string | null): TrackId | null {
   return instrumentId === undefined ? activeTrack : trackForInstrument(instrumentId);
 }
 
+/** Sections for one level of an instrument's path (e.g. only Level Five for a Level Five target). */
+export function sectionsForLevel(instrumentId: string | null | undefined, level: CadetLevel): CurriculumSection[] {
+  const n = LEVEL_NUMBER[level];
+  return getCurriculum(instrumentId).filter((s) => s.level === n);
+}
+
+/**
+ * Status of a lesson inside one level's list: lessons unlock in order within the level.
+ * Used for the level view, so a Level Five cadet is never gated by Basic lessons.
+ */
+export function sectionLessonStatus(
+  lessons: readonly Lesson[],
+  lessonId: string,
+  completed: readonly string[],
+): 'locked' | 'available' | 'completed' {
+  if (completed.includes(lessonId)) return 'completed';
+  const i = lessons.findIndex((l) => l.id === lessonId);
+  if (i === -1) return 'locked';
+  if (i === 0) return 'available';
+  return completed.includes(lessons[i - 1].id) ? 'available' : 'locked';
+}
+
 export function getCurriculum(instrumentId?: string | null): CurriculumSection[] {
   const track = resolveTrack(instrumentId);
   return track ? TRACKS[track].sections : [];

@@ -8,8 +8,9 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Method not allowed' });
 
-  // Sign-up is limited per address to slow down bulk account creation.
-  if (!(await withinLimit(`auth:signup:${clientIp(req)}`, 10, 60 * 60 * 1000))) {
+  // Sign-up is limited per IP address to slow down bulk account creation. The limit is high because
+  // a squadron's cadets usually share one network address.
+  if (!(await withinLimit(`auth:signup:${clientIp(req)}`, 100, 60 * 60 * 1000))) {
     return res.status(429).json({ ok: false, error: 'Too many sign-ups from this device. Try again later.' });
   }
 

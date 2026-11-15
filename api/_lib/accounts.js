@@ -210,3 +210,29 @@ export function clientIp(req) {
   const fwd = String(req.headers?.['x-forwarded-for'] ?? '');
   return (fwd.split(',')[0] || '').trim() || String(req.socket?.remoteAddress ?? 'unknown');
 }
+
+/**
+ * Cadet rows for the admin panel, built from saved profiles (the source of truth since accounts).
+ * Shaped like the old leaderboard entries so the existing analytics code can use them unchanged.
+ */
+export async function loadCadetsFromProfiles() {
+  const ids = await getJSON('accounts:index', []);
+  const rows = [];
+  for (const id of ids) {
+    const account = await getJSON(`account:${id}`, null);
+    const record = await getJSON(`profile:${id}`, null);
+    const profile = record?.profile;
+    if (!account || !profile) continue;
+    const progress = profile.progress ?? {};
+    rows.push({
+      name: profile.username || account.displayName,
+      xp: Number(progress.xp) || 0,
+      streak: Number(progress.streak) || 0,
+      currentStreak: Number(progress.streak) || 0,
+      lessons: Array.isArray(progress.completedLessons) ? progress.completedLessons.length : 0,
+      conceptMastery: progress.conceptMastery ?? null,
+      updatedAt: new Date(record.updatedAt ?? account.lastSignIn ?? Date.now()).toISOString(),
+    });
+  }
+  return rows;
+}
