@@ -1,8 +1,12 @@
-// POST /api/auth/signup  { email, displayName, password }
+// POST /api/auth/signup  { email, rank, lastName, password }
+// Display name is "Rank Last Name", for example "Cpl Smith".
 import {
   accountByEmail, createAccount, clientIp, isCadetEmail, issueSession, normalizeEmail,
   publicAccount, readBody, withinLimit, MIN_PASSWORD_LENGTH,
 } from '../_lib/accounts.js';
+
+/** Ranks a cadet can choose at sign-up. Keep in step with the sign-in screen. */
+const RANKS = ['Air Cadet', 'Leading Air Cadet', 'Corporal', 'Flight Corporal', 'Sergeant', 'Flight Sergeant', 'Warrant Officer 2nd Class', 'Warrant Officer 1st Class'];
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -16,14 +20,19 @@ export default async function handler(req, res) {
 
   const body = await readBody(req);
   const email = normalizeEmail(body.email);
-  const displayName = String(body.displayName ?? '').trim().slice(0, 40);
+  const rank = String(body.rank ?? '').trim();
+  const lastName = String(body.lastName ?? '').trim().slice(0, 30);
+  const displayName = `${rank} ${lastName}`.trim();
   const password = String(body.password ?? '');
 
   if (!isCadetEmail(email)) {
     return res.status(400).json({ ok: false, error: 'Use your .cadets.gc.ca email address.' });
   }
-  if (!displayName) {
-    return res.status(400).json({ ok: false, error: 'Enter the name you want shown, for example Cdt Smith.' });
+  if (!RANKS.includes(rank)) {
+    return res.status(400).json({ ok: false, error: 'Choose your rank.' });
+  }
+  if (!lastName || !/^[A-Za-z' -]+$/.test(lastName)) {
+    return res.status(400).json({ ok: false, error: 'Enter your last name.' });
   }
   if (password.length < MIN_PASSWORD_LENGTH) {
     return res.status(400).json({ ok: false, error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });

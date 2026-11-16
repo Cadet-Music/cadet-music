@@ -18,5 +18,7 @@ export default async function handler(req, res) {
 
   const removed = await clearAllAccounts();
   await delJSON('leaderboard:entries');
+  await delJSON('telemetry:logins');
+  await delJSON('telemetry:visitors');
   return res.status(200).json({ ok: true, accountsRemoved: removed });
 }

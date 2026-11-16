@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { DEFAULT_INSTRUMENT_ID, instrumentIdForType } from './instruments/registry';
 import type { RequirementRecord } from './requirements/model';
+import { getRequirementProgram } from './requirements/programs';
+import { applyPracticeResult } from './requirements/practice';
 import { clearSessionToken, type AccountInfo } from './utils/authApi';
 import { persist } from 'zustand/middleware';
 import { CadetLevel, LEVEL_INFO } from './data';
@@ -104,6 +106,8 @@ export interface User {
   targetLevel?: CadetLevel;
   /** Requirement records keyed by requirement id. Written only by the cadet's own actions or an instructor. */
   requirements?: Record<string, RequirementRecord>;
+  /** Best score per lesson (0 to 1) from its practice quiz. */
+  lessonScores?: Record<string, number>;
 }
 
 export type ViewType = 'login' | 'onboarding' | 'dashboard' | 'lesson' | 'settings' | 'songs' | 'leaderboard' | 'admin' | 'banner' | 'analytics' | 'animations' | 'privacy' | 'terms' | 'cookies' | 'telemetry-notice' | 'tone-coach' | 'gap-map';
@@ -137,6 +141,8 @@ interface AppState {
   /** Starts a signed-in session: restores the saved profile, or starts a new one for a new account. */
   startSession: (account: AccountInfo, profile: unknown | null) => void;
   setRequirementReady: (requirementId: string, ready: boolean) => void;
+  /** Records a finished lesson's quiz result and marks requirements ready when their practice passes. */
+  recordLessonResult: (lessonId: string, correct: number, total: number) => void;
   setActiveSongs: (songs: string[]) => void;
   setSongsSelected: (val: boolean) => void;
   setOnboarded: (val: boolean) => void;
@@ -326,6 +332,20 @@ export const useStore = create<AppState>()(
         const user = get().user;
         if (!user) return;
         set({ user: { ...user, targetLevel: level } });
+      },
+
+      recordLessonResult: (lessonId, correct, total) => {
+        const user = get().user;
+        if (!user || total <= 0) return;
+        const update = applyPracticeResult(
+          getRequirementProgram(user.instrumentId),
+          user.lessonScores ?? {},
+          user.requirements ?? {},
+          lessonId,
+          correct / total,
+          new Date().toISOString(),
+        );
+        set({ user: { ...user, lessonScores: update.lessonScores, requirements: update.requirements } });
       },
 
       setRequirementReady: (requirementId, ready) => {

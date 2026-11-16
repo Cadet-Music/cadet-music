@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../store';
 import { CadetLevel, LEVELS, LEVEL_INFO } from '../data';
+import { BANDS, MAX_QUESTIONS, estimateLevel, pickNext, shouldStop, type Band } from '../placement/adaptive';
 
 interface QuizQuestion {
   id: number;
@@ -51,47 +52,62 @@ const getLevelFromNumber = (num: number): CadetLevel => {
 
 export default function Onboarding() {
   const { setOnboarded, setTheoryLevel, setInstrumentLevel } = useStore();
-  const [currentQ, setCurrentQ] = useState(0);
+  // Start in the intermediate band; the next question depends on each answer.
+  const [currentQ, setCurrentQ] = useState(() => Math.max(0, pickNext(QUESTIONS, 1, [])));
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [used, setUsed] = useState<number[]>([]);
+  const [highestCorrectBand, setHighestCorrectBand] = useState(-1);
+  const [wrongAtBasic, setWrongAtBasic] = useState(0);
+  const [correctAtAdvanced, setCorrectAtAdvanced] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [step, setStep] = useState<'quiz' | 'result' | 'levels'>('quiz');
   const [theoryLevel, setLocalTheoryLevel] = useState<CadetLevel>('BASIC');
   const [playingLevel, setLocalPlayingLevel] = useState<CadetLevel>('BASIC');
   const [recommendedLevel, setRecommendedLevel] = useState<{theory: CadetLevel, instrument: CadetLevel, label: string, desc: string} | null>(null);
 
+  const LEVEL_NAMES: Record<CadetLevel, string> = {
+    BASIC: 'Basic Level', ONE: 'Level One', TWO: 'Level Two', THREE: 'Level Three', FOUR: 'Level Four', FIVE: 'Level Five',
+  };
+
   const handleAnswer = (idx: number) => {
     if (selected !== null) return;
     setSelected(idx);
-    const isCorrect = idx === QUESTIONS[currentQ].correct;
+    const q = QUESTIONS[currentQ];
+    const isCorrect = idx === q.correct;
+    const band = BANDS.indexOf(q.category) as Band;
+    const usedNow = [...used, currentQ];
     const newScore = isCorrect ? score + 1 : score;
+    const newHighest = isCorrect ? Math.max(highestCorrectBand, band) : highestCorrectBand;
+    const newWrongBasic = wrongAtBasic + (!isCorrect && band === 0 ? 1 : 0);
+    const newCorrectAdvanced = correctAtAdvanced + (isCorrect && band === 2 ? 1 : 0);
     if (isCorrect) setScore(newScore);
-    
+
     setShowFeedback(true);
     setTimeout(() => {
       setShowFeedback(false);
-      if (currentQ < QUESTIONS.length - 1) {
-        setCurrentQ(q => q + 1);
-        setSelected(null);
-      } else {
-        const rec = getRecommendedLevel(newScore);
-        setRecommendedLevel(rec);
-        setLocalTheoryLevel(rec.theory);
-        setLocalPlayingLevel(rec.instrument);
+      setUsed(usedNow);
+      setHighestCorrectBand(newHighest);
+      setWrongAtBasic(newWrongBasic);
+      setCorrectAtAdvanced(newCorrectAdvanced);
+
+      // Stop early when the answers are clear: the test ends after
+      // MAX_QUESTIONS, after two wrong answers at the basic band, or after three correct at the advanced band.
+      const stop = shouldStop(usedNow.length, newWrongBasic, newCorrectAdvanced);
+      const nextBand = Math.max(0, Math.min(2, band + (isCorrect ? 1 : -1)));
+      const next = stop ? -1 : pickNext(QUESTIONS, nextBand, usedNow);
+
+      if (next === -1) {
+        const level = estimateLevel(newScore, newHighest, newCorrectAdvanced);
+        setLocalTheoryLevel(level);
+        setLocalPlayingLevel(level);
+        setRecommendedLevel({ theory: level, instrument: level, label: LEVEL_NAMES[level], desc: LEVEL_INFO[level].description });
         setStep('result');
+      } else {
+        setCurrentQ(next);
+        setSelected(null);
       }
     }, 800);
-  };
-
-  const getRecommendedLevel = (finalScore: number) => {
-    // With 20 questions total, map scores to 6 levels
-    // BASIC (0-3), ONE (4-7), TWO (8-11), THREE (12-14), FOUR (15-17), FIVE (18-20)
-    if (finalScore >= 18) return { theory: 'FIVE' as CadetLevel, instrument: 'FOUR' as CadetLevel, label: 'Level Five', desc: 'Comprehensive knowledge, highly skilled.' };
-    if (finalScore >= 15) return { theory: 'FOUR' as CadetLevel, instrument: 'THREE' as CadetLevel, label: 'Level Four', desc: 'Detailed knowledge, skilled.' };
-    if (finalScore >= 12) return { theory: 'THREE' as CadetLevel, instrument: 'TWO' as CadetLevel, label: 'Level Three', desc: 'Detailed knowledge, skilled.' };
-    if (finalScore >= 8) return { theory: 'TWO' as CadetLevel, instrument: 'ONE' as CadetLevel, label: 'Level Two', desc: 'Basic knowledge, limited skill.' };
-    if (finalScore >= 4) return { theory: 'ONE' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Level One', desc: 'Basic knowledge, limited skill.' };
-    return { theory: 'BASIC' as CadetLevel, instrument: 'BASIC' as CadetLevel, label: 'Basic Level', desc: 'Starting from awareness.' };
   };
 
   const handleComplete = () => {
@@ -100,7 +116,7 @@ export default function Onboarding() {
     setOnboarded(true);
   };
 
-  const progress = ((currentQ + (selected !== null ? 1 : 0)) / QUESTIONS.length) * 100;
+  const progress = ((used.length + (selected !== null ? 1 : 0)) / MAX_QUESTIONS) * 100;
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] dark:bg-[#0f1720] flex items-center justify-center p-4">
@@ -117,7 +133,7 @@ export default function Onboarding() {
                   Placement Assessment
                 </span>
                 <span className="text-xs font-medium text-[#5a6577] dark:text-[#9aa3b0]">
-                  {currentQ + 1} of {QUESTIONS.length}
+                  {used.length + 1} of up to {MAX_QUESTIONS}
                 </span>
               </div>
               <div className="progress-bar">

@@ -107,11 +107,10 @@ export function currentFocus(
   records: Readonly<Record<string, RequirementRecord>>,
   completedLessons: readonly string[],
 ): RequirementStatus | null {
-  for (const level of LEVEL_ORDER) {
-    if (levelIndex(level) > levelIndex(target)) break;
-    for (const status of statusesForLevel(program, level, records, completedLessons)) {
-      if (!isCounted(status.state)) return status;
-    }
+  // Only the target level is considered. Earlier-level requirements are not focused on until a diagnostic
+  // shows which of them the cadet actually lacks; otherwise an advanced cadet is sent back to Basic.
+  for (const status of statusesForLevel(program, target, records, completedLessons)) {
+    if (!isCounted(status.state)) return status;
   }
   return null;
 }
@@ -152,11 +151,8 @@ export function buildGapMap(
   // not shown either: without a diagnostic, listing them would present beginner content to an
   // advanced cadet. Adding the diagnostic is what makes earlier gaps meaningful.
   const noTargetRequirements = targetItems.length === 0;
-  const earlierOpen = noTargetRequirements
-    ? []
-    : LEVEL_ORDER.filter((l) => levelIndex(l) < levelIndex(target))
-        .flatMap((l) => statusesForLevel(program, l, records, completedLessons))
-        .filter((s) => !isCounted(s.state));
+  // Earlier-level items are not listed until a diagnostic can say which ones are missing.
+  const earlierOpen: RequirementStatus[] = [];
 
   return {
     target,

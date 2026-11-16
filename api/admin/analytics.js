@@ -76,7 +76,8 @@ async function aggregateTelemetry() {
     const isRecent = Number.isFinite(when) && when >= weekAgo;
     if (isRecent) identifiedLast7 += 1;
     const visit = visitorById.get(login.visitorId);
-    const key = name.toLowerCase();
+    // Group by account id. Two cadets with the same rank and last name must not share activity.
+    const key = login.userId ? `id:${login.userId}` : `name:${name.toLowerCase()}`;
     let acc = byName.get(key);
     if (!acc) {
       acc = {

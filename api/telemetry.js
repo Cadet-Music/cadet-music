@@ -72,6 +72,7 @@ function buildLoginRecord(body, visitorId) {
   return {
     id: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
     timestamp: str(body.timestamp, 32) || new Date().toISOString(),
+    userId: str(body.userId, 64),
     username: str(body.username, 40),
     instrument: str(body.instrument, 40),
     lessonProgress: str(body.lessonProgress, 60),

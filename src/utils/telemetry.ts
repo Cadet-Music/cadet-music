@@ -184,6 +184,7 @@ let telemetryStarted = false;
 
 /** Lazily read the current profile without a static import (avoids store↔telemetry cycles). */
 async function currentUser(): Promise<{
+  id?: string;
   username: string;
   instrumentId?: string;
   instrument: string;
@@ -228,6 +229,7 @@ export async function sendLoginPing(): Promise<void> {
     void pingServer({
       timestamp: new Date().toISOString(),
       events: user ? 'login' : 'visit',
+      userId: user?.id ?? '',
       username: user?.username ?? '',
       instrument: user?.instrumentId ?? user?.instrument ?? '',
       lessonProgress: user ? `${user.progress.completedLessons.length}/${TOTAL_LESSONS}` : '',

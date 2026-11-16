@@ -277,20 +277,8 @@ export const BASS_CLARINET_PREPARED_MUSIC: Song[] = CLARINET_PREPARED_MUSIC.map(
 
 // Get songs for a specific level and instrument
 export const getSongsForLevel = (level: CadetLevel, instrument: string = 'alto-sax'): { listA: Song[]; listB: Song[] } => {
-  let songs: Song[];
-  
-  if (instrument === 'clarinet') {
-    songs = CLARINET_PREPARED_MUSIC.filter(s => s.level === level);
-  } else if (instrument === 'bass-clarinet') {
-    songs = BASS_CLARINET_PREPARED_MUSIC.filter(s => s.level === level);
-  } else {
-    songs = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === level);
-  }
-  
-  return {
-    listA: songs.filter(s => s.list === 'A'),
-    listB: songs.filter(s => s.list === 'B'),
-  };
+  // Official lists from the level packages (src/curriculum/standards.ts), not the older hand-typed lists.
+  return getOfficialSongs(level, instrument);
 };
 
 // Maintenance tasks by level (Annex A)
@@ -411,7 +399,8 @@ export const LEVEL_B_SONGS = SAXOPHONE_PREPARED_MUSIC.filter(s => s.level === 'O
 // Lesson structure now comes from the curriculum module (src/curriculum).
 // The old hand-written curriculum that lived here has been removed.
 export type { Lesson, CurriculumSection } from './curriculum';
-export { CURRICULUM, getAllLessons, getLessonById, getLessonStatus } from './curriculum';
+export { CURRICULUM, getAllLessons, getLessonById, getLessonStatus, getOfficialSongs } from './curriculum';
+import { getOfficialSongs } from './curriculum';
 
 export const STICKER_INFO: Record<string, { name: string }> = {
   'first-5': { name: 'First Steps' },

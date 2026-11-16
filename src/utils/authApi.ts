@@ -60,7 +60,7 @@ function outcomeFrom(status: number, data: any): AuthOutcome {
   return { ok: true, account: data.account, profile: data.profile ?? null };
 }
 
-export async function signUp(input: { email: string; displayName: string; password: string }): Promise<AuthOutcome> {
+export async function signUp(input: { email: string; rank: string; lastName: string; password: string }): Promise<AuthOutcome> {
   const { status, data } = await call('POST', '/api/auth/signup', input);
   return outcomeFrom(status, data);
 }

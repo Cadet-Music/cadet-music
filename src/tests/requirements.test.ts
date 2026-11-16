@@ -98,8 +98,8 @@ test('every teaching lesson id resolves to a real alto sax lesson', () => {
   }
 });
 
-test('Basic and Level One are present, Basic first', () => {
-  assert.deepEqual(availableLevels(program), ['BASIC', 'ONE']);
+test('every level from Basic to Level Five has requirements, in order', () => {
+  assert.deepEqual(availableLevels(program), ['BASIC', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']);
 });
 
 // ---------------------------------------------------------------- engine
@@ -142,13 +142,19 @@ test('target resolution: requested level wins; otherwise first open level; unkno
   assert.equal(resolveTarget(program, 'FIVE', {}, []), 'FIVE', 'a requested level is kept even without requirements');
 });
 
-test('gap map for Level One lists earlier open Basic requirements separately', () => {
+test('gap map for Level One shows only Level One items until a diagnostic exists', () => {
   const gap = buildGapMap(program, 'ONE', observed([basicIds[0]]), []);
   assert.equal(gap.target, 'ONE');
   assert.equal(gap.targetTotal, oneIds.length);
   assert.equal(gap.targetOpen, oneIds.length);
-  assert.equal(gap.earlierOpen.length, basicIds.length - 1);
-  assert.equal(gap.focus?.def.id, basicIds[1]);
+  assert.equal(gap.earlierOpen.length, 0, 'no Basic items for a Level One cadet');
+  assert.equal(gap.focus?.def.id, oneIds[0], 'focus is the first Level One requirement');
+});
+
+test('a Level Four target never focuses on Basic requirements', () => {
+  const gap = buildGapMap(program, 'FOUR', {}, []);
+  assert.equal(gap.focus?.def.level, 'FOUR');
+  assert.equal(gap.earlierOpen.length, 0);
 });
 
 test('gap map groups target requirements by family without losing any', () => {
@@ -158,6 +164,7 @@ test('gap map groups target requirements by family without losing any', () => {
 });
 
 import { sectionsForLevel, sectionLessonStatus } from '../curriculum';
+import { requirementsForLevel } from '../requirements/engine';
 
 test('a Level Five target shows only Level Five lessons, never Basic', () => {
   const sections = sectionsForLevel('alto-sax', 'FIVE');
@@ -175,12 +182,15 @@ test('within a level, lessons unlock in order', () => {
 });
 
 test('a level with no requirements written yet gives an empty gap map, not a false "complete"', () => {
-  const gap = buildGapMap(program, 'FIVE', {}, []);
+  const withoutFive = { ...program, requirements: program.requirements.filter((r) => r.level !== 'FIVE') };
+  const gap = buildGapMap(withoutFive, 'FIVE', {}, []);
   assert.equal(gap.targetTotal, 0);
   assert.equal(gap.focus, null);
 });
 
 import { workingLevelFor } from '../requirements/workingLevel';
+import { applyPracticeResult } from '../requirements/practice';
+import { STATE_LABEL } from '../requirements/model';
 
 test('working level: no target and alto sax starts at Basic', () => {
   assert.equal(workingLevelFor('alto-sax', undefined, {}, []), 'BASIC');
@@ -197,6 +207,44 @@ test('working level: after Basic is passed, the first open level is Level One', 
 test('working level: an instrument with no requirement program starts at Basic', () => {
   assert.equal(workingLevelFor('clarinet', undefined, {}, []), 'BASIC');
   assert.equal(workingLevelFor('tenor-sax', undefined, {}, []), 'BASIC');
+});
+
+test('every Level Two to Five teaching lesson and prepared-music list exists in the curriculum', () => {
+  const lessonIds = new Set(getAllLessons('alto-sax').map((l) => l.id));
+  for (const level of ['TWO', 'THREE', 'FOUR', 'FIVE'] as const) {
+    assert.ok(requirementsForLevel(program, level).length >= 5, `${level} has requirements`);
+  }
+  for (const r of program.requirements) for (const id of r.teachingLessonIds) assert.ok(lessonIds.has(id), `${r.id} -> ${id}`);
+});
+
+test('practice: passing every theory lesson of a requirement marks it ready from practice', () => {
+  const theory = program.requirements.find((r) => r.family === 'theory' && r.teachingLessonIds.length >= 2)!;
+  let state = applyPracticeResult(program, {}, {}, theory.teachingLessonIds[0], 1, '2026-11-01T00:00:00.000Z');
+  assert.equal(state.requirements[theory.id], undefined, 'one lesson alone is not enough');
+  for (const id of theory.teachingLessonIds.slice(1)) state = applyPracticeResult(program, state.lessonScores, state.requirements, id, 0.9, '2026-11-01T00:00:00.000Z');
+  assert.equal(state.requirements[theory.id]?.readySource, 'practice');
+});
+
+test('practice: a score below the pass mark does not count', () => {
+  const theory = program.requirements.find((r) => r.family === 'theory')!;
+  const state = applyPracticeResult(program, {}, {}, theory.teachingLessonIds[0], 0.5, 'now');
+  assert.equal(state.requirements[theory.id], undefined);
+});
+
+test('practice: playing requirements are never marked ready by a quiz', () => {
+  const playing = program.requirements.find((r) => r.family === 'scales')!;
+  const state = applyPracticeResult(program, {}, {}, playing.teachingLessonIds[0], 1, 'now');
+  assert.equal(state.requirements[playing.id], undefined);
+  assert.equal(STATE_LABEL['observed-pass'], 'Passed');
+});
+
+import { getSongsForLevel } from '../data';
+
+test('music list: Level One lists come from the official repertoire, not the old hand-typed lists', () => {
+  const { listA, listB } = getSongsForLevel('ONE', 'alto-sax');
+  assert.ok(listA.some((s) => s.title === 'Annie Laurie'), 'Annie Laurie is on the official Level One List A');
+  assert.ok(listB.some((s) => s.title === 'Waltz'), 'Waltz is on the official Level One List B');
+  assert.ok(!listA.some((s) => s.title === 'Winter Dreams'), 'old unverified entries are gone');
 });
 
 let failed = 0;

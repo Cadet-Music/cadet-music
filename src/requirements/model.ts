@@ -18,6 +18,7 @@ export type RequirementFamily =
   | 'scales'
   | 'sight-reading'
   | 'theory'
+  | 'aural'
   | 'prepared-music'
   | 'drill';
 
@@ -26,6 +27,7 @@ export const FAMILY_ORDER: readonly RequirementFamily[] = [
   'rhythm',
   'scales',
   'sight-reading',
+  'aural',
   'theory',
   'prepared-music',
   'drill',
@@ -37,6 +39,7 @@ export const FAMILY_TITLE: Readonly<Record<RequirementFamily, string>> = {
   scales: 'Scales',
   'sight-reading': 'Sight-reading',
   theory: 'Music theory',
+  aural: 'Aural skills',
   'prepared-music': 'Prepared music',
   drill: 'Band drill',
 };
@@ -75,8 +78,10 @@ export type RequirementState = 'not-started' | 'learning' | 'ready-to-check' | '
 
 /** What is recorded for a cadet against one requirement. */
 export interface RequirementRecord {
-  /** Cadet marked the requirement ready to check (self-report). */
+  /** When the requirement became ready to check. */
   readyAt?: string;
+  /** How readiness was set: the cadet ticked it ('self') or passing the practice quizzes did ('practice'). */
+  readySource?: 'self' | 'practice';
   /** Assessor-recorded pass. Not writable from the cadet's own UI. */
   observedPassAt?: string;
   observedBy?: string;

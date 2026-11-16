@@ -7,6 +7,7 @@ import { calculateAllAdaptiveWeights, applyConceptFloor } from '../adaptive';
 import { getLessonContent, getClarinetLessonContent, LessonContent } from '../lessonContent';
 import { getSongLessonById, SongLesson } from '../completeSongLessons';
 import confetti from 'canvas-confetti';
+import { afterQuestion } from '../lessons/flow';
 import SaxophoneAssembly from './SaxophoneAssembly';
 import AudioReferencePlayer from './AudioReferencePlayer';
 import GuidedMicrophonePractice from './GuidedMicrophonePractice';
@@ -672,14 +673,27 @@ function NoteMatchExercise({ exercise, onComplete }: { exercise: Exercise; onCom
   );
 }
 
+/** The right answer to a question, as plain text for the review list. */
+function answerText(e: Exercise): string {
+  if (e.type === 'multiple-choice') return e.options?.find(o => o.correct)?.text ?? '';
+  if (e.type === 'true-false') return e.correctAnswer === 'true' ? 'True' : 'False';
+  if (e.type === 'fill-order') return (e.correctOrder ?? []).join(' → ');
+  if (e.type === 'note-match') return (e.notePairs ?? []).map(p => `${p.note}: ${p.position}`).join(', ');
+  return 'Try this one again';
+}
+
 export default function LessonView() {
-  const { user, currentLessonId, setCurrentView, completeLesson, setCurrentLesson, recordCorrectAnswer, recordIncorrectAnswer } = useStore();
+  const { user, currentLessonId, setCurrentView, completeLesson, setCurrentLesson, recordCorrectAnswer, recordIncorrectAnswer, recordLessonResult } = useStore();
   // Adaptive exercise ordering is generated once per lesson session (stable
   // across re-renders so the quiz doesn't reshuffle mid-question).
   const [sessionKey, setSessionKey] = useState(0);
   const [step, setStep] = useState<LessonStep>('intro');
   const [noSax, setNoSax] = useState(false);
   const [exerciseIdx, setExerciseIdx] = useState(0);
+  // Try first: the cadet attempts the quiz before reading. Missed questions are reviewed, then retried.
+  const [phase, setPhase] = useState<'try' | 'retry'>('try');
+  const [missed, setMissed] = useState<Exercise[]>([]);
+  const [tryCorrect, setTryCorrect] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [songPhaseIdx, setSongPhaseIdx] = useState(0);
 
@@ -710,31 +724,43 @@ export default function LessonView() {
 
   const isPlayingLesson = lesson.type === 'playing';
   const isRhythmLesson = lesson.type === 'rhythm';
-  const totalExercises = exercises.length;
-  const currentExercise = exercises[exerciseIdx];
+  const activeExercises = phase === 'retry' ? missed : exercises;
+  const totalExercises = activeExercises.length;
+  const currentExercise = activeExercises[exerciseIdx];
+
+  const finishLesson = () => {
+    completeLesson(lesson.id, lesson.xp);
+    setStep('complete');
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  };
 
   const handleExerciseComplete = (correct: boolean) => {
-    if (correct) {
-      setCorrectCount(c => c + 1);
-      // Record correct answer for competency tracking
-      if (currentExercise.concept) {
-        recordCorrectAnswer(currentExercise.concept);
-      }
-    } else {
-      // Record incorrect answer for competency tracking
-      if (currentExercise.concept) {
-        recordIncorrectAnswer(currentExercise.concept);
-      }
+    if (currentExercise.concept) {
+      if (correct) recordCorrectAnswer(currentExercise.concept);
+      else recordIncorrectAnswer(currentExercise.concept);
     }
-    
+    const isLast = exerciseIdx >= totalExercises - 1;
+    const nextMissed = phase === 'try' && !correct ? [...missed, currentExercise] : missed;
+    const nextTryCorrect = phase === 'try' && correct ? tryCorrect + 1 : tryCorrect;
+    if (phase === 'try') {
+      setMissed(nextMissed);
+      setTryCorrect(nextTryCorrect);
+    }
+    if (correct) setCorrectCount(c => c + 1);
+
     setTimeout(() => {
-      if (exerciseIdx < totalExercises - 1) {
+      if (!isLast) {
         setExerciseIdx(i => i + 1);
-      } else {
-        completeLesson(lesson.id, lesson.xp);
-        setStep('complete');
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        return;
       }
+      // Only the first try is recorded as the lesson's score, so retries cannot inflate it.
+      if (phase === 'try') recordLessonResult(lesson.id, nextTryCorrect, exercises.length);
+      if (afterQuestion({ phase, isLast: true, missedSoFar: nextMissed.length }) === 'review') {
+        setExerciseIdx(0);
+        setStep('learn');
+        return;
+      }
+      finishLesson();
     }, correct ? 600 : 1200);
   };
 
@@ -836,7 +862,15 @@ export default function LessonView() {
               )}
 
               <motion.button 
-                onClick={() => setStep('learn')} 
+                onClick={() => {
+                  if (isSongLesson) { setStep('learn'); return; }
+                  setSessionKey(k => k + 1);
+                  setPhase('try');
+                  setExerciseIdx(0);
+                  setMissed([]);
+                  setTryCorrect(0);
+                  setStep('quiz');
+                }} 
                 className="btn-accent px-8 py-3.5"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -1018,6 +1052,21 @@ export default function LessonView() {
               <h2 className="text-xl font-semibold text-[#1a2332] dark:text-white mb-4">
                 {lessonContentData.title}
               </h2>
+
+              {missed.length > 0 && (
+                <div className="card mb-6">
+                  <p className="text-sm font-semibold text-[#1a2332] dark:text-white mb-1">Check these first</p>
+                  <p className="text-xs text-[#5a6577] dark:text-[#9aa3b0] mb-3">You will try these again next.</p>
+                  <ul className="space-y-3">
+                    {missed.map((e, i) => (
+                      <li key={`${e.question}-${i}`} className="text-sm">
+                        <span className="text-[#1a2332] dark:text-white">{e.question}</span>
+                        <span className="block text-[#3a8a5c] font-medium mt-0.5">{answerText(e)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Introduction */}
               <motion.div
@@ -1217,14 +1266,14 @@ export default function LessonView() {
 
               <button
                 onClick={() => {
-                  // Regenerate the adaptive ordering fresh for each practice run,
-                  // reflecting the cadet's latest mastery data.
-                  setSessionKey(k => k + 1);
+                  if (missed.length === 0) { finishLesson(); return; }
+                  setPhase('retry');
+                  setExerciseIdx(0);
                   setStep('quiz');
                 }}
                 className="btn-accent w-full py-3.5"
               >
-                <span className="flex items-center justify-center gap-2">Continue to Practice <ArrowRightIcon /></span>
+                <span className="flex items-center justify-center gap-2">{missed.length > 0 ? 'Try the ones I missed' : 'Finish lesson'} <ArrowRightIcon /></span>
               </button>
             </motion.div>
           )}
@@ -1249,7 +1298,7 @@ export default function LessonView() {
 
               {/* Exercise counter */}
               <div className="flex items-center justify-center gap-1.5 mb-6">
-                {exercises.map((_, i) => (
+                {activeExercises.map((_, i) => (
                   <div
                     key={i}
                     className={`w-2 h-2 rounded-full transition-colors ${
@@ -1333,7 +1382,7 @@ export default function LessonView() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                {correctCount}/{totalExercises} correct
+                {tryCorrect}/{exercises.length} correct on the first try
               </motion.p>
 
               <div className="flex items-center justify-center gap-3 mb-8">

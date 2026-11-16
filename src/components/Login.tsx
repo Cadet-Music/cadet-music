@@ -5,6 +5,9 @@ import { changePassword, fetchProfile, signIn, signUp, type AccountInfo } from '
 
 const MIN_PASSWORD = 8;
 
+/** Same list as the server (api/auth/signup.js). Keep the two in step. */
+const RANKS = ['Air Cadet', 'Leading Air Cadet', 'Corporal', 'Flight Corporal', 'Sergeant', 'Flight Sergeant', 'Warrant Officer 2nd Class', 'Warrant Officer 1st Class'];
+
 /**
  * Sign-in and sign-up with a cadet email and password. Passwords are checked on the
  * server; progress is restored from the saved profile on sign-in.
@@ -13,7 +16,8 @@ export default function Login() {
   const { startSession, darkMode, setDarkMode } = useStore();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
-  const [displayName, setDisplayName] = useState('');
+  const [rank, setRank] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -40,10 +44,11 @@ export default function Login() {
   };
 
   const submitSignUp = async () => {
-    if (!displayName.trim()) return setError('Enter the name you want shown, for example Cdt Smith.');
+    if (!rank) return setError('Choose your rank.');
+    if (!lastName.trim()) return setError('Enter your last name.');
     if (password.length < MIN_PASSWORD) return setError(`Password must be at least ${MIN_PASSWORD} characters.`);
     if (password !== confirm) return setError('The two passwords do not match.');
-    const result = await signUp({ email: email.trim().toLowerCase(), displayName: displayName.trim(), password });
+    const result = await signUp({ email: email.trim().toLowerCase(), rank, lastName: lastName.trim(), password });
     if (!result.ok || !result.account) return setError(result.error ?? 'Sign-up failed.');
     await finish(result.account, null);
   };
@@ -109,10 +114,19 @@ export default function Login() {
           )}
 
           {!mustChange && mode === 'signup' && (
-            <div>
-              <label htmlFor="login-name" className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">Name shown in the app</label>
-              <input id="login-name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Cdt Smith" className="input-field" />
-            </div>
+            <>
+              <div>
+                <label htmlFor="login-rank" className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">Rank</label>
+                <select id="login-rank" value={rank} onChange={(e) => setRank(e.target.value)} className="input-field">
+                  <option value="">Choose your rank</option>
+                  {RANKS.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="login-last" className="block text-sm font-medium text-[#1a2332] dark:text-[#e8eaed] mb-1.5">Last name</label>
+                <input id="login-last" value={lastName} onChange={(e) => setLastName(e.target.value)} className="input-field" />
+              </div>
+            </>
           )}
 
           <div>
